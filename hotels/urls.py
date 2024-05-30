@@ -3,5 +3,5 @@ from .views import ScrapeHotelsView,getAllHotels
 
 urlpatterns = [
     path('scrape/', ScrapeHotelsView.as_view(), name='scrape_hotels'),
-    path('getHotels/', getAllHotels),
+    path('get_hotels/', getAllHotels),
 ]
