@@ -10,6 +10,36 @@ import time
 
 import requests
 import json
+# views.py
+from django.http import JsonResponse
+
+from shapely.geometry import Point, LineString
+
+def get_coordinates_along_polyline(request):
+    # Get coordinates A and B from request
+    lat1, lon1 = float(request.GET.get('lat1')), float(request.GET.get('lon1'))
+    lat2, lon2 = float(request.GET.get('lat2')), float(request.GET.get('lon2'))
+    print(lat1,lon1)
+    print(lat2,lon2)
+    
+    # Create LineString from A to B
+    line = LineString([(lon1, lat1), (lon2, lat2)])
+    
+    # Threshold distance for points to be considered 'alongside' the polyline
+    threshold_distance = 0.1  # Adjust as needed
+    
+    # Get all coordinates from the database
+    allHotelList = Hotel.objects.all().values('id','place_id','name','address','rating','latitude','longitude','icon')
+    
+    # Filter coordinates that are alongside the polyline
+    result = []
+    for hotel in allHotelList:
+        # print("latitude == ? mm",hotel['latitude'])
+        point = Point(hotel['longitude'], hotel['latitude'])
+        if line.distance(point) <= threshold_distance:
+            result.append(json.dumps(hotel, default=str,))
+    
+    return JsonResponse(result, safe=False)
 
 # # Replace with your actual Google API key
 # API_KEY = 'YOUR_GOOGLE_API_KEY'
