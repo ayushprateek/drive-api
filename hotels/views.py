@@ -279,16 +279,68 @@ def get_coordinates_along_polyline(request):
     # Threshold distance for points to be considered 'alongside' the polyline
     threshold_distance = float(request.GET.get('threshold_distance'))
     
+    hotels = Hotel.objects.all()
+    results = []
+
+    for hotel in hotels:
+        result = {
+            "business_status": hotel.business_status,
+            "geometry": {
+                "location": {
+                    "lat": hotel.geometry.location.lat,
+                    "lng": hotel.geometry.location.lng
+                },
+                "viewport": {
+                    "northeast": {
+                        "lat": hotel.geometry.viewport.northeast_lat,
+                        "lng": hotel.geometry.viewport.northeast_lng
+                    },
+                    "southwest": {
+                        "lat": hotel.geometry.viewport.southwest_lat,
+                        "lng": hotel.geometry.viewport.southwest_lng
+                    }
+                }
+            },
+            "icon": hotel.icon,
+            "icon_background_color": hotel.icon_background_color,
+            "icon_mask_base_uri": hotel.icon_mask_base_uri,
+            "name": hotel.name,
+            "opening_hours": {
+                "open_now": hotel.open_now
+            },
+            "photos": [{
+                "height": photo.height,
+                "html_attributions": photo.html_attributions.split(','),
+                "photo_reference": photo.photo_reference,
+                "width": photo.width
+            } for photo in hotel.photos.all()],
+            "place_id": hotel.place_id,
+            "plus_code": {
+                "compound_code": hotel.plus_code.compound_code,
+                "global_code": hotel.plus_code.global_code
+            },
+            "rating": hotel.rating,
+            "reference": hotel.reference,
+            "scope": hotel.scope,
+            "types": hotel.types.split(','),
+            "user_ratings_total": hotel.user_ratings_total,
+            "vicinity": hotel.vicinity
+        }
+        results.append(result)
+    
     # Get all coordinates from the database
-    allHotelList = Hotel.objects.all().values('id','place_id','name','address','rating','latitude','longitude','icon')
+    # allHotelList = Hotel.objects.all().values('id','place_id','name','address','rating','latitude','longitude','icon')
     
     # Filter coordinates that are alongside the polyline
     result = []
-    for hotel in allHotelList:
-        # print("latitude == ? mm",hotel['latitude'])
-        point = Point(hotel['longitude'], hotel['latitude'])
-        if line.distance(point) <= threshold_distance and bounding_box.contains(point):
-            result.append(json.dumps(hotel, default=str,))
+    for hotel in results:
+        print("latitude == ",hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'])
+        point = Point(hotel['geometry']['location']['lat'], hotel['geometry']['location']['lng'])
+        print("distance from point == ",line.distance(point),bounding_box.contains(point))
+        # if line.distance(point) <= threshold_distance and bounding_box.contains(point):
+        if line.distance(point) <= threshold_distance:
+            print('inserting')
+            result.append(hotel)
     
     return JsonResponse(result, safe=False)
 
