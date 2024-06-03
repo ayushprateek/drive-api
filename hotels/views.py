@@ -26,7 +26,7 @@ def get_coordinates_along_polyline(request):
     line = LineString([(lon1, lat1), (lon2, lat2)])
     
     # Threshold distance for points to be considered 'alongside' the polyline
-    threshold_distance = 0.1  # Adjust as needed
+    threshold_distance = float(request.GET.get('threshold_distance'))
     
     # Get all coordinates from the database
     allHotelList = Hotel.objects.all().values('id','place_id','name','address','rating','latitude','longitude','icon')
