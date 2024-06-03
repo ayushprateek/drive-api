@@ -1,5 +1,48 @@
 from django.db import models
 
+class Location(models.Model):
+    lat = models.FloatField(null=True)
+    lng = models.FloatField(null=True)
+
+class Viewport(models.Model):
+    northeast_lat = models.FloatField(null=True)
+    northeast_lng = models.FloatField(null=True)
+    southwest_lat = models.FloatField(null=True)
+    southwest_lng = models.FloatField(null=True)
+
+class Geometry(models.Model):
+    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+    viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE)
+
+class Photo(models.Model):
+    height = models.IntegerField()
+    width = models.IntegerField()
+    html_attributions = models.TextField()
+    photo_reference = models.CharField(max_length=255)
+
+class PlusCode(models.Model):
+    compound_code = models.CharField(max_length=50)
+    global_code = models.CharField(max_length=50)
+
+class Hotel(models.Model):  # Renamed from Result to Hotel
+    business_status = models.CharField(max_length=50,null=True)
+    geometry = models.OneToOneField(Geometry, on_delete=models.CASCADE,null=True)
+    icon = models.URLField()
+    icon_background_color = models.CharField(max_length=10,null=True)
+    icon_mask_base_uri = models.URLField(null=True)
+    name = models.CharField(max_length=255)
+    open_now = models.BooleanField(default=False)
+    place_id = models.CharField(max_length=50)
+    plus_code = models.OneToOneField(PlusCode, on_delete=models.CASCADE,null=True)
+    rating = models.FloatField(null=True)
+    reference = models.CharField(max_length=50,null=True)
+    scope = models.CharField(max_length=50,null=True)
+    types = models.TextField(null=True)  # Will be stored as a comma-separated string
+    user_ratings_total = models.IntegerField()
+    vicinity = models.CharField(max_length=255,null=True)
+    photos = models.ManyToManyField(Photo)
+
+
 
 
 class Status(models.Model):
@@ -12,21 +55,21 @@ class Media(models.Model):
         db_table = '"media"'
     media = models.CharField(max_length=200)
     
-class Hotel(models.Model):
-    place_id = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=255)
-    address = models.CharField(max_length=255, blank=True, null=True)
-    rating = models.FloatField(default=0)
-    user_ratings_total = models.IntegerField(default=0)
-    start_price = models.FloatField(null=True)
-    end_price = models.FloatField(null=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-    icon = models.CharField(max_length=500, blank=True, null=True)
-    media = models.ForeignKey(Media, on_delete=models.CASCADE,null=True)
+# class Hotel(models.Model):
+#     place_id = models.CharField(max_length=255, unique=True)
+#     name = models.CharField(max_length=255)
+#     address = models.CharField(max_length=255, blank=True, null=True)
+#     rating = models.FloatField(default=0)
+#     user_ratings_total = models.IntegerField(default=0)
+#     start_price = models.FloatField(null=True)
+#     end_price = models.FloatField(null=True)
+#     latitude = models.FloatField(null=True)
+#     longitude = models.FloatField(null=True)
+#     icon = models.CharField(max_length=500, blank=True, null=True)
+#     media = models.ForeignKey(Media, on_delete=models.CASCADE,null=True)
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
     
 class HotelMedia(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)

@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views import View
 import requests
-from .models import Hotel
+from .models import *
 from django.conf import settings
+from django.db import connection
 
 import requests
 import time
@@ -14,6 +15,249 @@ import json
 from django.http import JsonResponse
 
 from shapely.geometry import Point, LineString,box
+
+import requests
+from django.http import JsonResponse
+from django.conf import settings
+from .models import Location, Viewport, Geometry, Photo, PlusCode, Hotel
+
+def truncate_all_tables(request):
+    with connection.cursor() as cursor:
+        cursor.execute("PRAGMA foreign_keys=OFF;")
+        for table in connection.introspection.table_names():
+            cursor.execute(f"DELETE FROM `{table}`;")
+            cursor.execute(f"DELETE FROM sqlite_sequence WHERE name='{table}';")
+        cursor.execute("PRAGMA foreign_keys=ON;")
+        return JsonResponse([], safe=False)
+
+def saveToDb(api_response):
+    data = api_response
+    
+    for result in data['results']:
+        location_data = result['geometry']['location']
+        location = Location.objects.create(
+            lat=location_data['lat'],
+            lng=location_data['lng']
+        )
+        
+        viewport_data = result['geometry']['viewport']
+        viewport = Viewport.objects.create(
+            northeast_lat=viewport_data['northeast']['lat'],
+            northeast_lng=viewport_data['northeast']['lng'],
+            southwest_lat=viewport_data['southwest']['lat'],
+            southwest_lng=viewport_data['southwest']['lng']
+        )
+        
+        geometry = Geometry.objects.create(
+            location=location,
+            viewport=viewport
+        )
+        
+        plus_code_data = result.get('plus_code', {})
+        plus_code = PlusCode.objects.create(
+            compound_code=plus_code_data.get('compound_code', ''),
+            global_code=plus_code_data.get('global_code', '')
+        )
+        
+        hotel = Hotel.objects.create(
+            business_status=result['business_status'],
+            geometry=geometry,
+            icon=result['icon'],
+            icon_background_color=result['icon_background_color'],
+            icon_mask_base_uri=result['icon_mask_base_uri'],
+            name=result['name'],
+            open_now=result.get('opening_hours', {}).get('open_now', False),
+            place_id=result['place_id'],
+            plus_code=plus_code,
+            rating=result['rating'],
+            reference=result['reference'],
+            scope=result['scope'],
+            types=','.join(result['types']),
+            user_ratings_total=result['user_ratings_total'],
+            vicinity=result['vicinity']
+        )
+        
+        for photo in result.get('photos', []):
+            photo_obj = Photo.objects.create(
+                height=photo['height'],
+                width=photo['width'],
+                html_attributions=', '.join(photo['html_attributions']),
+                photo_reference=photo['photo_reference']
+            )
+            hotel.photos.add(photo_obj)
+
+        hotel.save()
+        print("Hotel ID = ",hotel.id)
+
+def saveHotel(request):
+    latlang=[
+    {"latitude": 30.528997, "longitude": -85.884900},
+    {"latitude": 30.467823, "longitude": -85.481728},
+    {"latitude": 30.177115, "longitude": -85.285272},
+    {"latitude": 30.395227, "longitude": -84.892362},
+    {"latitude": 30.346799, "longitude": -84.331061},
+    {"latitude": 30.274113, "longitude": -83.853955},
+    {"latitude": 30.152850, "longitude": -83.404915},
+    {"latitude": 30.201373, "longitude": -83.012004},
+    {"latitude": 29.934201, "longitude": -83.124264},
+    {"latitude": 29.934201, "longitude": -83.124264},
+    {"latitude": 29.644144, "longitude": -82.891468},
+    {"latitude": 29.564339, "longitude": -82.570213},
+    {"latitude": 29.577644, "longitude": -82.172468},
+    {"latitude": 30.438702, "longitude": -82.631404},
+    {"latitude": 30.148104, "longitude": -82.524319},
+    {"latitude": 30.121644, "longitude": -82.264255},
+    {"latitude": 30.174558, "longitude": -81.988894},
+    {"latitude": 30.028976, "longitude": -82.203064},
+    {"latitude": 29.909704, "longitude": -81.820617},
+    {"latitude": 29.577644, "longitude": -81.912404},
+    {"latitude": 29.670732, "longitude": -81.637043},
+    {"latitude": 29.617549, "longitude": -81.453468},
+    {"latitude": 29.497786, "longitude": -81.820617},
+    {"latitude": 29.271181, "longitude": -82.019489},
+    {"latitude": 29.003942, "longitude": -82.065383},
+    {"latitude": 29.271181, "longitude": -81.835915},
+    {"latitude": 29.137648, "longitude": -81.499362},
+    {"latitude": 29.097555, "longitude": -81.835915},
+    {"latitude": 28.896852, "longitude": -81.973596},
+    {"latitude": 28.548048, "longitude": -81.988894},
+    {"latitude": 28.292419, "longitude": -81.790021},
+    {"latitude": 28.157630, "longitude": -81.606447},
+    {"latitude": 28.066303, "longitude": -81.422551},
+    {"latitude": 28.012578, "longitude": -81.257333},
+    {"latitude": 27.951145, "longitude": -81.083420},
+    {"latitude": 27.935782, "longitude": -81.379073},
+    {"latitude": 27.920416, "longitude": -81.744290},
+    {"latitude": 27.527851, "longitude": -81.639942},
+    {"latitude": 27.481574, "longitude": -81.909508},
+    {"latitude": 27.334902, "longitude": -81.944290},
+    {"latitude": 27.303999, "longitude": -82.248638},
+    {"latitude": 27.242167, "longitude": -82.074725},
+    {"latitude": 27.175862, "longitude": -81.461201},
+    {"latitude": 27.189757, "longitude": -81.195667},
+    {"latitude": 27.264911, "longitude": -81.067270},
+    {"latitude": 27.037494, "longitude": -81.176805},
+    {"latitude": 26.796580, "longitude": -81.220619},
+    {"latitude": 26.646564, "longitude": -81.206014},
+    {"latitude": 26.522489, "longitude": -81.279037},
+    {"latitude": 26.378655, "longitude": -81.454292},
+    {"latitude": 26.195335, "longitude": -81.498106},
+    {"latitude": 26.037974, "longitude": -81.468897},
+    {"latitude": 26.051095, "longitude": -81.198712},
+    {"latitude": 26.064215, "longitude": -80.957736},
+    {"latitude": 26.319763, "longitude": -80.826294},
+    {"latitude": 26.260840, "longitude": -80.629132},
+    {"latitude": 26.110124, "longitude": -80.497691},
+    {"latitude": 25.978909, "longitude": -80.541504},
+    {"latitude": 25.840975, "longitude": -80.687551},
+    {"latitude": 25.702879, "longitude": -80.745969},
+    {"latitude": 25.919814, "longitude": -80.541504},
+    {"latitude": 25.722617, "longitude": -80.556109},
+    {"latitude": 25.630480, "longitude": -80.753271},
+    {"latitude": 25.538271, "longitude": -80.833597},
+    {"latitude": 25.426209, "longitude": -80.592621},
+    {"latitude": 25.314042, "longitude": -80.541504},
+    {"latitude": 25.818571, "longitude": -80.344273},
+    {"latitude": 25.920899, "longitude": -80.361579},
+    {"latitude": 26.038690, "longitude": -80.378885},
+    {"latitude": 26.063122, "longitude": -80.304716},
+    {"latitude": 26.158581, "longitude": -80.228075},
+    {"latitude": 26.194080, "longitude": -80.186046},
+    {"latitude": 26.327422, "longitude": -80.199521},
+    {"latitude": 26.452348, "longitude": -80.185849},
+    {"latitude": 26.415619, "longitude": -80.150300},
+    {"latitude": 26.545343, "longitude": -80.177645},
+    {"latitude": 26.689580, "longitude": -80.163973},
+    {"latitude": 26.779940, "longitude": -80.188583},
+    {"latitude": 26.914127, "longitude": -80.174911},
+    {"latitude": 27.067636, "longitude": -80.267884},
+    {"latitude": 27.194184, "longitude": -80.338981},
+    {"latitude": 27.325447, "longitude": -80.478440},
+    {"latitude": 27.451702, "longitude": -80.503051},
+    {"latitude": 27.546299, "longitude": -80.538599},
+    {"latitude": 27.589932, "longitude": -80.590555},
+    {"latitude": 27.730407, "longitude": -80.672590},
+    {"latitude": 27.880370, "longitude": -80.686262},
+    {"latitude": 27.984256, "longitude": -80.724545},
+    {"latitude": 28.044608, "longitude": -80.814784},
+    {"latitude": 28.170033, "longitude": -80.754625},
+    {"latitude": 28.467230, "longitude": -80.949765},
+    {"latitude": 28.657637, "longitude": -81.044611},
+    {"latitude": 28.930741, "longitude": -81.078484},
+    {"latitude": 29.078866, "longitude": -81.410445},
+    {"latitude": 29.356766, "longitude": -81.329149},
+    {"latitude": 29.527859, "longitude": -81.417220},
+    {"latitude": 29.610352, "longitude": -81.667884},
+    {"latitude": 29.728083, "longitude": -81.457868},
+    {"latitude": 29.869178, "longitude": -81.437544},
+    {"latitude": 30.021805, "longitude": -81.816928},
+    {"latitude": 30.215187, "longitude": -81.471418},
+    {"latitude": 30.644946, "longitude": -81.820757}
+]
+    for data in latlang:
+        lat = data['latitude']
+        lng =  data['longitude']
+        url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
+        response = requests.get(url)
+    
+        if response.status_code == 200:
+            saveToDb(response.json())
+    return JsonResponse({'message': 'Hotels fetched and saved successfully'})
+    
+    
+def fetch_latestHotels(request):
+    hotels = Hotel.objects.all()
+    results = []
+
+    for hotel in hotels:
+        result = {
+            "business_status": hotel.business_status,
+            "geometry": {
+                "location": {
+                    "lat": hotel.geometry.location.lat,
+                    "lng": hotel.geometry.location.lng
+                },
+                "viewport": {
+                    "northeast": {
+                        "lat": hotel.geometry.viewport.northeast_lat,
+                        "lng": hotel.geometry.viewport.northeast_lng
+                    },
+                    "southwest": {
+                        "lat": hotel.geometry.viewport.southwest_lat,
+                        "lng": hotel.geometry.viewport.southwest_lng
+                    }
+                }
+            },
+            "icon": hotel.icon,
+            "icon_background_color": hotel.icon_background_color,
+            "icon_mask_base_uri": hotel.icon_mask_base_uri,
+            "name": hotel.name,
+            "opening_hours": {
+                "open_now": hotel.open_now
+            },
+            "photos": [{
+                "height": photo.height,
+                "html_attributions": photo.html_attributions.split(','),
+                "photo_reference": photo.photo_reference,
+                "width": photo.width
+            } for photo in hotel.photos.all()],
+            "place_id": hotel.place_id,
+            "plus_code": {
+                "compound_code": hotel.plus_code.compound_code,
+                "global_code": hotel.plus_code.global_code
+            },
+            "rating": hotel.rating,
+            "reference": hotel.reference,
+            "scope": hotel.scope,
+            "types": hotel.types.split(','),
+            "user_ratings_total": hotel.user_ratings_total,
+            "vicinity": hotel.vicinity
+        }
+        results.append(result)
+
+    return JsonResponse(results, safe=False)
+
+     
 
 def get_coordinates_along_polyline(request):
     # Get coordinates A and B from request
@@ -47,87 +291,6 @@ def get_coordinates_along_polyline(request):
             result.append(json.dumps(hotel, default=str,))
     
     return JsonResponse(result, safe=False)
-
-# # Replace with your actual Google API key
-# API_KEY = 'YOUR_GOOGLE_API_KEY'
-
-# # Define the polygon (bounding box)
-# polygon = [
-#     {"lat": 37.7749, "lng": -122.4194},
-#     {"lat": 37.8049, "lng": -122.4294},
-#     {"lat": 37.7949, "lng": -122.4094},
-#     {"lat": 37.7749, "lng": -122.3994}
-# ]
-
-# # Function to check if a point is inside the polygon
-# def point_in_polygon(lat, lng, polygon):
-#     num = len(polygon)
-#     j = num - 1
-#     inside = False
-#     for i in range(num):
-#         if (polygon[i]['lng'] > lng) != (polygon[j]['lng'] > lng) and \
-#                 (lat < (polygon[j]['lat'] - polygon[i]['lat']) * (lng - polygon[i]['lng']) / (polygon[j]['lng'] - polygon[i]['lng']) + polygon[i]['lat']):
-#             inside = not inside
-#         j = i
-#     return inside
-
-# # Define the search area (center point and radius)
-# location = "37.7749,-122.4194"  # Center of the polygon
-# radius = 1500  # Search radius in meters
-
-# # Search for hotels within the radius
-# url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={location}&radius={radius}&type=lodging&key={API_KEY}"
-# response = requests.get(url)
-# places = response.json()
-
-# # Filter results within the polygon
-# hotels_in_polygon = [
-#     place for place in places['results']
-#     if point_in_polygon(place['geometry']['location']['lat'], place['geometry']['location']['lng'], polygon)
-# ]
-
-# # Print the results
-# print(json.dumps(hotels_in_polygon, indent=2))
-
-
-# def get_hotels_in_zip(zip_codes, api_key):
-#     url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
-#     hotels = []
-
-#     for zip_code in zip_codes:
-#         query = f"hotels in {zip_code}"
-#         next_page_token = None
-
-#         while True:
-#             params = {
-#                 'query': query,
-#                 'key': api_key,
-#                 'type': 'lodging'
-#             }
-#             if next_page_token:
-#                 params['pagetoken'] = next_page_token
-
-#             response = requests.get(url, params=params)
-#             results = response.json()
-
-#             if 'results' in results:
-#                 hotels.extend(results['results'])
-
-#             next_page_token = results.get('next_page_token')
-
-#             if not next_page_token:
-#                 break
-#             time.sleep(2)  # Wait time to prevent going over the rate limit
-
-#     return hotels
-
-# # Example usage
-# api_key = settings.GOOGLE_API_KEY
-# florida_zip_codes = ["33101", "33109", "33125", "33126", "33127"]  # Add all relevant zip codes
-# hotels = get_hotels_in_zip(florida_zip_codes, api_key)
-
-# for hotel in hotels:
-#     print(hotel['name'], hotel['formatted_address'])
 
 
 class ScrapeHotelsView(View):
