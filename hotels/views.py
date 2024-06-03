@@ -13,12 +13,19 @@ import json
 # views.py
 from django.http import JsonResponse
 
-from shapely.geometry import Point, LineString
+from shapely.geometry import Point, LineString,box
 
 def get_coordinates_along_polyline(request):
     # Get coordinates A and B from request
     lat1, lon1 = float(request.GET.get('lat1')), float(request.GET.get('lon1'))
     lat2, lon2 = float(request.GET.get('lat2')), float(request.GET.get('lon2'))
+    south_lat = float(request.GET.get('south_lat'))
+    west_lon = float(request.GET.get('west_lon'))
+    north_lat = float(request.GET.get('north_lat'))
+    east_lon = float(request.GET.get('east_lon'))
+    
+    # Create a bounding box using shapely
+    bounding_box = box(west_lon, south_lat, east_lon, north_lat)
     print(lat1,lon1)
     print(lat2,lon2)
     
@@ -36,7 +43,7 @@ def get_coordinates_along_polyline(request):
     for hotel in allHotelList:
         # print("latitude == ? mm",hotel['latitude'])
         point = Point(hotel['longitude'], hotel['latitude'])
-        if line.distance(point) <= threshold_distance:
+        if line.distance(point) <= threshold_distance and bounding_box.contains(point):
             result.append(json.dumps(hotel, default=str,))
     
     return JsonResponse(result, safe=False)
