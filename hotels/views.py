@@ -333,14 +333,16 @@ def get_coordinates_along_polyline(request):
     
     # Filter coordinates that are alongside the polyline
     result = []
+    
+    
     for hotel in results:
-        print("latitude == ",hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'])
-        point = Point(hotel['geometry']['location']['lat'], hotel['geometry']['location']['lng'])
+        # print("latitude == ",hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'])
+        point = Point(hotel['geometry']['location']['lng'], hotel['geometry']['location']['lat'])
         print("distance from point == ",line.distance(point),bounding_box.contains(point))
-        # if line.distance(point) <= threshold_distance and bounding_box.contains(point):
-        if line.distance(point) <= threshold_distance:
+        if line.distance(point) <= threshold_distance and bounding_box.contains(point):
             print('inserting')
             result.append(hotel)
+    print('Len', len(results))
     
     return JsonResponse(result, safe=False)
 
