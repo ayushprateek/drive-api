@@ -69,7 +69,7 @@ def saveToDb(api_response):
             open_now=result.get('opening_hours', {}).get('open_now', False),
             place_id=result['place_id'],
             plus_code=plus_code,
-            rating=result['rating'],
+            rating=result.get('rating'),
             reference=result['reference'],
             scope=result['scope'],
             types=','.join(result['types']),
@@ -87,7 +87,9 @@ def saveToDb(api_response):
             hotel.photos.add(photo_obj)
 
         hotel.save()
-        print("Hotel ID = ",hotel.id)
+        print("Hotel ",hotel.id,'-->',hotel.name)
+   
+
 
 def saveHotel(request):
     latlang=[
@@ -199,9 +201,24 @@ def saveHotel(request):
         lng =  data['longitude']
         url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
         response = requests.get(url)
-    
         if response.status_code == 200:
-            saveToDb(response.json())
+            data=response.json()
+            saveToDb(data)
+            next_page_token = data.get('next_page_token')
+            print('next_page_token = ',next_page_token)
+            while next_page_token:
+                newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next_page_token}&key={settings.GOOGLE_API_KEY}"
+                res = requests.get(newUrl)
+                newData=res.json()
+                next_page_token = newData.get('next_page_token')
+                print('2nd calling next page url, Status = ',res.status_code)
+                if res.status_code == 200:
+                    saveToDb(res.json())
+                if not next_page_token:
+                    break
+            
+            
+            
     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
     
     
