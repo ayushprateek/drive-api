@@ -20,6 +20,7 @@ import requests
 from django.http import JsonResponse
 from django.conf import settings
 from .models import Location, Viewport, Geometry, Photo, PlusCode, Hotel
+import math
 
 def truncate_all_tables(request):
     with connection.cursor() as cursor:
@@ -274,7 +275,23 @@ def fetch_latestHotels(request):
 
     return JsonResponse(results, safe=False)
 
-     
+
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371  # Radius of the Earth in kilometers
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    distance = R * c
+    return distance
+
+def is_distance_one(lat,lng, polyline,threshold_distance):
+    for poly_point in polyline:
+        distance = haversine(lat, lng, poly_point.lat, poly_point.lng)
+        print('distance = ',distance)
+        if distance <= threshold_distance:
+            return True
+    return False
 
 def get_coordinates_along_polyline(request):
     # Get coordinates A and B from request
@@ -291,7 +308,18 @@ def get_coordinates_along_polyline(request):
     print(lat2,lon2)
     
     # Create LineString from A to B
-    line = LineString([(lon1, lat1), (lon2, lat2)])
+    # line = LineString([(lon1, lat1), (lon2, lat2)])
+    decoded_points=[]
+    
+    # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
+    url = f"https://maps.googleapis.com/maps/api/directions/json?origin={lat1},{lon1}&destination={lat2},{lon2}&key={settings.GOOGLE_API_KEY}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data=response.json()
+        decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
+        # for point in decoded_points:
+            # print(f"Lat: {point.lat}, Lng: {point.lng}")
+    
     
     # Threshold distance for points to be considered 'alongside' the polyline
     threshold_distance = float(request.GET.get('threshold_distance'))
@@ -355,13 +383,51 @@ def get_coordinates_along_polyline(request):
     for hotel in results:
         # print("latitude == ",hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'])
         point = Point(hotel['geometry']['location']['lng'], hotel['geometry']['location']['lat'])
-        print("distance from point == ",line.distance(point),bounding_box.contains(point))
-        if line.distance(point) <= threshold_distance and bounding_box.contains(point):
+        # print("distance from point == ",line.distance(point),bounding_box.contains(point))
+        
+        # if line.distance(point) <= threshold_distance and bounding_box.contains(point):
+        if is_distance_one(hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'], decoded_points,threshold_distance) and bounding_box.contains(point):
             print('inserting')
             result.append(hotel)
     print('Len', len(results))
     
     return JsonResponse(result, safe=False)
+
+def decode_poly(encoded):
+    points = []
+    index = 0
+    lat = 0
+    lng = 0
+
+    while index < len(encoded):
+        b, shift, result = 0, 0, 0
+        while True:
+            b = ord(encoded[index]) - 63
+            index += 1
+            result |= (b & 0x1F) << shift
+            shift += 5
+            if b < 0x20:
+                break
+        dlat = ~(result >> 1) if (result & 1) != 0 else (result >> 1)
+        lat += dlat
+
+        shift, result = 0, 0
+        while True:
+            b = ord(encoded[index]) - 63
+            index += 1
+            result |= (b & 0x1F) << shift
+            shift += 5
+            if b < 0x20:
+                break
+        dlng = ~(result >> 1) if (result & 1) != 0 else (result >> 1)
+        lng += dlng
+
+        lat_double = lat / 1E5
+        lng_double = lng / 1E5
+        position = LatLng(lat_double, lng_double)
+        points.append(position)
+
+    return points
 
 
 class ScrapeHotelsView(View):

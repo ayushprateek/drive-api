@@ -1,5 +1,9 @@
 from django.db import models
-
+class LatLng:
+    def __init__(self, lat, lng):
+        self.lat = lat
+        self.lng = lng
+        
 class Location(models.Model):
     lat = models.FloatField(null=True)
     lng = models.FloatField(null=True)
