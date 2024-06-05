@@ -35,64 +35,74 @@ def saveToDb(api_response):
     data = api_response
     
     for result in data['results']:
-        location_data = result['geometry']['location']
-        location = Location.objects.create(
-            lat=location_data['lat'],
-            lng=location_data['lng']
-        )
         
-        viewport_data = result['geometry']['viewport']
-        viewport = Viewport.objects.create(
-            northeast_lat=viewport_data['northeast']['lat'],
-            northeast_lng=viewport_data['northeast']['lng'],
-            southwest_lat=viewport_data['southwest']['lat'],
-            southwest_lng=viewport_data['southwest']['lng']
-        )
-        
-        geometry = Geometry.objects.create(
-            location=location,
-            viewport=viewport
-        )
-        
-        plus_code_data = result.get('plus_code', {})
-        plus_code = PlusCode.objects.create(
-            compound_code=plus_code_data.get('compound_code', ''),
-            global_code=plus_code_data.get('global_code', '')
-        )
-        
-        hotel = Hotel.objects.create(
-            business_status=result['business_status'],
-            geometry=geometry,
-            icon=result['icon'],
-            icon_background_color=result['icon_background_color'],
-            icon_mask_base_uri=result['icon_mask_base_uri'],
-            name=result['name'],
-            open_now=result.get('opening_hours', {}).get('open_now', False),
-            place_id=result['place_id'],
-            plus_code=plus_code,
-            rating=result.get('rating'),
-            reference=result['reference'],
-            scope=result['scope'],
-            types=','.join(result['types']),
-            user_ratings_total=result['user_ratings_total'],
-            vicinity=result['vicinity']
-        )
-        
-        for photo in result.get('photos', []):
-            photo_obj = Photo.objects.create(
-                height=photo['height'],
-                width=photo['width'],
-                html_attributions=', '.join(photo['html_attributions']),
-                photo_reference=photo['photo_reference']
+        if not Hotel.objects.filter(place_id=result['place_id']).exists():
+            location_data = result['geometry']['location']
+            location = Location.objects.create(
+                lat=location_data['lat'],
+                lng=location_data['lng']
             )
-            hotel.photos.add(photo_obj)
 
-        hotel.save()
-        print("Hotel ",hotel.id,'-->',hotel.name)
+            viewport_data = result['geometry']['viewport']
+            viewport = Viewport.objects.create(
+                northeast_lat=viewport_data['northeast']['lat'],
+                northeast_lng=viewport_data['northeast']['lng'],
+                southwest_lat=viewport_data['southwest']['lat'],
+                southwest_lng=viewport_data['southwest']['lng']
+            )
+
+            geometry = Geometry.objects.create(
+                location=location,
+                viewport=viewport
+            )
+
+            plus_code_data = result.get('plus_code', {})
+            plus_code = PlusCode.objects.create(
+                compound_code=plus_code_data.get('compound_code', ''),
+                global_code=plus_code_data.get('global_code', '')
+            )
+            if result.get('user_ratings_total', {}):
+                user_ratings_total=result.get('user_ratings_total', {})
+            else:
+                user_ratings_total=0
+            hotel = Hotel.objects.create(
+                business_status=result.get('business_status'),
+                geometry=geometry,
+                icon=result.get('icon'),
+                icon_background_color=result['icon_background_color'],
+                icon_mask_base_uri=result['icon_mask_base_uri'],
+                name=result['name'],
+                open_now=result.get('opening_hours', {}).get('open_now', False),
+                place_id=result['place_id'],
+                plus_code=plus_code,
+                rating=result.get('rating'),
+                reference=result['reference'],
+                scope=result['scope'],
+                types=','.join(result['types']),
+                user_ratings_total=user_ratings_total,
+                vicinity = result.get('vicinity', {}) if result.get('vicinity', {}) is not None else 0
+            )
+
+            for photo in result.get('photos', []):
+                photo_obj = Photo.objects.create(
+                    height=photo['height'],
+                    width=photo['width'],
+                    html_attributions=', '.join(photo['html_attributions']),
+                    photo_reference=photo['photo_reference']
+                )
+                hotel.photos.add(photo_obj)
+
+            hotel.save()
+            print("Hotel ",hotel.id,'-->',hotel.name)
    
 
 
 def saveHotel(request):
+    typeList=[
+        'hotel',
+        'motel',
+        'lodging'
+    ]
     latlang=[
     {"latitude": 30.528997, "longitude": -85.884900},
     {"latitude": 30.467823, "longitude": -85.481728},
@@ -197,27 +207,32 @@ def saveHotel(request):
     {"latitude": 30.215187, "longitude": -81.471418},
     {"latitude": 30.644946, "longitude": -81.820757}
 ]
-    for data in latlang:
-        lat = data['latitude']
-        lng =  data['longitude']
-        url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data=response.json()
-            saveToDb(data)
-            next_page_token = data.get('next_page_token')
-            print('next_page_token = ',next_page_token)
-            while next_page_token:
-                newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next_page_token}&key={settings.GOOGLE_API_KEY}"
-                res = requests.get(newUrl)
-                newData=res.json()
-                next_page_token = newData.get('next_page_token')
-                print('2nd calling next page url, Status = ',res.status_code)
-                if res.status_code == 200:
-                    saveToDb(res.json())
-                if not next_page_token:
-                    break
-            
+    for type in typeList:
+    
+        for data in latlang:
+            lat = data['latitude']
+            lng =  data['longitude']
+            url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type={type}&key={settings.GOOGLE_API_KEY}"
+            response = requests.get(url)
+            if response.status_code == 200:
+                data=response.json()
+                if not Hotel.objects.filter(place_id=data.get('place_id')).exists():
+                    saveToDb(data)
+                    next_page_token = data.get('next_page_token')
+                    print('next_page_token = ',next_page_token)
+                    while next_page_token:
+                        newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next_page_token}&key={settings.GOOGLE_API_KEY}"
+                        res = requests.get(newUrl)
+                        newData=res.json()
+                        next_page_token = newData.get('next_page_token')
+                        # print('2nd calling next page url, Status = ',res.status_code)
+                        if res.status_code == 200:
+                            if not Hotel.objects.filter(place_id=data.get('place_id')).exists():
+                                saveToDb(newData)
+                        if not next_page_token:
+                            break
+                    else:
+                        print('Hotel exists')
             
             
     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
