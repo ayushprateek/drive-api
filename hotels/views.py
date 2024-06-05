@@ -262,6 +262,7 @@ def fetch_latestHotels(request):
                 }
             },
             "icon": hotel.icon,
+            "discount_url": hotel.discount_url,
             "icon_background_color": hotel.icon_background_color,
             "icon_mask_base_uri": hotel.icon_mask_base_uri,
             "name": hotel.name,
@@ -362,6 +363,7 @@ def get_coordinates_along_polyline(request):
                 }
             },
             "icon": hotel.icon,
+            "discount_url": hotel.discount_url,
             "icon_background_color": hotel.icon_background_color,
             "icon_mask_base_uri": hotel.icon_mask_base_uri,
             "name": hotel.name,

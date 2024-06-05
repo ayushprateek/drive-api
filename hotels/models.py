@@ -45,6 +45,7 @@ class Hotel(models.Model):  # Renamed from Result to Hotel
     user_ratings_total = models.IntegerField()
     vicinity = models.CharField(max_length=255,null=True)
     photos = models.ManyToManyField(Photo)
+    discount_url=models.CharField(max_length=400,null=True)
 
 
 
