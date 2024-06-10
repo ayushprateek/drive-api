@@ -1,0 +1,91 @@
+[    
+    {
+        "model": "trip.category",
+        "pk": "743df1e2-65ba-4c35-90a3-edb4dce4c9a9",
+        "fields": {
+            "created_at": "2023-09-28T13:42:13.817Z",
+            "updated_at": "2023-09-28T13:42:13.818Z",
+            "name": "National Park",
+            "image_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/nationalPark-pc.png",
+            "icon_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/nationalPark_icon.png"
+        }
+    },
+    {
+        "model": "trip.category",
+        "pk": "79c56838-b6d2-4c9b-aee1-99551d70652c",
+        "fields": {
+            "created_at": "2023-09-29T05:59:43.730Z",
+            "updated_at": "2023-09-29T05:59:43.730Z",
+            "name": "Extreme Sports",
+            "image_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/extremeSport-pc.png"
+        }
+    },
+    {
+        "model": "trip.category",
+        "pk": "7acfc8ae-429c-4360-8a51-3552a5000aac",
+        "fields": {
+            "created_at": "2023-09-28T13:41:49.735Z",
+            "updated_at": "2023-09-28T13:41:49.735Z",
+            "name": "Attractions",
+            "image_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/attractions_pc_one_new.png",
+            "icon_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/attractions_new_updated_icon.png"
+        }
+    },
+    {
+        "model": "trip.category",
+        "pk": "8a90c4f5-1ce1-41a5-a683-6bbf8f1b0002",
+        "fields": {
+            "created_at": "2023-09-29T05:58:52.519Z",
+            "updated_at": "2023-09-29T05:58:52.519Z",
+            "name": "Historical Sites",
+            "image_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/historicSites-pc.png",
+            "icon_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/historical_icon.png"
+        }
+    },
+    {
+        "model": "trip.category",
+        "pk": "ecbc12ee-bcbc-430e-beb7-abd3bfeab182",
+        "fields": {
+            "created_at": "2023-09-28T13:42:28.171Z",
+            "updated_at": "2023-09-28T13:42:28.171Z",
+            "name": "Weird and Wacky",
+            "image_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/weirdWacky-pc.png",
+            "icon_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/weirdWacky_icon.png"
+        }
+    },
+    {
+        "model": "trip.category",
+        "pk": "fe719ed2-5639-4589-8eea-076b4fa5adf6",
+        "fields": {
+            "created_at": "2023-09-29T05:58:24.554Z",
+            "updated_at": "2023-09-29T05:58:24.554Z",
+            "name": "Events Calendar",
+            "image_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/Attractions_image.png",
+            "icon_url":null
+        }
+    },
+    {
+        "model": "trip.category",
+        "pk": "fe9c81db-bc51-428a-a594-3816ee1a590f",
+        "fields": {
+            "created_at": "2023-09-29T05:58:24.554Z",
+            "updated_at": "2023-09-29T05:58:24.554Z",
+            "name": "Travel Info",
+            "image_url": null,
+            "icon_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/travelInfo_icon.png"
+        }
+    },
+
+    {
+        "model": "trip.category",
+        "pk": "d7fac18e-ce5b-467c-94ad-b1a2449dd0d2",
+        "fields": {
+            "created_at": "2023-09-29T05:58:24.554Z",
+            "updated_at": "2023-09-29T05:58:24.554Z",
+            "name": "Hotels",
+            "image_url": null,
+            "icon_url": "https://s3.amazonaws.com/nfx-drive-ai/icons/categories/hotels_icon.png"
+        }
+    }
+
+]

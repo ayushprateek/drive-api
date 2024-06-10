@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('https://s3.us-west-2.amazonaws.com/images.unsplash.com/small/photo-1483683804023-6ccdb62f86ef');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .dashboard-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 20px;
+            width: calc(33.33% - 40px);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .dashboard-box:hover {
+            transform: scale(1.03);
+        }
+
+        .dashboard-box h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-box-content {
+            /* Add styling for the content within each box */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            background-color: #fff;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .box-table-container {
+            overflow-x: auto;
+        }
+
+        h3 {
+            color: #555;
+            margin-top: 15px;
+        }
+
+        .dashboard-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #555;
+            text-align: center;
+        }
+
+        .no-data {
+            color: #777;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Box 1: Top Searched Routes -->
+    <div class="dashboard-box">
+        <h2>Top Searched Routes</h2>
+        <div>
+            <label for="startDateTopRoute">Start Date:</label>
+            <input type="date" id="startDateTopRoute">
+            <label for="endDateTopRoute">End Date:</label>
+            <input type="date" id="endDateTopRoute">
+            <input class="applyTopRoute" onclick="formatTopSearchedRoutesFilter()" id="applyTopRouteId" type="submit" value="Apply">
+            <input class="applyTopRoute" onclick="formatTopSearchedRoutesFilter('reset')" id="applyTopRouteResetId" type="submit" value="Reset">
+
+        </div>
+        <div class="dashboard-box-content box-table-container" id="top-searched-routes"></div>
+    </div>
+
+    <!-- Box 2: Top Users -->
+    <div class="dashboard-box">
+        <h2>Top Users</h2>
+        <div>
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDateTopUsers">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDateTopUsers">
+            <input class="applyTopUsers" onclick="formatTopUsersFilter()" id="applyTopUsersId" type="submit" value="Apply">
+            <input class="applyTopUsers" onclick="formatTopUsersFilter('reset')" id="applyTopUsersResetId" type="submit" value="Reset">
+        </div>
+        <div class="dashboard-box-content box-table-container" id="top-users"></div>
+    </div>
+
+    <!-- Box 3: Search Time Analysis -->
+    <div class="dashboard-box">
+        <h2>Search Time Analysis</h2>
+        <div>
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDateSearchTime">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDateSearchTime">    
+            <input class="applySearchTime" onclick="formatSearchTimeAnalysisFilter()" id="applySearchTimeId" type="submit" value="Apply">
+            <input class="applySearchTime" onclick="formatSearchTimeAnalysisFilter('reset')" id="applySearchTimeResetId" type="submit" value="Reset">
+        </div>
+        <div class="dashboard-box-content" id="search-time-analysis"></div>
+    </div>
+
+    <!-- Box 4: User Behavior Analytics -->
+    <div class="dashboard-box">
+        <h2>User Behavior Analytics</h2>
+        <div>
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDateUserBehaviour">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDateUserBehaviour">    
+            <input class="applyUserBehaviour" onclick="formatUserBehaviorAnalyticsFilter()" id="applyUserBehaviourId" type="submit" value="Apply">
+            <input class="applyUserBehaviour" onclick="formatUserBehaviorAnalyticsFilter('reset')" id="applyUserBehaviourId" type="submit" value="Reset">
+
+        </div>
+        <div class="dashboard-box-content" id="user-behavior-analytics"></div>
+    </div>
+
+    <!-- Box 5: Top Searched Categories -->
+    <div class="dashboard-box">
+        <h2>Top Searched Categories</h2>
+        <div>
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDateTopSearch">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDateTopSearch">    
+            <input class="applyTopSearch" onclick="formatTopSearchedCategoriesFilter()" id="applyTopSearchId" type="submit" value="Apply">
+            <input class="applyTopSearch" onclick="formatTopSearchedCategoriesFilter('reset')" id="applyTopSearchId" type="submit" value="Reset">
+
+        </div>
+        <div class="dashboard-box-content" id="top-searched-categories"></div>
+    </div>
+
+    <!-- Box 6: Analytics Data -->
+    <div class="dashboard-box">
+        <h2>Analytics Data</h2>
+        <!-- <div>
+            <select id="dropdownAnalytics">
+                <option value="day">Day</option>
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+                <option value="custom">Custom</option>
+            </select>
+
+            <div id="dateFields" style="display: none;">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDateAnalytics">
+        
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDateAnalytics">
+            </div>
+            
+            <input class="applyAnalytics" onclick="formatAnalyticsDataFilter()" id="applyAnalyticsId" type="submit" value="Apply">
+            <input class="applyAnalytics" onclick="formatAnalyticsDataFilter('reset')" id="applyAnalyticsId" type="submit" value="Reset">
+
+        </div> -->
+        <div class="dashboard-box-content" id="analytics-data"></div>
+    </div>
+
+    <script>
+        // Function to fetch and format data
+        function fetchData(url, containerId, formatFunction) {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById(containerId);
+                    container.innerHTML = formatFunction(data);
+                })
+                .catch(error => console.error(`Error fetching data from ${url}:`, error));
+        }
+
+        // Function to format Top Searched Routes data
+        function formatTopSearchedRoutes(data) {
+            let formattedData = '';
+            if (data && data.success && data.data) {
+                if (Array.isArray(data.data)) {
+                    formattedData += '<table>';
+                    if (data.data.length > 0) {
+                        formattedData += '<tr><th>Origin</th><th>Destination</th><th>Count</th></tr>';
+                        data.data.forEach(item => {
+                            formattedData += '<tr>';
+                            formattedData += `<td>${item.origin}</td><td>${item.destination}</td><td>${item.count}</td>`;
+                            formattedData += '</tr>';
+                        });
+                    } else {
+                        formattedData += '<tr><td colspan="3" class="no-data">No data available</td></tr>';
+                    }
+                    formattedData += '</table>';
+                }
+            }
+            return formattedData;
+        }
+
+
+        // Top Searched Routes with Date Filter
+
+        function formatTopSearchedRoutesFilter(data) {
+            var startDate = document.getElementById("startDateTopRoute").value
+            var endDate =  document.getElementById("endDateTopRoute").value
+            var params = data == 'reset'?{}:{start_date: startDate, end_date: endDate}
+
+        if (startDate && endDate) {
+            $.ajax({
+            url: '/analytics/top-searched-routes/', 
+            type: 'GET',
+            dataType: 'json',
+            data: JSON.stringify(params),
+            success: function(response) {
+                let formattedData = '';
+                if (Array.isArray(response.data)) {
+                formattedData += '<table>';
+                if (response.data.length > 0) {
+                    formattedData += '<tr><th>Origin</th><th>Destination</th><th>Count</th></tr>';
+                    response.data.forEach(item => {
+                        formattedData += '<tr>';
+                        formattedData += `<td>${item.origin}</td><td>${item.destination}</td><td>${item.count}</td>`;
+                        formattedData += '</tr>';
+                    });
+                } else {
+                    formattedData += '<tr><td colspan="3" class="no-data">No data available</td></tr>';
+                }
+                formattedData += '</table>';
+                if (data == 'reset'){
+                    $('#startDateTopRoute').val("");
+                    $('#endDateTopRoute').val("");
+                }
+                $('#top-searched-routes').empty();
+                $('#top-searched-routes').append(formattedData)
+            }
+            },
+            error: function(error) {
+                console.log('Error:', error);
+            }
+        });
+        }
+        }
+
+        // Function to format Top Users data
+        function formatTopUsers(data) {
+            let formattedData = '';
+            if (data && data.success && data.data) {
+                if (Array.isArray(data.data)) {
+                    formattedData += '<table>';
+                    if (data.data.length > 0) {
+                        formattedData += '<tr><th>Name</th><th>Email</th><th>Count</th></tr>';
+                        data.data.forEach(item => {
+                            formattedData += '<tr>';
+                            formattedData += `<td>${item.user__first_name}</td><td>${item.user__email}</td><td>${item.count}</td>`;
+                            formattedData += '</tr>';
+                        });
+                    } else {
+                        formattedData += '<tr><td colspan="3" class="no-data">No data available</td></tr>';
+                    }
+                    formattedData += '</table>';
+                }
+            }
+            return formattedData;
+        }
+
+
+        // Top Users Filter
+
+        function formatTopUsersFilter(data) {
+            let formattedData = '';
+            var startDate = document.getElementById("startDateTopUsers").value
+            var endDate =  document.getElementById("endDateTopUsers").value
+            var params = data == 'reset'?{}:{start_date: startDate, end_date: endDate}
+
+            if (startDate && endDate) {
+                $.ajax({
+                url: '/analytics/top-users/',
+                type: 'GET',
+                dataType: 'json',
+                data: JSON.stringify(params),
+                success: function(response) {
+                let formattedData = '';
+                if (Array.isArray(response.data)) {
+                    formattedData += '<table>';
+                    if (response.data.length > 0) {
+                        formattedData += '<tr><th>Name</th><th>Email</th><th>Count</th></tr>';
+                        response.data.forEach(item => {
+                            formattedData += '<tr>';
+                            formattedData += `<td>${item.user__first_name}</td><td>${item.user__email}</td><td>${item.count}</td>`;
+                            formattedData += '</tr>';
+                        });
+                    } else {
+                        formattedData += '<tr><td colspan="3" class="no-data">No data available</td></tr>';
+                    }
+                    formattedData += '</table>';
+                if (data == 'reset'){
+                    $('#startDateTopUser').val("");
+                    $('#endDateTopUser').val("");
+                }
+                $('#top-users').empty();
+                $('#top-users').append(formattedData)
+            }
+            },
+            })
+        }}
+
+
+        // Function to format Search Time Analysis data
+        function formatSearchTimeAnalysis(data) {
+            let formattedData = '';
+            if (data && data.success && data.data) {
+                formattedData += '<p>Average Search Time: ' + data.data.average_search_time + ' Sec</p>';
+                if (Array.isArray(data.data.busiest_hours) && data.data.busiest_hours.length > 0) {
+                    formattedData += '<table>';
+                    formattedData += '<tr><th>Date</th><th>Busiest Time</th><th>Search Count</th></tr>';
+                    data.data.busiest_hours.forEach(item => {
+                        formattedData += '<tr>';
+                        const date = new Date(item.hour).toLocaleDateString();
+                        const hour = new Date(item.hour).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        formattedData += `<td>${date}</td><td>${hour}</td><td>${item.count}</td>`;
+                        formattedData += '</tr>';
+                    });
+                    formattedData += '</table>';
+                } else {
+                    formattedData += '<p class="no-data">No data available for busiest hours.</p>';
+                }
+            }
+            return formattedData;
+        }
+
+
+        // Function to format Search Time Analysis Filter data
+        function formatSearchTimeAnalysisFilter(data) {
+            var startDate = document.getElementById("startDateSearchTime").value
+            var endDate =  document.getElementById("endDateSearchTime").value
+            var params = data == 'reset'?{}:{start_date: startDate, end_date: endDate}
+            let formattedData = '';
+            if (startDate && endDate) {
+                $.ajax({
+                url: '/analytics/search-time-analysis/',
+                type: 'GET',
+                dataType: 'json',
+                data: JSON.stringify(params),
+                success: function(response) {
+                let formattedData = '';
+                if (response.data && response.success) {
+                formattedData += '<p>Average Search Time: ' + response.data.average_search_time + ' Sec</p>';
+                if (Array.isArray(response.data.busiest_hours) && response.data.busiest_hours.length > 0) {
+                    formattedData += '<table>';
+                    formattedData += '<tr><th>Date</th><th>Busiest Time</th><th>Search Count</th></tr>';
+                    response.data.busiest_hours.forEach(item => {
+                        formattedData += '<tr>';
+                        const date = new Date(item.hour).toLocaleDateString();
+                        const hour = new Date(item.hour).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        formattedData += `<td>${date}</td><td>${hour}</td><td>${item.count}</td>`;
+                        formattedData += '</tr>';
+                    });
+                    formattedData += '</table>';
+                } else {
+                    formattedData += '<p class="no-data">No data available for busiest hours.</p>';
+                }
+            }
+
+            if (data == 'reset'){
+                    $('#startDateSearchTime').val("");
+                    $('#endDateSearchTime').val("");
+                }
+                $('#search-time-analysis').empty();
+                $('#search-time-analysis').append(formattedData)
+            }
+
+            })}}
+
+
+        // Function to format User Behavior Analytics data
+        function formatUserBehaviorAnalytics(data) {
+            let formattedData = '';
+            if (data && data.success && data.data) {
+                if (typeof data.data === 'object') {
+                    if (Array.isArray(data.data.user_retention) && data.data.user_retention.length > 0) {
+                        formattedData += '<h3>User Retention</h3>';
+                        formattedData += '<table>';
+                        formattedData += '<tr><th>Name</th><th>Email</th><th>Total Searches</th><th>Last Search</th></tr>';
+                        const aggregatedRetentionData = {};
+                        data.data.user_retention.forEach(item => {
+                            const email = item.user__email;
+                            const name = item.user__first_name;
+                            if (aggregatedRetentionData[email]) {
+                                aggregatedRetentionData[email].total_searches += item.total_searches;
+                                aggregatedRetentionData[email].last_search = latestDate(aggregatedRetentionData[email].last_search, item.last_search);
+                            } else {
+                                aggregatedRetentionData[email] = { "name": name, "email":email, total_searches: item.total_searches, last_search: item.last_search };
+                            }
+                        });
+
+                        for (const name in aggregatedRetentionData) {
+                            formattedData += '<tr>';
+                            formattedData += `<td>${aggregatedRetentionData[name].name}</td><td>${aggregatedRetentionData[name].email}</td><td>${aggregatedRetentionData[name].total_searches}</td><td>${formatLastSearch(aggregatedRetentionData[name].last_search)}</td>`;
+                            formattedData += '</tr>';
+                        }
+                        formattedData += '</table>';
+                    } else {
+                        formattedData += '<p class="no-data">No data available for User Retention.</p>';
+                    }
+                }
+            }
+            return formattedData;
+        }
+
+        // Function to format User Behavior Analytics data
+        function formatUserBehaviorAnalyticsFilter(data) {
+            let formattedData = '';
+            var startDate = document.getElementById("startDateUserBehaviour").value
+            var endDate =  document.getElementById("endDateUserBehaviour").value
+            var params = data == 'reset'?{}:{start_date: startDate, end_date: endDate}
+
+            if (startDate && endDate) {
+                $.ajax({
+                url: '/analytics/user-behavior-analytics/',
+                type: 'GET',
+                dataType: 'json',
+                data: JSON.stringify(params),
+                success: function(response) {
+                let formattedData = '';
+                if (typeof response.data.user_retention === 'object') {
+                    if (Array.isArray(response.data.user_retention) && response.data.user_retention.length > 0) {
+                        formattedData += '<h3>User Retention</h3>';
+                        formattedData += '<table>';
+                        formattedData += '<tr><th>Name</th><th>Email</th><th>Total Searches</th><th>Last Search</th></tr>';
+                        const aggregatedRetentionData = {};
+                        response.data.user_retention.forEach(item => {
+                            const email = item.user__email;
+                            const name = item.user__first_name;
+                            if (aggregatedRetentionData[email]) {
+                                aggregatedRetentionData[email].total_searches += item.total_searches;
+                                aggregatedRetentionData[email].last_search = latestDate(aggregatedRetentionData[email].last_search, item.last_search);
+                            } else {
+                                aggregatedRetentionData[email] = { "name": name, "email":email, total_searches: item.total_searches, last_search: item.last_search };
+                            }
+                        });
+
+                        for (const name in aggregatedRetentionData) {
+                            formattedData += '<tr>';
+                            formattedData += `<td>${aggregatedRetentionData[name].name}</td><td>${aggregatedRetentionData[name].email}</td><td>${aggregatedRetentionData[name].total_searches}</td><td>${formatLastSearch(aggregatedRetentionData[name].last_search)}</td>`;
+                            formattedData += '</tr>';
+                        }
+                        formattedData += '</table>';
+                    } else {
+                        formattedData += '<p class="no-data">No data available for User Retention.</p>';
+                    }
+                }
+
+
+                if (data == 'reset'){
+                    $('#startDateUserBehaviour').val("");
+                    $('#endDateUserBehaviour').val("");
+                }
+                $('#user-behavior-analytics').empty();
+                $('#user-behavior-analytics').append(formattedData)
+            },
+            })
+        }}
+
+
+        // Function to fetch the latest date between two dates
+        function latestDate(date1, date2) {
+            return new Date(date1) > new Date(date2) ? date1 : date2;
+        }
+
+        // Function to format the last search date
+        function formatLastSearch(lastSearch) {
+            return new Date(lastSearch).toLocaleString();
+        }
+
+        // Function to format Top Searched Categories data
+        function formatTopSearchedCategories(data) {
+            let formattedData = '';
+            if (data && data.success && data.data) {
+                if (typeof data.data === 'object') {
+                    formattedData += '<table>';
+                    formattedData += '<tr><th>Name</th><th>Count</th></tr>';
+                    for (const key in data.data) {
+                        formattedData += '<tr>';
+                        formattedData += `<td>${key}</td><td>${data.data[key]}</td>`;
+                        formattedData += '</tr>';
+                    }
+                    formattedData += '</table>';
+                }
+            }
+            return formattedData;
+        }
+
+
+        // Function to format Top Searched Categories data
+        function formatTopSearchedCategoriesFilter(data) {
+            let formattedData = '';
+            var startDate = document.getElementById("startDateTopSearch").value
+            var endDate =  document.getElementById("endDateTopSearch").value
+            var params = data == 'reset'?{}:{start_date: startDate, end_date: endDate}
+            if (startDate && endDate) {
+                $.ajax({
+                url: '/analytics/top-searched-categories/',
+                type: 'GET',
+                dataType: 'json',
+                data: JSON.stringify(params),
+                success: function(response) {
+                if (response.data && response.success) {
+                    if (typeof response.data === 'object') {
+                        formattedData += '<table>';
+                        formattedData += '<tr><th>Name</th><th>Count</th></tr>';
+                        for (const key in response.data) {
+                            formattedData += '<tr>';
+                            formattedData += `<td>${key}</td><td>${response.data[key]}</td>`;
+                            formattedData += '</tr>';
+                        }
+                        formattedData += '</table>';
+                    }
+                }
+                if (data == 'reset'){
+                    $('#startDateTopSearch').val("");
+                    $('#endDateTopSearch').val("");
+                }
+                $('#top-searched-categories').empty();
+                $('#top-searched-categories').append(formattedData)
+            }})}}
+
+
+        // Function to format Analytics Data
+        function formatAnalyticsData(data) {
+            let formattedData = '';
+            if (data && data.success && data.data) {
+                if (Array.isArray(data.data)) {
+                    formattedData += '<table>';
+                    formattedData += '<tr><th>Week</th><th>Total Search Count</th></tr>';
+                    const aggregatedData = {};
+                    data.data.forEach(item => {
+                        const week = formatWeekRange(item.week);
+                        if (aggregatedData[week]) {
+                            aggregatedData[week] += item.count;
+                        } else {
+                            aggregatedData[week] = item.count;
+                        }
+                    });
+                    for (const week in aggregatedData) {
+                        formattedData += '<tr>';
+                        formattedData += `<td>${week}</td><td>${aggregatedData[week]}</td>`;
+                        formattedData += '</tr>';
+                    }
+                    formattedData += '</table>';
+                }
+            }
+            return formattedData;
+        }
+
+        // Function to format the week string into a readable range
+        function formatWeekRange(weekString) {
+            const startDate = new Date(weekString);
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + 6);
+            const formattedStartDate = formatDate(startDate);
+            const formattedEndDate = formatDate(endDate);
+            return `${formattedStartDate} - ${formattedEndDate}`;
+        }
+
+        // Function to format date as YYYY-MM-DD
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+
+        $(document).ready(function() {     
+            // Get today's date    
+            var today = new Date().toISOString().split('T')[0];
+            // Set the max attribute of the date input to today's date    
+            $('#startDateTopRoute').attr('max', today); 
+            $('#startDateTopUsers').attr('max', today); 
+            $('#startDateSearchTime').attr('max', today); 
+            $('#startDateUserBehaviour').attr('max', today); 
+            $('#startDateTopSearch').attr('max', today); 
+
+        });
+
+        // document.getElementById("dropdownAnalytics").addEventListener("change", function() {
+        //     var dropdownValue = this.value;
+        //     var dateFieldsDiv = document.getElementById("dateFields");
+
+        //     // Show date fields if dropdown value is "option3", hide them otherwise
+        //     if (dropdownValue === "custom") {
+        //         dateFieldsDiv.style.display = "block";
+        //     } else {
+        //         dateFieldsDiv.style.display = "none";
+        //     }
+        // });
+        
+        // Fetch data for each box
+        fetchData('/analytics/top-searched-routes/', 'top-searched-routes', formatTopSearchedRoutes);
+        fetchData('/analytics/top-users/', 'top-users', formatTopUsers);
+        fetchData('/analytics/search-time-analysis/', 'search-time-analysis', formatSearchTimeAnalysis);
+        fetchData('/analytics/user-behavior-analytics/', 'user-behavior-analytics', formatUserBehaviorAnalytics);
+        fetchData('/analytics/top-searched-categories/', 'top-searched-categories', formatTopSearchedCategories);
+        fetchData('/analytics/analytics-data/?type=week', 'analytics-data', formatAnalyticsData);
+    </script>
+</body>
+</html>

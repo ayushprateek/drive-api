@@ -1,0 +1,62 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block content %}
+    {{ block.super }}
+{% endblock %}
+
+{% block sidebar %}
+    {{ block.super }}
+
+    <!-- File Upload Section -->
+    <div class="module">
+        <h2>{% trans 'File Upload' %}</h2>
+        <form method="post" action="{% url 'trip:bulk_upload' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="file" required>
+            <input type="submit" value="Upload">
+        </form>
+    </div>
+
+    <!-- Add Hotel by URL Section -->
+    <div class="module">
+        <h2>{% trans 'Add Hotel by URL' %}</h2>
+        <form method="post" action="{% url 'trip:add_hotel' %}">
+            {% csrf_token %}
+            <input type="text" name="hotel_link" placeholder="Enter hotel website URL" required>
+            <input type="submit" value="Add Hotel">
+        </form>
+    </div>
+
+    <!-- Add Data by City, URL, and Category -->
+    <div class="module">
+        <h2>{% trans 'Upload Data by City, URL, and Category' %}</h2>
+        <form method="post" action="{% url 'trip:add_data' %}">
+            {% csrf_token %}
+            <input type="text" name="city" placeholder="Enter City" required>
+            <input type="text" name="data_url" placeholder="Enter URL" required>
+            <select name="category" required>
+                <option value="" disabled selected>Select a Category</option>
+                <option value="Attractions">Attractions</option>
+                <option value="Food">Food</option>
+                <option value="Weird and Wacky">Weird and Wacky</option>
+                <option value="National Park">National Park</option>
+                <option value="Family Fun">Family Fun</option>
+                <option value="Historical Sites">Historical Sites</option>
+                <option value="Extreme Sports">Extreme Sports</option>
+                <option value="Events Calendar">Events Calendar</option>
+                <option value="RV & Camping">RV & Camping</option>
+            </select>
+            <input type="submit" value="Upload Data">
+        </form>
+    </div>
+
+        <!-- Add Data by City, URL, and Category -->
+        <div class="module">
+            <h2>{% trans 'Analytics' %}</h2>
+            <form method="get" action="{% url 'Analytics' %}">
+                <input type="submit" value="View Analytics">
+            </form>
+        </div>
+            
+{% endblock %}

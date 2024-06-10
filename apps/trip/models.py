@@ -1,0 +1,368 @@
+from django.db import models
+from django.db.models import JSONField
+from apps.trip.choices import ChoicesFields
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from django.contrib.postgres.fields import ArrayField
+from apps.trip.services.common import get_geo_code, get_geo_code_area
+from apps.trip.services.fetch_image import scrap_images
+
+from apps.user.models import BaseModel, Media, User
+from common.cloud_service import upload_file_to_aws_s3
+
+
+class Category(BaseModel):
+    """
+    A "Category" model in Django typically represents a grouping or classification used
+    to categorize and organize items or content within an application, providing a structured
+    way to manage and filter data based on specific attributes or characteristics.
+    """
+    name = models.CharField(max_length=100)
+    icon_url = models.URLField(max_length=255, blank=True, null=True)
+    image_url = models.URLField(max_length=255, blank=True, null=True)
+
+
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class City(BaseModel):
+    """
+    "City" model in Django typically represents geographical locations, storing information
+    about cities such as their name, country,  latitude and 
+    longitude coordinates, enabling applications to manage and query city-related data.
+    """
+    name = models.CharField(max_length=100, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+    description = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "City"
+        verbose_name_plural = "Cities"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+
+
+class Food(BaseModel):  # have to replace name with Hotels
+    """
+    "Food" model in Django typically represents objects, individuals, or items with
+    specific attributes and relationships.
+    """
+    name = models.CharField(max_length=500, blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='food_city')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    description = models.TextField(null=True, blank=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+    meta_data = models.JSONField(default=dict)
+
+
+    class Meta:
+        verbose_name = "Food"
+        verbose_name_plural = "Foods"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class FamilyFun(BaseModel):
+    """
+    "FamilyFun" model in Django typically represents objects, individuals, or items with
+    specific attributes and relationships.
+    """
+    name = models.CharField(max_length=500, blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='familyfun_city')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    description = models.TextField(null=True, blank=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+    meta_data = models.JSONField(default=dict)
+
+
+    class Meta:
+        verbose_name = "Family Fun"
+        verbose_name_plural = "Family Fun"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class Attraction(BaseModel):
+    """
+    "Attractions" model in Django typically represents objects, individuals, or items with
+    specific attributes and relationships.
+    """
+    name = models.CharField(max_length=500, blank=True, null=True)
+    attraction = models.CharField(max_length=200,
+                                  choices=ChoicesFields.ATTRACTIONS_CHOICE,
+                                  blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='attraction_city')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    description = models.TextField(null=True, blank=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+    meta_data = models.JSONField(default=dict)
+
+
+    class Meta:
+        verbose_name = "Attraction"
+        verbose_name_plural = "Attractions"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class WeirdAndWacky(BaseModel):
+    """
+    "WeirdAndWacky" model in Django typically represents objects, individuals, or items with
+    specific attributes and relationships.
+    """
+    name = models.CharField(max_length=500, blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='weirdandwacky_city')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    description = models.TextField(null=True, blank=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+    meta_data = models.JSONField(default=dict)
+
+    class Meta:
+        verbose_name = "Weird And Wacky"
+        verbose_name_plural = "Weird And Wacky"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class Camp(BaseModel):
+    """
+    "Camp" model in Django typically represents objects, individuals, or items with
+    specific attributes and relationships.
+    """
+    name = models.CharField(max_length=500, blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='camp_city')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    description = models.TextField(null=True, blank=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+    meta_data = models.JSONField(default=dict)
+
+
+    class Meta:
+        verbose_name = "Camp"
+        verbose_name_plural = "Camps"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class Park(BaseModel):
+    """
+    "Park" model in Django typically represents objects, individuals, or items with
+    specific attributes and relationships.
+    """
+    name = models.CharField(max_length=500, blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='park_city')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    description = models.TextField(null=True, blank=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+    meta_data = models.JSONField(default=dict)
+
+
+    class Meta:
+        verbose_name = "Park"
+        verbose_name_plural = "Parks"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class DriveWebsite(BaseModel):
+    """
+    "Deeplink URL" in a Django model typically refers to a field that stores a URL pointing
+    to a specific internal or external resource, allowing applications to provide direct
+    access to relevant content or functionality, enhancing user experience and navigation.
+    """
+    url_link = models.URLField(max_length=500, blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='website_category')
+
+    class Meta:
+        verbose_name = "DriveWebsite"
+        verbose_name_plural = "DriveWebsites"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.url_link
+
+
+class Event(BaseModel):
+    """
+    "Events" model in Django typically represents objects, individuals, or items with
+    specific attributes and relationships.
+    """
+    name = models.CharField(max_length=500, blank=True, null=True)
+    type = models.CharField(max_length=200,
+                            choices=ChoicesFields.EVENT_CHOICE,
+                            blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='event_city')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    description = models.TextField(null=True, blank=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+    meta_data = models.JSONField(default=dict)
+
+    class Meta:
+        verbose_name = "Event"
+        verbose_name_plural = "Events"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class HistoricalSite(BaseModel):
+    """
+    "HistoricalSite" model in Django typically represents objects, individuals, or items with
+    specific attributes and relationships.
+    """
+    name = models.CharField(max_length=500, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='historicalsite_city')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    description = models.TextField(null=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+    meta_data = models.JSONField(default=dict)
+
+
+    class Meta:
+        verbose_name = "Historical Site"
+        verbose_name_plural = "Historical Sites"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class ExtremeSport(BaseModel):
+    """
+    "ExtremeSport" model in Django typically represents objects, individuals, or items with
+    specific attributes and relationships.
+    """
+    name = models.CharField(max_length=500, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='extremesport_city')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    description = models.TextField(null=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+    meta_data = models.JSONField(default=dict)
+
+    class Meta:
+        verbose_name = "Extreme Sport"
+        verbose_name_plural = "Extreme Sports"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+# @receiver(post_save, sender=City)
+# def post_save_city_image_obj(sender, created, instance, **kwargs):
+#     if created:
+#         image_scrap_url = DriveWebsite.objects.filter(
+#             category=Category.objects.filter(name="City").first()).first().url_link
+#         media_obj = scrap_images(instance, image_scrap_url + instance.name)
+#         latitude, longitude = get_geo_code(instance.name)
+#         instance.image = media_obj
+#         instance.latitude = latitude
+#         instance.longitude = longitude
+#         instance.save()
+
+#
+# @receiver(post_save, sender=City)
+# def post_save_hotel_obj(sender, created, instance, **kwargs):
+#     if created:
+#         food_scrap_url = DriveWebsite.objects.filter(
+#             category=Category.objects.filter(name="Hotels").first()).first().url_link
+#         get_hotel_metadata(instance, food_scrap_url + instance.name + "/")
+
+
+class Hotel(BaseModel):
+    """
+    Represents hotel entities with details about the hotel, its facilities,
+    policies, reviews, geographical data, images, and other related metadata.
+
+    Attributes:
+    - name (TextField): The name of the hotel.
+    - description (TextField): A brief description of the hotel.
+    - contact_info (JSONField): Contact details like phone, email, etc.
+    - check_in_data (JSONField): Details about check-in and check-out times.
+    - address (JSONField): Address information stored in JSON format.
+    - latitude (DecimalField): Geographical latitude of the hotel.
+    - longitude (DecimalField): Geographical longitude of the hotel.
+    - amenities (JSONField): List or dictionary of amenities available at the hotel.
+    - service_amenities (JSONField): List or dictionary of service amenities provided by the hotel.
+    - facility_overview (TextField): A text overview of the hotel's facilities.
+    - hotel_policy (JSONField): Hotel's policies stored in JSON format.
+    - meta_data (JSONField): Additional metadata about the hotel.
+    - cover_image (TextField): Primary image representing the hotel.
+    - images (ArrayField): A list of URLs or texts representing various images of the hotel.
+    """
+
+    name = models.TextField()
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, related_name="hotels_city", null=True)
+    description = models.TextField(null=True)
+    contact_info = models.JSONField(default=dict)
+    check_in_data = models.JSONField(default=dict)
+    address = JSONField(default=dict)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    hotel_reviews = models.JSONField(default=dict)
+    amenities = JSONField(default=dict)
+    service_amenities = JSONField(default=dict)
+    facility_overview = models.TextField(null=True, blank=True)
+    hotel_policy = models.JSONField(default=dict)
+    meta_data = models.JSONField(default=dict)
+    cover_image = models.TextField(null=True)
+    images = ArrayField(models.TextField(null=True), default=list)
+
+    class Meta:
+        verbose_name = "Hotel"
+        verbose_name_plural = "Hotels"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+class UserLikes(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    liked_hotels = models.ManyToManyField(Hotel)
+    liked_extremesports = models.ManyToManyField(ExtremeSport)
+    liked_historicalsites = models.ManyToManyField(HistoricalSite)
+    liked_events = models.ManyToManyField(Event)
+    liked_wierdandwacky = models.ManyToManyField(WeirdAndWacky)
+    liked_parks = models.ManyToManyField(Park)
+    liked_attractions = models.ManyToManyField(Attraction)
+ 
+ 
+    def __str__(self):
+        return self.user.first_name

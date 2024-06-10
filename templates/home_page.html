@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Drive-AI Backend</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+
+    <!-- Styles -->
+    <style>
+        html, body {
+            background: linear-gradient(to right, #36D1DC, #5B86E5); /* Gradient background */
+            color: #FFF; /* Change text color for better visibility */
+            font-family: 'Nunito', sans-serif;
+            font-weight: 200;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .full-height {
+            height: 100vh;
+        }
+
+        .flex-center {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+        }
+
+        .position-ref {
+            position: relative;
+        }
+
+        .top-right {
+            position: absolute;
+            right: 10px;
+            top: 18px;
+        }
+
+        .content {
+            text-align: center;
+        }
+
+        .title {
+            font-size: 84px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow to make text pop */
+        }
+
+        .links > a {
+            color: #FFF; /* Change link color to white for better visibility */
+            background: rgba(255, 255, 255, 0.1); /* Slight background to links */
+            border-radius: 5px; /* Rounded edges for links */
+            padding: 5px 25px; /* Increase padding for more clickable area */
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .1rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: background 0.3s, color 0.3s; /* Transition effect for smooth color change */
+        }
+
+        .links > a:hover {
+            background: rgba(255, 255, 255, 0.3); /* Darken background on hover */
+            color: #636b6f; /* Original link color on hover */
+        }
+
+        .m-b-md {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex-center position-ref full-height">
+        <div class="content">
+            <div class="title m-b-md">
+                <!-- Split the title message into individual spans for animation -->
+                <span>{{ message }}</span>
+                <div id="title-container">
+                    <span class="letter">D</span>
+                    <span class="letter">R</span>
+                    <span class="letter">I</span>
+                    <span class="letter">V</span>
+                    <span class="letter">E</span>
+                    <span>-</span>
+                    <span class="letter">A</span>
+                    <span class="letter">I</span>
+                    <br>
+                    <span class="letter">B</span>
+                    <span class="letter">a</span>
+                    <span class="letter">c</span>
+                    <span class="letter">k</span>
+                    <span class="letter">e</span>
+                    <span class="letter">n</span>
+                    <span class="letter">d</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Styles remain the same except for additional styles -->
+    <style>
+        /* ... existing styles ... */
+
+        /* Keyframes for "coming from the back" effect */
+        @keyframes popIn {
+            from {
+                transform: scale(0.5) translateZ(-200px);
+                opacity: 0.2;
+            }
+            to {
+                transform: scale(1) translateZ(0);
+                opacity: 1;
+            }
+        }
+
+        /* Container for the title to center the letters */
+        #title-container {
+            display: inline-block;
+            perspective: 1000px; /* Needed for 3D transformations */
+        }
+
+        .letter {
+            display: inline-block;
+            font-size: 84px;
+            cursor: pointer;
+            transform: scale(1) translateZ(0);
+            transition: transform 0.3s, color 0.3s;
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+
+        .letter:hover {
+            transform: scale(1.1) rotateZ(-15deg) translateY(-10px);
+            color: #FFC107; /* Golden color for hover effect */
+        }
+    </style>
+</body>
+
+</html>
