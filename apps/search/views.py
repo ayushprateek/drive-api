@@ -24,11 +24,13 @@ class SearchAPIView(generics.GenericAPIView):
     about hotels, attractions, and coupons relevant to the search.
 
     """
+    print('SearchAPIView called')
 
     permission_classes = [
         permissions.IsUser,
     ]
     serializer_class = TravelAssistantSerializer
+    print('swagger_auto_schema')
 
     @swagger_auto_schema(responses={200: schema.search_api_response})
     def post(self, request, *args, **kwargs):
@@ -52,18 +54,22 @@ class SearchAPIView(generics.GenericAPIView):
         """
 
         try:
+            print('process_user_query')
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             # Context is a user previous query
             context = {}
+            print('process_user_query')
             response = TravelAssistant().process_user_query(
                 request.data.get("query"), context
             )
             content_str = response
+            print('response',response)
             # Remove excessive indentation
             formatted_content = re.sub(r"\n\s+", "\n", content_str)
             return Response({"result": formatted_content}, status=status.HTTP_200_OK)
         except Exception as ex:
+            print(ex)
             return Response(
                 {"result": constants.standard_question_patterns},
                 status=status.HTTP_200_OK,
