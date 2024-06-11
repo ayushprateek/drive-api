@@ -2,6 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from django.core.management.commands.runserver import Command as runserver
 
 
 def main():
@@ -15,6 +16,9 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+        
+    default_port = os.getenv('DJANGO_RUNSERVER_PORT', '8080')
+    runserver.default_port = default_port
     execute_from_command_line(sys.argv)
 
 

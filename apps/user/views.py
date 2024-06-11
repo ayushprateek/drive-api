@@ -68,6 +68,7 @@ class UserSignUpAPIView(generics.GenericAPIView):
     """
     SignUp customer and Create Customer Profile (POST Request)
     """
+    print('Method called')
 
     serializer_class = user_serializer.UserSignUpSerializer
 
@@ -81,10 +82,13 @@ class UserSignUpAPIView(generics.GenericAPIView):
             serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
                 response = serializer.save()
+                print("User added",response)
                 return Response(response, status=status.HTTP_201_CREATED)
             else:
+                print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            print(ex)
             raise ValidationError(ApplicationMessages.SOMETHING_WENT_WRONG, status.HTTP_400_BAD_REQUEST)
 
 
