@@ -1,5 +1,6 @@
 from django.urls import path
 from apps.trip import views as trip_views
+from .views import *
 
 app_name = 'trip'
 
@@ -15,5 +16,11 @@ urlpatterns = [
     path('plan/', trip_views.TripPlanAPIView.as_view(), name='trip-api'),
     path('save/', trip_views.TripSaveAPIView.as_view(), name='trip-save-api'),
     path('like/', trip_views.UserLikeAPIView.as_view(), name='user-like-api'),
+    path('scrape/', ScrapeHotelsView.as_view(), name='scrape_hotels'),
+    path('getHotels/', getAllHotels),
+    path('get-hotels-along-route/', get_coordinates_along_polyline),
+    path('temp-save-hotel/', saveHotel),
+    path('fetch_latestHotels/', fetch_latestHotels),
+    path('truncate_all_tables/', truncate_all_tables),
 
 ]

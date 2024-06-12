@@ -8,7 +8,7 @@ from django.contrib.postgres.fields import ArrayField
 from apps.trip.services.common import get_geo_code, get_geo_code_area
 from apps.trip.services.fetch_image import scrap_images
 
-from apps.user.models import BaseModel, Media, User
+from apps.user.models import BaseModel, Media, User as user
 from common.cloud_service import upload_file_to_aws_s3
 
 
@@ -305,6 +305,47 @@ class ExtremeSport(BaseModel):
 #             category=Category.objects.filter(name="Hotels").first()).first().url_link
 #         get_hotel_metadata(instance, food_scrap_url + instance.name + "/")
 
+class LatLng:
+    def __init__(self, lat, lng):
+        self.lat = lat
+        self.lng = lng
+
+class Location(models.Model):
+    lat = models.FloatField(null=True)
+    lng = models.FloatField(null=True)
+
+class Viewport(models.Model):
+    northeast_lat = models.FloatField(null=True)
+    northeast_lng = models.FloatField(null=True)
+    southwest_lat = models.FloatField(null=True)
+    southwest_lng = models.FloatField(null=True)
+
+class Geometry(models.Model):
+    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+    viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE)
+
+class Photo(models.Model):
+    height = models.IntegerField()
+    width = models.IntegerField()
+    html_attributions = models.TextField()
+    photo_reference = models.CharField(max_length=255)
+
+class PlusCode(models.Model):
+    compound_code = models.CharField(max_length=50)
+    global_code = models.CharField(max_length=50)
+
+
+
+
+class Status(models.Model):
+    class Meta:
+        db_table = '"status"'
+    title = models.CharField(max_length=50)
+    
+class Media(models.Model):
+    class Meta:
+        db_table = '"media"'
+    media = models.CharField(max_length=200)
 
 class Hotel(BaseModel):
     """
@@ -327,13 +368,12 @@ class Hotel(BaseModel):
     - cover_image (TextField): Primary image representing the hotel.
     - images (ArrayField): A list of URLs or texts representing various images of the hotel.
     """
-
+    place_id = models.CharField(max_length=500, unique=True,default='')
     name = models.TextField()
     city = models.ForeignKey(City, on_delete=models.SET_NULL, related_name="hotels_city", null=True)
     description = models.TextField(null=True)
     contact_info = models.JSONField(default=dict)
     check_in_data = models.JSONField(default=dict)
-    address = JSONField(default=dict)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     hotel_reviews = models.JSONField(default=dict)
@@ -344,6 +384,28 @@ class Hotel(BaseModel):
     meta_data = models.JSONField(default=dict)
     cover_image = models.TextField(null=True)
     images = ArrayField(models.TextField(null=True), default=list)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    rating = models.FloatField(default=0,null=True)
+    user_ratings_total = models.IntegerField(default=0,null=True)
+    start_price = models.FloatField(null=True)
+    end_price = models.FloatField(null=True)
+    icon = models.CharField(max_length=500, blank=True, null=True)
+    media = models.ForeignKey(Media, on_delete=models.CASCADE,null=True)
+    discount_url=models.CharField(max_length=400,null=True)
+    business_status = models.CharField(max_length=50,null=True)
+    geometry = models.OneToOneField(Geometry, on_delete=models.CASCADE,null=True)
+    icon_background_color = models.CharField(max_length=10,null=True)
+    icon_mask_base_uri = models.URLField(null=True)
+    
+    open_now = models.BooleanField(default=False)
+    plus_code = models.OneToOneField(PlusCode, on_delete=models.CASCADE,null=True)
+    
+    reference = models.CharField(max_length=50,null=True)
+    scope = models.CharField(max_length=50,null=True)
+    types = models.TextField(null=True)  # Will be stored as a comma-separated string
+    
+    vicinity = models.CharField(max_length=255,null=True)
+    photos = models.ManyToManyField(Photo)
 
     class Meta:
         verbose_name = "Hotel"
@@ -354,7 +416,7 @@ class Hotel(BaseModel):
         return self.name
 
 class UserLikes(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(user, on_delete=models.CASCADE)
     liked_hotels = models.ManyToManyField(Hotel)
     liked_extremesports = models.ManyToManyField(ExtremeSport)
     liked_historicalsites = models.ManyToManyField(HistoricalSite)
