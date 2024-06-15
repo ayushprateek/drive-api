@@ -55,7 +55,40 @@ class GetMediaSerializer(serializers.Serializer):
         """take id and return the s3 url"""
         return cloud_service.convert_image_id_to_s3_signed_url(self.initial_data.get("id"))
 
+class SendEmailOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
 
+    def validate(self, data):
+        """create and mail the token to the user"""
+        print('SendEmailOTPSerializer called')
+        
+        verification_code = utils.generate_verification_code(6)
+        data = {
+            "verification_code": verification_code,
+            "expiry_time": timezone.now() + timezone.timedelta(minutes=Constant.VERIFICATION_CODE_EXPIRE_TIME),
+        }
+        print("Email = ",data.get("email"))
+        mail.SignupOTP(
+                {
+                    "verification_code": verification_code,
+                    "email": data.get("email")
+                    # "email": "ayushpratik08041999@gmail.com"
+                }
+            )
+        # if data:
+        #     print('data exists')
+        #     instance = user_models.UserVerification.create_reset_password_verification(data)
+        #     mail.SignupOTP(
+        #         {
+        #             "verification_code": verification_code,
+        #             "email": self.validated_data.get("email")
+        #         }
+        #     )
+        # else:
+        #     raise ValidationError(ApplicationMessages.BAD_REQUEST)
+        
+        return data
+    
 class UserSignUpSerializer(serializers.ModelSerializer):
     """Customer profile serializer"""
     profile_pic = serializers.PrimaryKeyRelatedField(queryset=user_models.Media.objects.all(), required=False)

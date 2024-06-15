@@ -63,7 +63,19 @@ class MediaAPIView(generics.GenericAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class SendEmailOTP(generics.GenericAPIView):
+    serializer_class = user_serializer.SendEmailOTPSerializer
 
+    @swagger_auto_schema(responses={201: 'Email sent successfully'})
+    def post(self, request, *args, **kwargs):
+        print('SendEmailOTP')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({'detail': 'Email sent successfully'}, status=201)
+        
+        # serializer_class.create(validated_data=request.data)
+        
+        return Response({'OTP Sent':'Hi'}, status.HTTP_200_OK)
 class UserSignUpAPIView(generics.GenericAPIView):
     """
     SignUp customer and Create Customer Profile (POST Request)

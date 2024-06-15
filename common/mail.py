@@ -76,3 +76,35 @@ class ResetPasswordMail(Email):
         obj = Email
         obj.send(self)
         del obj
+        
+class SignupOTP(Email):
+    """
+    A utility class to handle sending password reset emails to users.
+
+    This class inherits from the base `Email` class and adds specific functionality for
+    formatting and sending password reset emails to users who have requested it.
+    The email contains a verification code which is essential for the password reset process.
+    """
+
+    def __init__(self, params):
+        """
+        Initialize ResetPasswordMail with necessary parameters.
+
+        This constructor sets up the email attributes based on the provided parameters.
+        It then calls the base Email class to handle the actual sending of the email.
+        """
+        print('SignupOTP called')
+        self.subject = ApplicationMessages.RESET_EMAIL_SUBJECT
+        self.template_file = "user/reset_email.html"
+        self.template_params = {
+            "verification_code": params.get("verification_code")
+        }
+
+        self.to_email = params.get("email")
+        self.from_email = settings.FROM_EMAIL
+        super().__init__(
+            self.subject, self.template_file, self.template_params, self.to_email
+        )
+        obj = Email
+        obj.send(self)
+        del obj
