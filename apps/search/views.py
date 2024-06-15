@@ -69,7 +69,7 @@ class SearchAPIView(generics.GenericAPIView):
             formatted_content = re.sub(r"\n\s+", "\n", content_str)
             return Response({"result": formatted_content}, status=status.HTTP_200_OK)
         except Exception as ex:
-            print(ex)
+            print('Ex = ',ex)
             return Response(
                 {"result": constants.standard_question_patterns},
                 status=status.HTTP_200_OK,

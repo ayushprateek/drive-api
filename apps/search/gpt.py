@@ -25,12 +25,14 @@ class TravelAssistant:
         - str: The assistant's reply.
         """
         # Set parameters for the OpenAI GPT-3 API
+        print('generate_chatgpt_response called')
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{'role': 'system', 'content': 'You are a helpful assistant.'},
                       {'role': 'user', 'content': user_query}],
             temperature=0.2
         )
+        print('True response = ',response)
         # Extract and return the assistant's reply
         assistant_reply = response['choices'][0]["message"]["content"]
         return assistant_reply
