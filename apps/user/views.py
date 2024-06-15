@@ -101,21 +101,21 @@ class UserSignUpAPIView(generics.GenericAPIView):
         """
         data=request.data
         try:
-            try:
-                print('OTPVerificationTemp = ',data.get("verification_code"))
-                verification_instance=self.model.get_instance( {
-                        "verification_code": data.get("verification_code"),
-                        "is_used": False,})  
-                # Check for code expiry
-                if timezone.now() > verification_instance.expiry_time:
-                    verification_instance.is_used = True
-                    verification_instance.save()
-                    return Response(
-                        ApplicationMessages.VERIFICATION_CODE_EXPIRED, status=status.HTTP_400_BAD_REQUEST
-                    )
-            except Exception as ex:
-                raise ValidationError(ApplicationMessages.INVALID_VERIFICATION_CODE)
-            
+            print('OTPVerificationTemp = ',data.get("verification_code"))
+            verification_instance=self.model.get_instance( {
+                    "verification_code": data.get("verification_code"),
+                    "is_used": False,})  
+            print("CCCCC")
+            # Check for code expiry
+            if timezone.now() > verification_instance.expiry_time:
+                verification_instance.is_used = True
+                verification_instance.save()
+                return Response(
+                    ApplicationMessages.VERIFICATION_CODE_EXPIRED, status=status.HTTP_400_BAD_REQUEST
+                )
+        except Exception as ex:
+            raise ValidationError(ApplicationMessages.INVALID_VERIFICATION_CODE)
+        try:
             serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
                 response = serializer.save()
@@ -125,7 +125,7 @@ class UserSignUpAPIView(generics.GenericAPIView):
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
-            print(ex)
+            print("EX = ",ex)
             raise ValidationError(ApplicationMessages.SOMETHING_WENT_WRONG, status.HTTP_400_BAD_REQUEST)
 
 
