@@ -103,9 +103,16 @@ class UserSignUpAPIView(generics.GenericAPIView):
         try:
             try:
                 print('OTPVerificationTemp = ',data.get("verification_code"))
-                self.model.get_instance( {
+                verification_instance=self.model.get_instance( {
                         "verification_code": data.get("verification_code"),
                         "is_used": False,})  
+                # Check for code expiry
+                if timezone.now() > verification_instance.expiry_time:
+                    verification_instance.is_used = True
+                    verification_instance.save()
+                    return Response(
+                        ApplicationMessages.VERIFICATION_CODE_EXPIRED, status=status.HTTP_400_BAD_REQUEST
+                    )
             except Exception as ex:
                 raise ValidationError(ApplicationMessages.INVALID_VERIFICATION_CODE)
             
