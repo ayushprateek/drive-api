@@ -57,22 +57,23 @@ class GetMediaSerializer(serializers.Serializer):
 
 class SendEmailOTPSerializer(serializers.Serializer):
     email = serializers.EmailField()
+    
 
-    def validate(self, data):
+    def create(self, data):
         """create and mail the token to the user"""
-        print('SendEmailOTPSerializer called')
-        
+        print('SendEmailOTPSerializer called',data)
+        print("Email = ",data.get("email"))
         verification_code = utils.generate_verification_code(6)
         data = {
+            "email": data.get("email"),
             "verification_code": verification_code,
             "expiry_time": timezone.now() + timezone.timedelta(minutes=Constant.VERIFICATION_CODE_EXPIRE_TIME),
         }
-        print("Email = ",data.get("email"))
+        instance = user_models.UserSignupVerification.create_signup_verification(data)
         mail.SignupOTP(
                 {
-                    "verification_code": verification_code,
-                    "email": data.get("email")
-                    # "email": "ayushpratik08041999@gmail.com"
+                    "verification_code": instance.verification_code,
+                    "email": instance.email
                 }
             )
         # if data:

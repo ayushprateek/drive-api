@@ -189,7 +189,22 @@ class User(AbstractBaseUser, BaseModel):
         }
         caches.set(USER_TOKEN, tokens['refresh'], ONE_DAY, user_id=str(self.id), token=tokens['access'])
         return tokens
-
+    
+class UserSignupVerification(BaseModel):
+    email=models.CharField(null=True,blank=True,max_length=225)
+    verification_code = models.CharField(max_length=255)
+    expiry_time = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    
+    @staticmethod
+    def create_signup_verification(kwargs):
+        """
+        Creates a OTP/Token and return user obj
+        """
+        
+        obj = UserSignupVerification(**kwargs)
+        obj.save()
+        return obj
 
 class UserVerification(BaseModel):
     """

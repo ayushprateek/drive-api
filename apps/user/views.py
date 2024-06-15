@@ -65,17 +65,25 @@ class MediaAPIView(generics.GenericAPIView):
 
 class SendEmailOTP(generics.GenericAPIView):
     serializer_class = user_serializer.SendEmailOTPSerializer
-
+    model = user_models.UserVerification
+    
     @swagger_auto_schema(responses={201: 'Email sent successfully'})
     def post(self, request, *args, **kwargs):
         print('SendEmailOTP')
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response({'detail': 'Email sent successfully'}, status=201)
+        data=request.data
+        if user_models.User.objects.filter(email=data.get("email")).exists():
+            raise ValidationError(ApplicationMessages.USER_ALREADY_EXIST)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response({'detail': 'Email sent successfully'}, status=201)
         
         # serializer_class.create(validated_data=request.data)
         
         return Response({'OTP Sent':'Hi'}, status.HTTP_200_OK)
+
+            
 class UserSignUpAPIView(generics.GenericAPIView):
     """
     SignUp customer and Create Customer Profile (POST Request)
@@ -83,6 +91,7 @@ class UserSignUpAPIView(generics.GenericAPIView):
     print('Method called')
 
     serializer_class = user_serializer.UserSignUpSerializer
+    model = user_models.UserSignupVerification
 
     @swagger_auto_schema(responses={201: schema.email_signup_response})
     def post(self, request, *args, **kwargs):
@@ -90,7 +99,16 @@ class UserSignUpAPIView(generics.GenericAPIView):
         create a new User
         payload For Email Signup: {"email": "example@ex.com", "password": "Admin@123"}
         """
+        data=request.data
         try:
+            try:
+                print('OTPVerificationTemp = ',data.get("verification_code"))
+                self.model.get_instance( {
+                        "verification_code": data.get("verification_code"),
+                        "is_used": False,})  
+            except Exception as ex:
+                raise ValidationError(ApplicationMessages.INVALID_VERIFICATION_CODE)
+            
             serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
                 response = serializer.save()
