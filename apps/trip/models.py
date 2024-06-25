@@ -331,8 +331,8 @@ class Photo(models.Model):
     photo_reference = models.CharField(max_length=255)
 
 class PlusCode(models.Model):
-    compound_code = models.CharField(max_length=50)
-    global_code = models.CharField(max_length=50)
+    compound_code = models.CharField(max_length=250)
+    global_code = models.CharField(max_length=250)
 
 
 

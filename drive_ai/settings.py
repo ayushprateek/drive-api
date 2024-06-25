@@ -140,8 +140,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', 
         'NAME': 'drive_dev',
         'USER': 'postgres',
-        # 'PASSWORD': 'Ayush@123',
-        'PASSWORD': 'Kishul#123',
+        'PASSWORD': 'Ayush@123',
+        # 'PASSWORD': 'Kishul#123',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -184,7 +184,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 APPEND_SLASH = True
 FAIL_SILENTLY = False

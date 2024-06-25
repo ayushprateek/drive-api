@@ -57,9 +57,20 @@ import requests
 import json
 from shapely.geometry import Point, LineString,box
 import math
+from drive_ai import settings
 
 
-
+def printRoot(request):
+    print(settings.STATIC_ROOT+'Temp.png')
+    print(settings.STATIC_URL)
+    url='static/Experiences.png'
+    category = Category.objects.create(
+    name='Experiences',
+    image_url=url,
+    icon_url=url
+    )
+    
+    return JsonResponse({'message': 'Hotels fetched and saved successfully'})
 class ScrapeHotelsView(View):
     def get(self, request):
         latitude = request.GET.get('latitude')
