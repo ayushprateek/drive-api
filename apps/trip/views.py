@@ -63,11 +63,46 @@ from drive_ai import settings
 def printRoot(request):
     print(settings.STATIC_ROOT+'Temp.png')
     print(settings.STATIC_URL)
-    url='static/Experiences.png'
-    category = Category.objects.create(
+    
+    Category.objects.create(
     name='Experiences',
-    image_url=url,
-    icon_url=url
+    image_url='static/Experiences.jpeg',
+    icon_url='static/Experiences.jpeg'
+    )
+    Category.objects.create(
+    name='Experiences',
+    image_url='static/Experiences.jpeg',
+    icon_url='static/Experiences.jpeg'
+    )
+    Category.objects.create(
+    name='Weird Wacky',
+    image_url='static/WeirdWacky.png',
+    icon_url='static/WeirdWacky.png'
+    )
+    Category.objects.create(
+    name='Extream Soprts',
+    image_url='static/ExtreamSoprts.png',
+    icon_url='static/ExtreamSoprts.png'
+    )
+    Category.objects.create(
+    name='Hotel Deals',
+    image_url='static/HotelDeals.png',
+    icon_url='static/HotelDeals.png'
+    )
+    Category.objects.create(
+    name='National Park',
+    image_url='static/NationalPark.png',
+    icon_url='static/NationalPark.png'
+    )
+    Category.objects.create(
+    name='Evant Calendar',
+    image_url='static/EvantCalendar.png',
+    icon_url='static/EvantCalendar.png'
+    )
+    Category.objects.create(
+    name='Historic Sites',
+    image_url='static/HistoricSites.png',
+    icon_url='static/HistoricSites.png'
     )
     
     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
