@@ -227,7 +227,7 @@ class ScrapeHotelsView(View):
         
 
     def fetch_hotels_from_google(self, lat, lng):
-        url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
+        url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type=lodging&key={settings.GOOGLE_API_KEY}"
         response = requests.get(url)
         results = response.json().get('results', [])
 
@@ -466,7 +466,7 @@ def saveHotel(request):
         for data in latlang:
             lat = data['latitude']
             lng =  data['longitude']
-            url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type={type}&key={settings.GOOGLE_API_KEY}"
+            url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}"
             response = requests.get(url)
             if response.status_code == 200:
                 data=response.json()
