@@ -52,12 +52,12 @@ class Hotel(models.Model):  # Renamed from Result to Hotel
 
 class Status(models.Model):
     class Meta:
-        db_table = '"status"'
+        db_table = '"status_status"'
     title = models.CharField(max_length=50)
     
 class Media(models.Model):
     class Meta:
-        db_table = '"media"'
+        db_table = '"media_hotel_media"'
     media = models.CharField(max_length=200)
     
 # class Hotel(models.Model):
@@ -110,14 +110,7 @@ class Tax(models.Model):
     name = models.CharField(max_length=50)
     percentage = models.DecimalField(max_digits=10, decimal_places=2) 
 
-class Plan(models.Model):
-    class Meta:
-        db_table='"plan"'
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=200)
-    trip_date = models.DateTimeField(null=False)
-    created_at = models.DateTimeField(null=False)
-    updated_at = models.DateTimeField(null=True)
+
     
 class Category(models.Model):
     class Meta:

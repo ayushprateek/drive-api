@@ -174,7 +174,8 @@ class UserEmailLoginAPIView(generics.GenericAPIView):
             response = {
                 "message": "User Logged In Successfully!",
                 "access_token": user.tokens()['access'],
-                "refresh_token": user.tokens()['refresh']
+                "refresh_token": user.tokens()['refresh'],
+                "user_id": user.id
             }
             return Response(response, status=status.HTTP_200_OK)
         else:

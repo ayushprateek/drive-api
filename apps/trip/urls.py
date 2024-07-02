@@ -23,5 +23,8 @@ urlpatterns = [
     path('fetch_latestHotels/', fetch_latestHotels),
     path('truncate_all_tables/', truncate_all_tables),
     path('printRoot/', printRoot),
-
+    path('city-scrape/', cityScrape),
+    path('create-trip/', createTripPlan,name='create-trip'),
+    path('city-search/', SearchCityListAPIView.as_view(), name='city-search'),
+    path('historicalSitesScrape/', historicalSitesScrape, name='city-search')
 ]

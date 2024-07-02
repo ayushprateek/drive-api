@@ -1,7 +1,7 @@
 import datetime
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
+from rest_framework.decorators import api_view
 import pandas as pd
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -9,6 +9,7 @@ from django.urls import reverse
 from apps.search.models import SearchLog
 from apps.user.models import User
 from rest_framework.exceptions import ValidationError
+from datetime import date
 from django.db import models
 from django.db import models
 from django.db.models import F
@@ -20,6 +21,10 @@ from apps.trip.helper import (
     fetch_pois_save_for_location,
     fetch_pois_save_with_route,
     get_route,
+)
+from apps.user import (
+    serializers as user_serializer,
+    models as user_models, schema,
 )
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -106,6 +111,67 @@ def printRoot(request):
     )
     
     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
+
+def cityScrape(request):
+    print('cityScrape')
+    City.objects.create(
+      name='Miami',
+      country='US',
+      latitude=25.761670,
+      longitude=-80.22534,
+      images=['Miami.jpeg'],
+      description='Miami, officially the City of Miami, is a coastal city in the U.S. state of Florida and the seat of Miami-Dade County in South Florida'
+    )
+    
+    City.objects.create(
+      name='Jacksonville',
+      country='US',
+      latitude=30.387233,
+      longitude=-81.670820,
+      images=['Jacksonville.jpeg','Jacksonville2.jpeg'],
+      description='Jacksonville is the most populous city proper in the U.S. state of Florida, located on the Atlantic coast of northeastern Florida. It is the seat of Duval County, with which the City of Jacksonville consolidated in 1968. It was the largest city by area in the contiguous United States as of 2020'
+    )
+    return JsonResponse({'message': 'City fetched and saved successfully'})
+
+def historicalSitesScrape(request):
+    
+    miami=City.objects.filter(id='2089800e-c9b1-439b-a20d-a480ae8d7419').first()
+    jacksonville=City.objects.filter(id='f37eb49a-6415-4614-bfa9-6036f8d6f6e0').first()
+    HistoricalSite.objects.create(
+        name='Vizcaya',
+        description='This beautiful estate was built by industrialist James Deering in the early 20th century. It features a stunning Italian Renaissance-style villa',
+        images=['Vizcaya.png'],
+        city=miami,
+        latitude=miami.latitude,
+        longitude=miami.longitude,
+    )
+    HistoricalSite.objects.create(
+        name='Jacksonville',
+        description='This beautiful estate was built by industrialist James Deering in the early 20th century. It features a stunning Italian Renaissance-style villa',
+        images=['Jacksonville.jpeg'],
+        city=jacksonville,
+        latitude=miami.latitude,
+        longitude=miami.longitude,
+    )
+    return JsonResponse({'message': 'HistoricalSite fetched and saved successfully'})
+@api_view(['POST'])
+def createTripPlan(request):
+    print('createPlan called')
+    data = json.loads(request.body)
+    print(data)
+    city=City.objects.filter(id=data['city_id']).first()
+    user=User.objects.filter(id=data['user_id']).first()
+    Plan.objects.create(
+    name = data['name'],
+    description = data['description'],
+    start_date = data['start_date'],
+    end_date = data['end_date'],
+    city=city,
+    user=user,
+    created_at=date.today().strftime('%Y-%m-%d %H:%M:%S') 
+    )
+    return JsonResponse({'message': 'Trip Created'})
+        
 class ScrapeHotelsView(View):
     def get(self, request):
         latitude = request.GET.get('latitude')
@@ -940,6 +1006,15 @@ class AddHotelAPIView(APIView):
         # Redirect back to the admin panel
         return HttpResponseRedirect(reverse("admin:index"))
 
+class SearchCityListAPIView(generics.ListAPIView):
+    serializer_class = trip_serializer.CitySerializer
+
+    def get_queryset(self):
+        queryset = City.objects.all()
+        query = self.request.query_params.get('q', None)
+        if query:
+            queryset = queryset.filter(name__icontains=query)
+        return queryset
 
 class AddSiteAPIView(APIView):
     """

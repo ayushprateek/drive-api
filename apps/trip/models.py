@@ -347,6 +347,18 @@ class Media(models.Model):
         db_table = '"media"'
     media = models.CharField(max_length=200)
 
+class Plan(models.Model):
+    class Meta:
+        db_table='"plan"'
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=200)
+    start_date = models.DateTimeField(null=True)
+    end_date = models.DateTimeField(null=True)
+    city = models.ForeignKey(City,on_delete=models.CASCADE,null=True)
+    user = models.ForeignKey(user,on_delete=models.CASCADE,null=True)
+    created_at = models.DateTimeField(null=False)
+    updated_at = models.DateTimeField(null=True)
+
 class Hotel(BaseModel):
     """
     Represents hotel entities with details about the hotel, its facilities,
