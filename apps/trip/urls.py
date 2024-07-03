@@ -25,6 +25,11 @@ urlpatterns = [
     path('printRoot/', printRoot),
     path('city-scrape/', cityScrape),
     path('create-trip/', createTripPlan,name='create-trip'),
+    path('get-trip/', getTripPlan,name='create-trip'),
     path('city-search/', SearchCityListAPIView.as_view(), name='city-search'),
-    path('historicalSitesScrape/', historicalSitesScrape, name='city-search')
+    path('historicalSitesScrape/', historicalSitesScrape, name='city-search'),
+    path('get-historical-sites/', getHistoricalsites,name='create-trip'),
+    path('GetExtremeSport/', getExtremeSport,name='create-trip'),
+    path('GetWeirdAndWacky/', getWeirdAndWacky,name='create-trip'),
+    path('weird/', weird,name='create-trip'),
 ]

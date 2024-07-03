@@ -133,8 +133,8 @@ def cityScrape(request):
     )
     return JsonResponse({'message': 'City fetched and saved successfully'})
 
+
 def historicalSitesScrape(request):
-    
     miami=City.objects.filter(id='2089800e-c9b1-439b-a20d-a480ae8d7419').first()
     jacksonville=City.objects.filter(id='f37eb49a-6415-4614-bfa9-6036f8d6f6e0').first()
     HistoricalSite.objects.create(
@@ -149,6 +149,61 @@ def historicalSitesScrape(request):
         name='Jacksonville',
         description='This beautiful estate was built by industrialist James Deering in the early 20th century. It features a stunning Italian Renaissance-style villa',
         images=['Jacksonville.jpeg'],
+        city=jacksonville,
+        latitude=miami.latitude,
+        longitude=miami.longitude,
+    )
+    return JsonResponse({'message': 'HistoricalSite fetched and saved successfully'})
+
+
+def weird(request):
+    miami=City.objects.filter(id='2089800e-c9b1-439b-a20d-a480ae8d7419').first()
+    jacksonville=City.objects.filter(id='f37eb49a-6415-4614-bfa9-6036f8d6f6e0').first()
+    WeirdAndWacky.objects.create(
+        name='Coral Castle',
+        description='Chosen TOP 35 out of more than 35,000 Museums in the United States "...guaranteed to be the highlight of...',
+        images=['static/WeirdAndWacky1.png'],
+        city=miami,
+        latitude=miami.latitude,
+        longitude=miami.longitude,
+    )
+    WeirdAndWacky.objects.create(
+        name='Meet The Florida Skunk Ape, The Sunshine State’s Answer To Bigfoot',
+        description='The "Swamp Sasquatch" known as the Florida Skunk Ape is a 66, 450...',
+        images=['static/WeirdAndWacky2.png'],
+        city=miami,
+        latitude=miami.latitude,
+        longitude=miami.longitude,
+    )
+    WeirdAndWacky.objects.create(
+        name='Florida 2nd in nation for most UFO sightings',
+        description='TAMPA, Fla. (WFLA) – Florida has the second-most reported UFO – or unidentified flying...',
+        images=['static/WeirdAndWacky3.png'],
+        city=jacksonville,
+        latitude=miami.latitude,
+        longitude=miami.longitude,
+    )
+    
+    ExtremeSport.objects.create(
+        name='Exotic Indoor Firearm Experience in Miami',
+        description='Feel the adrenaline rush of firing a machine gun at an indoor gun range in Miami. Try out the extensive...',
+        images=['static/ExtremeSport1.png'],
+        city=miami,
+        latitude=miami.latitude,
+        longitude=miami.longitude,
+    )
+    ExtremeSport.objects.create(
+        name='Speedboat Sightseeing Tour of Miami',
+        description='Speedboat Sightseeing Tour of Miami',
+        images=['static/ExtremeSport2.png'],
+        city=jacksonville,
+        latitude=miami.latitude,
+        longitude=miami.longitude,
+    )
+    ExtremeSport.objects.create(
+        name='Miami Waterlife Tours Biscayne Bay Jet Ski Tour',
+        description='See the sights of Miami from the water during this Jet Ski tour along Biscayne Bay. Travel the waters of Biscayn...',
+        images=['static/ExtremeSport3.png'],
         city=jacksonville,
         latitude=miami.latitude,
         longitude=miami.longitude,
@@ -170,6 +225,69 @@ def createTripPlan(request):
     user=user,
     created_at=date.today().strftime('%Y-%m-%d %H:%M:%S') 
     )
+    return JsonResponse({'message': 'Trip Created'})
+@api_view(['POST'])
+def getTripPlan(request):
+    data = json.loads(request.body)
+    plans = Plan.objects.filter(user_id=data['user_id']).select_related('city').values(
+        'id', 'name', 'city__id', 'city__name', 'city__images'
+    )
+    print(len(plans))
+    plans_list = list(plans)
+    for plan in plans_list:
+        plan['city_name'] = plan.pop('city__name')
+        plan['city_images'] = plan.pop('city__images')
+        plan['city_id'] = plan.pop('city__id')
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def getHistoricalsites(request):
+    data = json.loads(request.body)
+    plans = HistoricalSite.objects.filter(city_id=data['city_id']).all().values(
+        'id', 'name', 
+        'description', 'images',
+    )
+    print(len(plans))
+    plans_list = list(plans)
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def getWeirdAndWacky(request):
+    data = json.loads(request.body)
+    plans = WeirdAndWacky.objects.filter(city_id=data['city_id']).all().values(
+        'id', 'name', 
+        'description', 'images',
+    )
+    print(len(plans))
+    plans_list = list(plans)
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def getExtremeSport(request):
+    data = json.loads(request.body)
+    plans = ExtremeSport.objects.filter(city_id=data['city_id']).all().values(
+        'id', 'name', 
+        'description', 'images',
+    )
+    print(len(plans))
+    plans_list = list(plans)
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+    # print(data)
+    # city=City.objects.filter(id=data['city_id']).first()
+    # user=User.objects.filter(id=data['user_id']).first()
+    # Plan.objects.create(
+    # name = data['name'],
+    # description = data['description'],
+    # start_date = data['start_date'],
+    # end_date = data['end_date'],
+    # city=city,
+    # user=user,
+    # created_at=date.today().strftime('%Y-%m-%d %H:%M:%S') 
+    # )
     return JsonResponse({'message': 'Trip Created'})
         
 class ScrapeHotelsView(View):
