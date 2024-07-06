@@ -231,6 +231,7 @@ def historicalSitesScrape(request):
 
 def weird(request):
     miami=City.objects.filter(id='2089800e-c9b1-439b-a20d-a480ae8d7419').first()
+    print('Name = ',miami.name)
     jacksonville=City.objects.filter(id='f37eb49a-6415-4614-bfa9-6036f8d6f6e0').first()
     WeirdAndWacky.objects.create(
         name='Coral Castle',
