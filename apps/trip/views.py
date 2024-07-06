@@ -187,23 +187,23 @@ def cityScrape(request):
         description='Pembroke Pines is a city in southern Broward County, Florida, and a suburb of Miami.'
     )
 
-    # City.objects.create(
-    #   name='Miami',
-    #   country='US',
-    #   latitude=25.761670,
-    #   longitude=-80.22534,
-    #   images=[statioc/'Miami.jpeg'],
-    #   description='Miami, officially the City of Miami, is a coastal city in the U.S. state of Florida and the seat of Miami-Dade County in South Florida'
-    # )
+    City.objects.create(
+      name='Miami',
+      country='US',
+      latitude=25.761670,
+      longitude=-80.22534,
+      images=['static/Miami.jpeg'],
+      description='Miami, officially the City of Miami, is a coastal city in the U.S. state of Florida and the seat of Miami-Dade County in South Florida'
+    )
     
-    # City.objects.create(
-    #   name='Jacksonville',
-    #   country='US',
-    #   latitude=30.387233,
-    #   longitude=-81.670820,
-    #   images=['static/Jacksonville.jpeg','static/Jacksonville2.jpeg'],
-    #   description='Jacksonville is the most populous city proper in the U.S. state of Florida, located on the Atlantic coast of northeastern Florida. It is the seat of Duval County, with which the City of Jacksonville consolidated in 1968. It was the largest city by area in the contiguous United States as of 2020'
-    # )
+    City.objects.create(
+      name='Jacksonville',
+      country='US',
+      latitude=30.387233,
+      longitude=-81.670820,
+      images=['static/Jacksonville.jpeg','static/Jacksonville2.jpeg'],
+      description='Jacksonville is the most populous city proper in the U.S. state of Florida, located on the Atlantic coast of northeastern Florida. It is the seat of Duval County, with which the City of Jacksonville consolidated in 1968. It was the largest city by area in the contiguous United States as of 2020'
+    )
     return JsonResponse({'message': 'City fetched and saved successfully'})
 
 
