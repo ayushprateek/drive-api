@@ -213,7 +213,7 @@ def historicalSitesScrape(request):
     HistoricalSite.objects.create(
         name='Vizcaya',
         description='This beautiful estate was built by industrialist James Deering in the early 20th century. It features a stunning Italian Renaissance-style villa',
-        images=['Vizcaya.png'],
+        images=['static/Vizcaya.png'],
         city=miami,
         latitude=miami.latitude,
         longitude=miami.longitude,
@@ -221,7 +221,7 @@ def historicalSitesScrape(request):
     HistoricalSite.objects.create(
         name='Jacksonville',
         description='This beautiful estate was built by industrialist James Deering in the early 20th century. It features a stunning Italian Renaissance-style villa',
-        images=['Jacksonville.jpeg'],
+        images=['static/Jacksonville.jpeg'],
         city=jacksonville,
         latitude=miami.latitude,
         longitude=miami.longitude,
@@ -1041,6 +1041,7 @@ def get_coordinates_along_polyline(request):
     response = requests.get(url)
     if response.status_code == 200:
         data=response.json()
+        print("Data = ",data)
         decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
         # for point in decoded_points:
             # print(f"Lat: {point.lat}, Lng: {point.lng}")
