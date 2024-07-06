@@ -208,8 +208,8 @@ def cityScrape(request):
 
 
 def historicalSitesScrape(request):
-    miami=City.objects.filter(name='Miami').first()
-    jacksonville=City.objects.filter(name='Jacksonville').first()
+    miami=City.objects.filter(id='0e872ebf-e377-41e5-a9d1-36297c2dea6b').first()
+    jacksonville=City.objects.filter(id='8a8da460-2ec4-496e-82de-58f2f1726257').first()
     HistoricalSite.objects.create(
         name='Vizcaya',
         description='This beautiful estate was built by industrialist James Deering in the early 20th century. It features a stunning Italian Renaissance-style villa',
