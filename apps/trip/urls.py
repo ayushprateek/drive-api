@@ -32,4 +32,7 @@ urlpatterns = [
     path('GetExtremeSport/', getExtremeSport,name='create-trip'),
     path('GetWeirdAndWacky/', getWeirdAndWacky,name='create-trip'),
     path('weird/', weird,name='create-trip'),
+    path('like-place/', likePlace,name='create-trip'),
+    path('unlike-place/', unlikePlace,name='create-trip'),
+    path('is-place-liked/', isPlaceLiked,name='create-trip'),
 ]

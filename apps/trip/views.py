@@ -114,23 +114,96 @@ def printRoot(request):
 
 def cityScrape(request):
     print('cityScrape')
-    City.objects.create(
-      name='Miami',
-      country='US',
-      latitude=25.761670,
-      longitude=-80.22534,
-      images=['Miami.jpeg'],
-      description='Miami, officially the City of Miami, is a coastal city in the U.S. state of Florida and the seat of Miami-Dade County in South Florida'
-    )
     
     City.objects.create(
-      name='Jacksonville',
-      country='US',
-      latitude=30.387233,
-      longitude=-81.670820,
-      images=['Jacksonville.jpeg','Jacksonville2.jpeg'],
-      description='Jacksonville is the most populous city proper in the U.S. state of Florida, located on the Atlantic coast of northeastern Florida. It is the seat of Duval County, with which the City of Jacksonville consolidated in 1968. It was the largest city by area in the contiguous United States as of 2020'
+        name='Orlando',
+        country='US',
+        latitude=28.538336,
+        longitude=-81.379234,
+        images=['static/Orlando.jpeg'],
+        description='Orlando is a city in central Florida, known for its theme parks, including Walt Disney World and Universal Studios.'
     )
+
+    City.objects.create(
+        name='Tampa',
+        country='US',
+        latitude=27.950575,
+        longitude=-82.457178,
+        images=['static/Tampa.jpeg'],
+        description='Tampa is a city on Tampa Bay, along Florida’s Gulf Coast. It is known for its museums and other cultural offerings.'
+    )
+
+    City.objects.create(
+        name='Tallahassee',
+        country='US',
+        latitude=30.438255,
+        longitude=-84.280733,
+        images=['static/Tallahassee.jpeg'],
+        description='Tallahassee is the capital of the U.S. state of Florida. It is known for its large number of law firms, lobbying organizations, and trade associations.'
+    )
+
+    City.objects.create(
+        name='St. Petersburg',
+        country='US',
+        latitude=27.767600,
+        longitude=-82.640290,
+        images=['static/St_Petersburg.jpeg'],
+        description='St. Petersburg is a city on Florida’s Gulf Coast, part of the Tampa Bay area. It is known for its pleasant weather and cultural attractions.'
+    )
+
+    City.objects.create(
+        name='Fort Lauderdale',
+        country='US',
+        latitude=26.122439,
+        longitude=-80.137317,
+        images=['static/Fort_Lauderdale.jpeg'],
+        description='Fort Lauderdale is a city on Florida’s southeastern coast, known for its boating canals and stunning beaches.'
+    )
+
+    City.objects.create(
+        name='Hialeah',
+        country='US',
+        latitude=25.857596,
+        longitude=-80.278105,
+        images=['static/Hialeah.jpeg'],
+        description='Hialeah is a city in Miami-Dade County, Florida, and a principal city of the Miami metropolitan area.'
+    )
+
+    City.objects.create(
+        name='Port St. Lucie',
+        country='US',
+        latitude=27.273049,
+        longitude=-80.358226,
+        images=['static/Port_St_Lucie.jpeg'],
+        description='Port St. Lucie is a city in Florida, known for its beautiful parks, riverfront, and botanical gardens.'
+    )
+
+    City.objects.create(
+        name='Pembroke Pines',
+        country='US',
+        latitude=26.007765,
+        longitude=-80.296256,
+        images=['static/Pembroke_Pines.jpeg'],
+        description='Pembroke Pines is a city in southern Broward County, Florida, and a suburb of Miami.'
+    )
+
+    # City.objects.create(
+    #   name='Miami',
+    #   country='US',
+    #   latitude=25.761670,
+    #   longitude=-80.22534,
+    #   images=[statioc/'Miami.jpeg'],
+    #   description='Miami, officially the City of Miami, is a coastal city in the U.S. state of Florida and the seat of Miami-Dade County in South Florida'
+    # )
+    
+    # City.objects.create(
+    #   name='Jacksonville',
+    #   country='US',
+    #   latitude=30.387233,
+    #   longitude=-81.670820,
+    #   images=['static/Jacksonville.jpeg','static/Jacksonville2.jpeg'],
+    #   description='Jacksonville is the most populous city proper in the U.S. state of Florida, located on the Atlantic coast of northeastern Florida. It is the seat of Duval County, with which the City of Jacksonville consolidated in 1968. It was the largest city by area in the contiguous United States as of 2020'
+    # )
     return JsonResponse({'message': 'City fetched and saved successfully'})
 
 
@@ -209,6 +282,168 @@ def weird(request):
         longitude=miami.longitude,
     )
     return JsonResponse({'message': 'HistoricalSite fetched and saved successfully'})
+
+@api_view(['POST'])
+def likePlace(request):
+    print('createPlan called')
+    data = json.loads(request.body)
+    print(data)
+    
+    userdata=User.objects.filter(id=data['user_id']).first()
+    
+    if UserLikes.objects.filter(user_id=data['user_id']).exists():
+        user_likes = UserLikes.objects.filter(user_id=data['user_id']).first()
+    else :
+        user_likes = UserLikes.objects.create(user=userdata)
+    
+    if HistoricalSite.objects.filter(id=data['like_id']).exists():
+        historicalsites=HistoricalSite.objects.get(id=data['like_id'])
+        user_likes.liked_historicalsites.add(historicalsites)
+        return JsonResponse({'message': 'User Liked Historical Site'})
+        
+    if Hotel.objects.filter(id=data['like_id']).exists():
+        hotel = Hotel.objects.get(id=data['like_id'])
+        user_likes.liked_hotels.add(hotel)
+        return JsonResponse({'message': 'User Liked Hotel'})
+        
+    if ExtremeSport.objects.filter(id=data['like_id']).exists():
+        extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
+        user_likes.liked_extremesports.add(extreme_sport)
+        return JsonResponse({'message': 'User Liked Extreme Sport'})
+        
+    if Event.objects.filter(id=data['like_id']).exists():
+        event = Event.objects.get(id=data['like_id'])
+        user_likes.liked_events.add(event)
+        return JsonResponse({'message': 'User Liked Event'})
+        
+    if WeirdAndWacky.objects.filter(id=data['like_id']).exists():
+        weird_and_wacky = WeirdAndWacky.objects.get(id=data['like_id'])
+        user_likes.liked_wierdandwacky.add(weird_and_wacky)
+        return JsonResponse({'message': 'User Liked Weird And Wacky'})
+        
+    if Park.objects.filter(id=data['like_id']).exists():
+        park = Park.objects.get(id=data['like_id'])
+        user_likes.liked_parks.add(park)
+        return JsonResponse({'message': 'User Liked Park'})
+        
+    if Attraction.objects.filter(id=data['like_id']).exists():
+        attraction = Attraction.objects.get(id=data['like_id'])
+        user_likes.liked_attractions.add(attraction)
+        return JsonResponse({'message': 'User Liked Attraction'})
+    
+    
+@api_view(['POST'])
+def isPlaceLiked(request):
+    data = json.loads(request.body)
+    
+    if UserLikes.objects.filter(user_id=data['user_id']).exists():
+        user_likes = UserLikes.objects.filter(user_id=data['user_id']).first()
+        if user_likes and user_likes.liked_historicalsites.filter(id=data['like_id']).exists():
+            # historicalsites=HistoricalSite.objects.filter(id=data['like_id']).first()
+            
+            return JsonResponse({'message': 'User Liked Historical Site',
+                                 'liked':True})
+        
+        if user_likes and user_likes.liked_hotels.filter(id=data['like_id']).exists():
+            # hotel = Hotel.objects.get(id=data['like_id'])
+            # user_likes.liked_hotels.add(hotel)
+            return JsonResponse({'message': 'User Liked Hotel',
+                                 'liked':True})
+
+        if user_likes and user_likes.liked_extremesports.filter(id=data['like_id']).exists():
+            # extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
+            # user_likes.liked_extremesports.add(extreme_sport)
+            return JsonResponse({'message': 'User Liked Extreme Sport',
+                                 'liked':True})
+
+        if user_likes and user_likes.liked_events.filter(id=data['like_id']).exists():
+            # event = Event.objects.get(id=data['like_id'])
+            # user_likes.liked_events.add(event)
+            return JsonResponse({'message': 'User Liked Event',
+                                 'liked':True})
+
+        if user_likes and user_likes.liked_wierdandwacky.filter(id=data['like_id']).exists():
+            return JsonResponse({'message': 'User Liked Weird And Wacky',
+                                 'liked':True})
+
+        if user_likes and user_likes.liked_parks.filter(id=data['like_id']).exists():
+            # park = Park.objects.get(id=data['like_id'])
+            # user_likes.liked_parks.add(park)
+            return JsonResponse({'message': 'User Liked Park','liked':True})
+
+        if user_likes and user_likes.liked_attractions.filter(id=data['like_id']).exists():
+            # attraction = Attraction.objects.get(id=data['like_id'])
+            # user_likes.liked_attractions.add(attraction)
+            return JsonResponse({'message': 'User Liked Attraction','liked':True})
+        
+        return JsonResponse({
+            'message': 'User Did not like',
+            'liked':False})
+    else :
+        return JsonResponse({
+            'message': 'User Did not like',
+            'liked':True})
+        
+@api_view(['POST'])
+def unlikePlace(request):
+    data = json.loads(request.body)
+    
+    if UserLikes.objects.filter(user_id=data['user_id']).exists():
+        user_likes = UserLikes.objects.filter(user_id=data['user_id']).first()
+        if user_likes and user_likes.liked_historicalsites.filter(id=data['like_id']).exists():
+            historical_site_to_remove = user_likes.liked_historicalsites.filter(id=data['like_id']).first()
+            if historical_site_to_remove:
+                user_likes.liked_historicalsites.remove(historical_site_to_remove)
+            return JsonResponse({'message': 'User Unliked Historical Site',
+                                 'liked':False})
+        
+        if user_likes and user_likes.liked_hotels.filter(id=data['like_id']).exists():
+            # hotel = Hotel.objects.get(id=data['like_id'])
+            # user_likes.liked_hotels.add(hotel)
+            return JsonResponse({'message': 'User Liked Hotel',
+                                 'liked':False})
+
+        if user_likes and user_likes.liked_extremesports.filter(id=data['like_id']).exists():
+            # extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
+            # user_likes.liked_extremesports.add(extreme_sport)
+            return JsonResponse({'message': 'User Liked Extreme Sport',
+                                 'liked':False})
+
+        if user_likes and user_likes.liked_events.filter(id=data['like_id']).exists():
+            # event = Event.objects.get(id=data['like_id'])
+            # user_likes.liked_events.add(event)
+            return JsonResponse({'message': 'User Liked Event',
+                                 'liked':False})
+
+        if user_likes and user_likes.liked_wierdandwacky.filter(id=data['like_id']).exists():
+            return JsonResponse({'message': 'User Liked Weird And Wacky',
+                                 'liked':False})
+
+        if user_likes and user_likes.liked_parks.filter(id=data['like_id']).exists():
+            # park = Park.objects.get(id=data['like_id'])
+            # user_likes.liked_parks.add(park)
+            return JsonResponse({'message': 'User Liked Park','liked':False})
+
+        if user_likes and user_likes.liked_attractions.filter(id=data['like_id']).exists():
+            # attraction = Attraction.objects.get(id=data['like_id'])
+            # user_likes.liked_attractions.add(attraction)
+            return JsonResponse({'message': 'User Liked Attraction','liked':False})
+        
+        return JsonResponse({
+            'message': 'User Did not like',
+            'liked':False})
+    else :
+        return JsonResponse({
+            'message': 'User Did not like',
+            'liked':False})
+    
+    
+    
+    
+    
+    
+
+
 @api_view(['POST'])
 def createTripPlan(request):
     print('createPlan called')
