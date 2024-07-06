@@ -230,9 +230,9 @@ def historicalSitesScrape(request):
 
 
 def weird(request):
-    miami=City.objects.filter(id='2089800e-c9b1-439b-a20d-a480ae8d7419').first()
+    miami=City.objects.filter(id='0e872ebf-e377-41e5-a9d1-36297c2dea6b').first()
     print('Name = ',miami.name)
-    jacksonville=City.objects.filter(id='f37eb49a-6415-4614-bfa9-6036f8d6f6e0').first()
+    jacksonville=City.objects.filter(id='8a8da460-2ec4-496e-82de-58f2f1726257').first()
     WeirdAndWacky.objects.create(
         name='Coral Castle',
         description='Chosen TOP 35 out of more than 35,000 Museums in the United States "...guaranteed to be the highlight of...',
