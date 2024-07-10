@@ -66,7 +66,7 @@ from drive_ai import settings
 
 
 def printRoot(request):
-    print(settings.STATIC_ROOT+'Temp.png')
+    # print(settings.STATIC_ROOT+'Temp.png')
     print(settings.STATIC_URL)
     
     Category.objects.create(
