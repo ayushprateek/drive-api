@@ -476,6 +476,20 @@ def getTripPlan(request):
     
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def getTripViaId(request, id=None):
+    plans = Plan.objects.filter(id=id).select_related('city').values(
+        'id', 'name', 'city__id', 'city__name', 'city__images'
+    )
+    print(len(plans))
+    plans_list = list(plans)
+    for plan in plans_list:
+        plan['city_name'] = plan.pop('city__name')
+        plan['city_images'] = plan.pop('city__images')
+        plan['city_id'] = plan.pop('city__id')
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+
 @api_view(['POST'])
 def getHistoricalsites(request):
     data = json.loads(request.body)

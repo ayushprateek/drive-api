@@ -27,6 +27,7 @@ urlpatterns = [
     path('city-scrape/', cityScrape),
     path('create-trip/', createTripPlan,name='create-trip'),
     path('get-trip/', getTripPlan,name='create-trip'),
+    path('get-trip-via-id/<id>', getTripViaId,name='create-trip'),
     path('city-search/', SearchCityListAPIView.as_view(), name='city-search'),
     path('historicalSitesScrape/', historicalSitesScrape, name='city-search'),
     path('get-historical-sites/', getHistoricalsites,name='create-trip'),
