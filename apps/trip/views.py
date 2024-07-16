@@ -466,6 +466,29 @@ def createTripPlan(request):
         user=user
     )
     return JsonResponse({'message': 'Trip Created'})
+
+@api_view(['POST'])
+def addUserToPlan(request):
+    print('createPlan called')
+    data = json.loads(request.body)
+    if not User.objects.filter(id=data['user_id']).exists():
+        return JsonResponse({'message': 'User does not exist'},safe=False, status=400)
+    
+    if not Plan.objects.filter(id=data['plan_id']).exists():
+        return JsonResponse({'message': 'Plan does not exist'},safe=False, status=400)
+    
+    if not PlanUser.objects.filter(plan_id=data['plan_id'], user_id=data['user_id']).exists():
+        plan=Plan.objects.filter(id=data['plan_id']).first()
+        user=User.objects.filter(id=data['user_id']).first()
+        PlanUser.objects.create(
+            plan=plan,
+            user=user
+        )
+        return JsonResponse({'message': 'User Added'},safe=False, status=200)
+    else:
+        return JsonResponse({'message': 'User already added'},safe=False, status=400)
+
+
 @api_view(['POST'])
 def getTripPlan(request):
     data = json.loads(request.body)

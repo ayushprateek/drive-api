@@ -37,4 +37,5 @@ urlpatterns = [
     path('like-place/', likePlace,name='create-trip'),
     path('unlike-place/', unlikePlace,name='create-trip'),
     path('is-place-liked/', isPlaceLiked,name='create-trip'),
+    path('add-user-to-plan/', addUserToPlan,name='add-user'),
 ]
