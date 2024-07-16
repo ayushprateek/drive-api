@@ -492,17 +492,31 @@ def addUserToPlan(request):
 @api_view(['POST'])
 def getTripPlan(request):
     data = json.loads(request.body)
-    plans = Plan.objects.filter(user_id=data['user_id']).select_related('city').values(
-        'id', 'name', 'city__id', 'city__name', 'city__images'
-    )
-    print(len(plans))
-    plans_list = list(plans)
+    
+    # Check if PlanUser with given user_id exists
+    if not PlanUser.objects.filter(user_id=data['user_id']).exists():
+        return JsonResponse([], safe=False, status=status.HTTP_200_OK)
+    
+    # Retrieve all PlanUser objects for the given user_id
+    planUserList = PlanUser.objects.filter(user_id=data['user_id'])
+    
+    plans_list = []
+    for planUser in planUserList:
+        # Correctly access plan_id attribute
+        plans = list(Plan.objects.filter(id=planUser.plan_id).select_related('city').values(
+            'id', 'name', 'city__id', 'city__name', 'city__images'
+        ))
+        
+        # Each plan is a dictionary, append each to plans_list
+        plans_list.extend(plans)
+    
+    # Flatten the list of dictionaries
     for plan in plans_list:
         plan['city_name'] = plan.pop('city__name')
         plan['city_images'] = plan.pop('city__images')
         plan['city_id'] = plan.pop('city__id')
     
-    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+    return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def getTripViaId(request, id=None):
