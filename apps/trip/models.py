@@ -355,9 +355,18 @@ class Plan(models.Model):
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
     city = models.ForeignKey(City,on_delete=models.CASCADE,null=True)
-    user = models.ForeignKey(user,on_delete=models.CASCADE,null=True)
+    # user = models.ForeignKey(user,on_delete=models.CASCADE,null=True)
     created_at = models.DateTimeField(null=False)
     updated_at = models.DateTimeField(null=True)
+class PlanUser(models.Model):
+    class Meta:
+        db_table = 'plan_user'
+        unique_together = (('plan', 'user'),)
+
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+    user = models.ForeignKey(user, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Hotel(BaseModel):
     """

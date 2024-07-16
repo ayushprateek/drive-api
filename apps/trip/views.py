@@ -451,14 +451,19 @@ def createTripPlan(request):
     print(data)
     city=City.objects.filter(id=data['city_id']).first()
     user=User.objects.filter(id=data['user_id']).first()
-    Plan.objects.create(
+    plan=Plan(
     name = data['name'],
     description = data['description'],
     start_date = data['start_date'],
     end_date = data['end_date'],
     city=city,
-    user=user,
+    
     created_at=date.today().strftime('%Y-%m-%d %H:%M:%S') 
+    )
+    plan.save()
+    PlanUser.objects.create(
+        plan=plan,
+        user=user
     )
     return JsonResponse({'message': 'Trip Created'})
 @api_view(['POST'])
