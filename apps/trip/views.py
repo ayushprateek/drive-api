@@ -707,6 +707,179 @@ def getHistoricalsites(request):
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
 
 @api_view(['POST'])
+def getLikedSitesViaPlan(request):
+    data = json.loads(request.body)
+    plan_id=data['plan_id']
+    plans_list=[]
+    historicalSiteList=[]
+    eventList=[]
+    parkList=[]
+    hotelList=[]
+    extremeSportList=[]
+    weirdAndWackyList=[]
+    attractionList=[]
+    
+    userLikesHistoricalSite=UserLikesHistoricalSite.objects.filter(plan_id=plan_id).all().values('historicalsite_id','id')
+    userLikesEvent=UserLikesEvent.objects.filter(plan_id=plan_id).all().values('event_id','id')
+    userLikesPark=UserLikesPark.objects.filter(plan_id=plan_id).all().values('park_id','id')
+    userLikesHotel=UserLikesHotel.objects.filter(plan_id=plan_id).all().values('hotel_id','id')
+    userLikesExtremeSport=UserLikesExtremeSport.objects.filter(plan_id=plan_id).all().values('extremesport_id','id')
+    userLikesWeirdAndWacky=UserLikesWeirdAndWacky.objects.filter(plan_id=plan_id).all().values('weirdandwacky_id','id')
+    userLikesAttraction=UserLikesAttraction.objects.filter(plan_id=plan_id).all().values('attraction_id','id')
+    
+    
+    
+    if userLikesHistoricalSite:
+        userLikesHistoricalSiteData = userLikesHistoricalSite[0]
+        if HistoricalSite.objects.filter(id=userLikesHistoricalSiteData['historicalsite_id']).exists():
+            plans = HistoricalSite.objects.filter(id=userLikesHistoricalSiteData['historicalsite_id']).all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            
+            for plan in plans:
+                plan['users']=len(userLikesHistoricalSite)
+            historicalSiteList.append(list(plans))
+            
+    if userLikesEvent:
+        userLikesEventData = userLikesEvent[0]
+        if Event.objects.filter(id=userLikesEventData['event_id']).exists():
+            plans = Event.objects.filter(id=userLikesEventData['event_id']).all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            for plan in plans:
+                plan['users']=len(userLikesEvent)
+            # plans_list.append({"Event":list(plans)})
+            eventList.append(list(plans))
+    
+    if userLikesPark:
+        userLikesParkData = userLikesPark[0]
+        if Park.objects.filter(id=userLikesParkData['park_id']).exists():
+            plans = Park.objects.filter(id=userLikesParkData['park_id']).all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            # plans_list.append({"Park":list(plans)})
+            for plan in plans:
+                plan['users']=len(userLikesPark)
+            parkList.append(list(plans))
+    
+    if userLikesHotel:
+        userLikesHotelData = userLikesHotel[0]
+        if Hotel.objects.filter(id=userLikesHotelData['hotel_id']).exists():
+            plans = Hotel.objects.filter(id=userLikesHotelData['hotel_id']).all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            # plans_list.append({"Hotel":list(plans)})
+            for plan in plans:
+                plan['users']=len(userLikesHotel)
+            hotelList.append(list(plans))
+    
+    if userLikesWeirdAndWacky:
+        userLikesWeirdAndWackyData = userLikesWeirdAndWacky[0]
+        if WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id']).exists():
+            plans = WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id']).all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            for plan in plans:
+                plan['users']=len(userLikesWeirdAndWacky)
+            weirdAndWackyList.append(list(plans))
+            # plans_list.append({"WeirdAndWacky":list(plans)})
+            
+    if userLikesExtremeSport:
+        
+        userLikesExtremeSportData = userLikesExtremeSport[0]
+        if ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id']).exists():
+            plans = ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id']).all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            # plans_list.append({"ExtremeSport":list(plans)})
+            for plan in plans:
+                plan['users']=len(userLikesExtremeSport)
+            extremeSportList.append(list(plans))
+    
+    if userLikesAttraction:
+        
+        userLikesAttractionData = userLikesAttraction[0]
+        if Attraction.objects.filter(id=userLikesAttractionData['attraction_id']).exists():
+            plans = Attraction.objects.filter(id=userLikesAttractionData['attraction_id']).all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            # plans_list.append({"Attraction":list(plans)})
+            for plan in plans:
+                plan['users']=len(userLikesAttraction)
+            attractionList.append(list(plans))
+    
+    plans_list.append({"HistoricalSite":list(historicalSiteList)})
+    plans_list.append({"Event":list(eventList)})
+    plans_list.append({"Park":list(parkList)})
+    plans_list.append({"Hotel":list(hotelList)})
+    plans_list.append({"WeirdAndWacky":list(weirdAndWackyList)})
+    plans_list.append({"ExtremeSport":list(extremeSportList)})
+    plans_list.append({"Attraction":list(attractionList)})
+    return JsonResponse(json.dumps(
+        {
+        "HistoricalSite":list(historicalSiteList),
+         "Event":list(eventList),
+         "Park":list(parkList),
+         "Hotel":list(hotelList),
+         "WeirdAndWacky":list(weirdAndWackyList),
+         "ExtremeSport":list(extremeSportList),
+         "Attraction":list(attractionList)
+         },
+        default=str
+        ) ,safe=False,status=status.HTTP_200_OK)
+    
+    return JsonResponse(plans_list ,safe=False,status=status.HTTP_200_OK)
+
+@api_view(['POST'])
 def getWeirdAndWacky(request):
     data = json.loads(request.body)
     plans = WeirdAndWacky.objects.filter(city_id=data['city_id']).all().values(
