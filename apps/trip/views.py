@@ -382,7 +382,7 @@ def isPlaceLiked(request):
     else :
         return JsonResponse({
             'message': 'User Did not like',
-            'liked':True})
+            'liked':False})
         
 @api_view(['POST'])
 def unlikePlace(request):
