@@ -288,6 +288,7 @@ def likePlace(request):
     print('createPlan called')
     data = json.loads(request.body)
     print(data)
+    planModel=Plan.objects.filter(id=data['plan_id']).first()
     
     userdata=User.objects.filter(id=data['user_id']).first()
     
@@ -297,38 +298,101 @@ def likePlace(request):
         user_likes = UserLikes.objects.create(user=userdata)
     
     if HistoricalSite.objects.filter(id=data['like_id']).exists():
-        historicalsites=HistoricalSite.objects.get(id=data['like_id'])
-        user_likes.liked_historicalsites.add(historicalsites)
+        historicalsite = HistoricalSite.objects.get(id=data['like_id'])
+        UserLikesHistoricalSite.objects.create(
+            userlikes=user_likes,
+            historicalsite=historicalsite,
+            plan=planModel
+            ) 
         return JsonResponse({'message': 'User Liked Historical Site'})
+    
+    # if HistoricalSite.objects.filter(id=data['like_id']).exists():
+    #     historicalsites=HistoricalSite.objects.get(id=data['like_id'])
+    #     user_likes.liked_historicalsites.add(historicalsites)
+    #     return JsonResponse({'message': 'User Liked Historical Site'})
         
+    # if Hotel.objects.filter(id=data['like_id']).exists():
+    #     hotel = Hotel.objects.get(id=data['like_id'])
+    #     user_likes.liked_hotels.add(hotel)
+    #     return JsonResponse({'message': 'User Liked Hotel'})
+    
     if Hotel.objects.filter(id=data['like_id']).exists():
-        hotel = Hotel.objects.get(id=data['like_id'])
-        user_likes.liked_hotels.add(hotel)
+        historicalsite = Hotel.objects.get(id=data['like_id'])
+        UserLikesHotel.objects.create(
+            userlikes=user_likes,
+            hotel=historicalsite,
+            plan=planModel
+            ) 
         return JsonResponse({'message': 'User Liked Hotel'})
         
+    # if ExtremeSport.objects.filter(id=data['like_id']).exists():
+    #     extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
+    #     user_likes.liked_extremesports.add(extreme_sport)
+    #     return JsonResponse({'message': 'User Liked Extreme Sport'})
+    
     if ExtremeSport.objects.filter(id=data['like_id']).exists():
-        extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
-        user_likes.liked_extremesports.add(extreme_sport)
+        historicalsite = ExtremeSport.objects.get(id=data['like_id'])
+        UserLikesExtremeSport.objects.create(
+            userlikes=user_likes,
+            extremesport=historicalsite,
+            plan=planModel
+            ) 
         return JsonResponse({'message': 'User Liked Extreme Sport'})
         
+    # if Event.objects.filter(id=data['like_id']).exists():
+    #     event = Event.objects.get(id=data['like_id'])
+    #     user_likes.liked_events.add(event)
+    #     return JsonResponse({'message': 'User Liked Event'})
+    
     if Event.objects.filter(id=data['like_id']).exists():
-        event = Event.objects.get(id=data['like_id'])
-        user_likes.liked_events.add(event)
+        historicalsite = Event.objects.get(id=data['like_id'])
+        UserLikesEvent.objects.create(
+            userlikes=user_likes,
+            event=historicalsite,
+            plan=planModel
+            ) 
         return JsonResponse({'message': 'User Liked Event'})
         
+    # if WeirdAndWacky.objects.filter(id=data['like_id']).exists():
+    #     weird_and_wacky = WeirdAndWacky.objects.get(id=data['like_id'])
+    #     user_likes.liked_wierdandwacky.add(weird_and_wacky)
+    #     return JsonResponse({'message': 'User Liked Weird And Wacky'})
+    
     if WeirdAndWacky.objects.filter(id=data['like_id']).exists():
-        weird_and_wacky = WeirdAndWacky.objects.get(id=data['like_id'])
-        user_likes.liked_wierdandwacky.add(weird_and_wacky)
+        historicalsite = WeirdAndWacky.objects.get(id=data['like_id'])
+        UserLikesWeirdAndWacky.objects.create(
+            userlikes=user_likes,
+            weirdandwacky=historicalsite,
+            plan=planModel
+            ) 
         return JsonResponse({'message': 'User Liked Weird And Wacky'})
         
+    # if Park.objects.filter(id=data['like_id']).exists():
+    #     park = Park.objects.get(id=data['like_id'])
+    #     user_likes.liked_parks.add(park)
+    #     return JsonResponse({'message': 'User Liked Park'})
+    
     if Park.objects.filter(id=data['like_id']).exists():
-        park = Park.objects.get(id=data['like_id'])
-        user_likes.liked_parks.add(park)
+        historicalsite = Park.objects.get(id=data['like_id'])
+        UserLikesPark.objects.create(
+            userlikes=user_likes,
+            park=historicalsite,
+            plan=planModel
+            ) 
         return JsonResponse({'message': 'User Liked Park'})
-        
+    
+    # if Attraction.objects.filter(id=data['like_id']).exists():
+    #     attraction = Attraction.objects.get(id=data['like_id'])
+    #     user_likes.liked_attractions.add(attraction)
+    #     return JsonResponse({'message': 'User Liked Attraction'})
+    
     if Attraction.objects.filter(id=data['like_id']).exists():
-        attraction = Attraction.objects.get(id=data['like_id'])
-        user_likes.liked_attractions.add(attraction)
+        historicalsite = Attraction.objects.get(id=data['like_id'])
+        UserLikesAttraction.objects.create(
+            userlikes=user_likes,
+            attraction=historicalsite,
+            plan=planModel
+            ) 
         return JsonResponse({'message': 'User Liked Attraction'})
     
     
@@ -338,40 +402,40 @@ def isPlaceLiked(request):
     
     if UserLikes.objects.filter(user_id=data['user_id']).exists():
         user_likes = UserLikes.objects.filter(user_id=data['user_id']).first()
-        if user_likes and user_likes.liked_historicalsites.filter(id=data['like_id']).exists():
+        if user_likes and user_likes.liked_historicalsites_new.filter(id=data['like_id']).exists():
             # historicalsites=HistoricalSite.objects.filter(id=data['like_id']).first()
             
             return JsonResponse({'message': 'User Liked Historical Site',
                                  'liked':True})
         
-        if user_likes and user_likes.liked_hotels.filter(id=data['like_id']).exists():
+        if user_likes and user_likes.liked_hotels_new.filter(id=data['like_id']).exists():
             # hotel = Hotel.objects.get(id=data['like_id'])
             # user_likes.liked_hotels.add(hotel)
             return JsonResponse({'message': 'User Liked Hotel',
                                  'liked':True})
 
-        if user_likes and user_likes.liked_extremesports.filter(id=data['like_id']).exists():
+        if user_likes and user_likes.liked_extremesports_new.filter(id=data['like_id']).exists():
             # extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
             # user_likes.liked_extremesports.add(extreme_sport)
             return JsonResponse({'message': 'User Liked Extreme Sport',
                                  'liked':True})
 
-        if user_likes and user_likes.liked_events.filter(id=data['like_id']).exists():
+        if user_likes and user_likes.liked_events_new.filter(id=data['like_id']).exists():
             # event = Event.objects.get(id=data['like_id'])
             # user_likes.liked_events.add(event)
             return JsonResponse({'message': 'User Liked Event',
                                  'liked':True})
 
-        if user_likes and user_likes.liked_wierdandwacky.filter(id=data['like_id']).exists():
+        if user_likes and user_likes.liked_wierdandwacky_new.filter(id=data['like_id']).exists():
             return JsonResponse({'message': 'User Liked Weird And Wacky',
                                  'liked':True})
 
-        if user_likes and user_likes.liked_parks.filter(id=data['like_id']).exists():
+        if user_likes and user_likes.liked_parks_new.filter(id=data['like_id']).exists():
             # park = Park.objects.get(id=data['like_id'])
             # user_likes.liked_parks.add(park)
             return JsonResponse({'message': 'User Liked Park','liked':True})
 
-        if user_likes and user_likes.liked_attractions.filter(id=data['like_id']).exists():
+        if user_likes and user_likes.liked_attractions_new.filter(id=data['like_id']).exists():
             # attraction = Attraction.objects.get(id=data['like_id'])
             # user_likes.liked_attractions.add(attraction)
             return JsonResponse({'message': 'User Liked Attraction','liked':True})

@@ -436,16 +436,61 @@ class Hotel(BaseModel):
     def __str__(self):
         return self.name
 
+# class UserLikes(models.Model):
+#     user = models.OneToOneField(user, on_delete=models.CASCADE)
+#     liked_hotels = models.ManyToManyField(Hotel)
+#     liked_extremesports = models.ManyToManyField(ExtremeSport)
+#     liked_historicalsites = models.ManyToManyField(HistoricalSite)
+#     liked_events = models.ManyToManyField(Event)
+#     liked_wierdandwacky = models.ManyToManyField(WeirdAndWacky)
+#     liked_parks = models.ManyToManyField(Park)
+#     liked_attractions = models.ManyToManyField(Attraction)
+ 
 class UserLikes(models.Model):
     user = models.OneToOneField(user, on_delete=models.CASCADE)
-    liked_hotels = models.ManyToManyField(Hotel)
-    liked_extremesports = models.ManyToManyField(ExtremeSport)
-    liked_historicalsites = models.ManyToManyField(HistoricalSite)
-    liked_events = models.ManyToManyField(Event)
-    liked_wierdandwacky = models.ManyToManyField(WeirdAndWacky)
-    liked_parks = models.ManyToManyField(Park)
-    liked_attractions = models.ManyToManyField(Attraction)
- 
+
+    liked_hotels_new = models.ManyToManyField(Hotel, through='UserLikesHotel')
+    liked_extremesports_new = models.ManyToManyField(ExtremeSport, through='UserLikesExtremeSport')
+    liked_historicalsites_new = models.ManyToManyField(HistoricalSite, through='UserLikesHistoricalSite')
+    liked_events_new = models.ManyToManyField(Event, through='UserLikesEvent')
+    liked_wierdandwacky_new = models.ManyToManyField(WeirdAndWacky, through='UserLikesWeirdAndWacky')
+    liked_parks_new = models.ManyToManyField(Park, through='UserLikesPark')
+    liked_attractions_new = models.ManyToManyField(Attraction, through='UserLikesAttraction')
+
+class UserLikesHotel(models.Model):
+    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+
+class UserLikesExtremeSport(models.Model):
+    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+    extremesport = models.ForeignKey(ExtremeSport, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+
+class UserLikesHistoricalSite(models.Model):
+    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+    historicalsite = models.ForeignKey(HistoricalSite, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+
+class UserLikesEvent(models.Model):
+    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+
+class UserLikesWeirdAndWacky(models.Model):
+    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+    weirdandwacky = models.ForeignKey(WeirdAndWacky, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+
+class UserLikesPark(models.Model):
+    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+    park = models.ForeignKey(Park, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+
+class UserLikesAttraction(models.Model):
+    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+    attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
  
     def __str__(self):
         return self.user.first_name
