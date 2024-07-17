@@ -448,50 +448,148 @@ def isPlaceLiked(request):
             'message': 'User Did not like',
             'liked':False})
         
+        
+
+@api_view(['POST'])
+def isPlaceLikedInPlan(request):
+    data = json.loads(request.body)
+    
+    if UserLikes.objects.filter(user_id=data['user_id']).exists():
+        user_likes = UserLikes.objects.filter(user_id=data['user_id']).first()
+
+    
+        
+        if user_likes and UserLikesHistoricalSite.objects.filter(historicalsite_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            return JsonResponse({'message': 'User Liked Historical Site',
+                                 'liked':True})
+        
+        if user_likes and UserLikesHotel.objects.filter(hotel_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            # hotel = Hotel.objects.get(id=data['like_id'])
+            # user_likes.liked_hotels.add(hotel)
+            return JsonResponse({'message': 'User Liked Hotel',
+                                 'liked':True})
+
+        if user_likes and UserLikesExtremeSport.objects.filter(extremesport_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            # extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
+            # user_likes.liked_extremesports.add(extreme_sport)
+            return JsonResponse({'message': 'User Liked Extreme Sport',
+                                 'liked':True})
+
+        if user_likes and UserLikesEvent.objects.filter(event_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            # event = Event.objects.get(id=data['like_id'])
+            # user_likes.liked_events.add(event)
+            return JsonResponse({'message': 'User Liked Event',
+                                 'liked':True})
+
+        if user_likes and UserLikesWeirdAndWacky.objects.filter(weirdandwacky_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            return JsonResponse({'message': 'User Liked Weird And Wacky',
+                                 'liked':True})
+
+        if user_likes and UserLikesPark.objects.filter(park_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            # park = Park.objects.get(id=data['like_id'])
+            # user_likes.liked_parks.add(park)
+            return JsonResponse({'message': 'User Liked Park','liked':True})
+
+        if user_likes and UserLikesAttraction.objects.filter(attraction_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            # attraction = Attraction.objects.get(id=data['like_id'])
+            # user_likes.liked_attractions.add(attraction)
+            return JsonResponse({'message': 'User Liked Attraction','liked':True})
+        
+        return JsonResponse({
+            'message': 'User Did not like',
+            'liked':False})
+    else :
+        return JsonResponse({
+            'message': 'User Did not like',
+            'liked':False})
+        
 @api_view(['POST'])
 def unlikePlace(request):
     data = json.loads(request.body)
     
     if UserLikes.objects.filter(user_id=data['user_id']).exists():
         user_likes = UserLikes.objects.filter(user_id=data['user_id']).first()
-        if user_likes and user_likes.liked_historicalsites.filter(id=data['like_id']).exists():
-            historical_site_to_remove = user_likes.liked_historicalsites.filter(id=data['like_id']).first()
-            if historical_site_to_remove:
-                user_likes.liked_historicalsites.remove(historical_site_to_remove)
+        
+        if user_likes and UserLikesHistoricalSite.objects.filter(historicalsite_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            UserLikesHistoricalSite.objects.filter(historicalsite_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).delete()
             return JsonResponse({'message': 'User Unliked Historical Site',
                                  'liked':False})
+            
+       
         
-        if user_likes and user_likes.liked_hotels.filter(id=data['like_id']).exists():
-            # hotel = Hotel.objects.get(id=data['like_id'])
-            # user_likes.liked_hotels.add(hotel)
-            return JsonResponse({'message': 'User Liked Hotel',
+        if user_likes and  UserLikesHotel.objects.filter(hotel_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            UserLikesHotel.objects.filter(hotel_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).delete()
+            
+            return JsonResponse({'message': 'User Unliked Hotel',
+                                 'liked':False})
+            
+        # if user_likes and user_likes.liked_hotels_new.filter(id=data['like_id']).exists():
+        #     # hotel = Hotel.objects.get(id=data['like_id'])
+        #     # user_likes.liked_hotels.add(hotel)
+        #     return JsonResponse({'message': 'User Liked Hotel',
+        #                          'liked':False})
+        
+        if user_likes and  UserLikesExtremeSport.objects.filter(extremesport_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            UserLikesExtremeSport.objects.filter(extremesport_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).delete()
+            
+            return JsonResponse({'message': 'User Unliked Extreme Sport',
                                  'liked':False})
 
-        if user_likes and user_likes.liked_extremesports.filter(id=data['like_id']).exists():
-            # extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
-            # user_likes.liked_extremesports.add(extreme_sport)
-            return JsonResponse({'message': 'User Liked Extreme Sport',
+        # if user_likes and user_likes.liked_extremesports_new.filter(id=data['like_id']).exists():
+        #     # extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
+        #     # user_likes.liked_extremesports.add(extreme_sport)
+        #     return JsonResponse({'message': 'User Liked Extreme Sport',
+        #                          'liked':False})
+        
+       
+        
+        if user_likes and  UserLikesEvent.objects.filter(event_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            UserLikesEvent.objects.filter(event_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).delete()
+        
+            return JsonResponse({'message': 'User Unliked Event',
                                  'liked':False})
 
-        if user_likes and user_likes.liked_events.filter(id=data['like_id']).exists():
-            # event = Event.objects.get(id=data['like_id'])
-            # user_likes.liked_events.add(event)
-            return JsonResponse({'message': 'User Liked Event',
+        # if user_likes and user_likes.liked_events_new.filter(id=data['like_id']).exists():
+        #     # event = Event.objects.get(id=data['like_id'])
+        #     # user_likes.liked_events.add(event)
+        #     return JsonResponse({'message': 'User Liked Event',
+        #                          'liked':False})
+
+
+
+        if user_likes and UserLikesWeirdAndWacky.objects.filter(weirdandwacky_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            UserLikesWeirdAndWacky.objects.filter(weirdandwacky_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).delete()
+            
+            return JsonResponse({'message': 'User Unliked Weird And Wacky',
+                                 'liked':False})
+            
+        # if user_likes and user_likes.liked_wierdandwacky_new.filter(id=data['like_id']).exists():
+        #     return JsonResponse({'message': 'User Liked Weird And Wacky',
+        #                          'liked':False})
+
+
+
+        if user_likes and UserLikesPark.objects.filter(park_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            UserLikesPark.objects.filter(park_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).delete()
+            
+            return JsonResponse({'message': 'User Unliked Park',
+                                 'liked':False})
+            
+        # if user_likes and user_likes.liked_parks_new.filter(id=data['like_id']).exists():
+        #     # park = Park.objects.get(id=data['like_id'])
+        #     # user_likes.liked_parks.add(park)
+        #     return JsonResponse({'message': 'User Liked Park','liked':False})
+        
+        if user_likes and UserLikesAttraction.objects.filter(park_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).exists():
+            UserLikesAttraction.objects.filter(park_id=data['like_id'],plan_id=data['plan_id'],userlikes_id=user_likes.id).delete()
+            
+            return JsonResponse({'message': 'User Unliked Attractions',
                                  'liked':False})
 
-        if user_likes and user_likes.liked_wierdandwacky.filter(id=data['like_id']).exists():
-            return JsonResponse({'message': 'User Liked Weird And Wacky',
-                                 'liked':False})
-
-        if user_likes and user_likes.liked_parks.filter(id=data['like_id']).exists():
-            # park = Park.objects.get(id=data['like_id'])
-            # user_likes.liked_parks.add(park)
-            return JsonResponse({'message': 'User Liked Park','liked':False})
-
-        if user_likes and user_likes.liked_attractions.filter(id=data['like_id']).exists():
-            # attraction = Attraction.objects.get(id=data['like_id'])
-            # user_likes.liked_attractions.add(attraction)
-            return JsonResponse({'message': 'User Liked Attraction','liked':False})
+        # if user_likes and user_likes.liked_attractions_new.filter(id=data['like_id']).exists():
+        #     # attraction = Attraction.objects.get(id=data['like_id'])
+        #     # user_likes.liked_attractions.add(attraction)
+        #     return JsonResponse({'message': 'User Liked Attraction','liked':False})
         
         return JsonResponse({
             'message': 'User Did not like',
