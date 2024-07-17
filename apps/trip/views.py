@@ -707,6 +707,54 @@ def getHistoricalsites(request):
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
 
 @api_view(['POST'])
+def getExperienceSites(request):
+    data = json.loads(request.body)
+    plans = HistoricalSite.objects.filter(city_id=data['city_id']).all().values(
+        'id', 'name', 
+        'description', 'images',
+    )
+    print(len(plans))
+    plans_list = list(plans)
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def getHotelSites(request):
+    data = json.loads(request.body)
+    plans = Hotel.objects.filter(city_id=data['city_id']).all().values(
+        'id', 'name', 
+        'description', 'images',
+    )
+    print(len(plans))
+    plans_list = list(plans)
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def getParkSites(request):
+    data = json.loads(request.body)
+    plans = Park.objects.filter(city_id=data['city_id']).all().values(
+        'id', 'name', 
+        'description', 'images',
+    )
+    print(len(plans))
+    plans_list = list(plans)
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def getEventSites(request):
+    data = json.loads(request.body)
+    plans = Event.objects.filter(city_id=data['city_id']).all().values(
+        'id', 'name', 
+        'description', 'images',
+    )
+    print(len(plans))
+    plans_list = list(plans)
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['POST'])
 def getLikedSitesViaPlan(request):
     data = json.loads(request.body)
     plan_id=data['plan_id']
