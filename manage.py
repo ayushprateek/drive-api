@@ -17,7 +17,7 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
         
-    default_port = os.getenv('DJANGO_RUNSERVER_PORT', '8085')
+    default_port = os.getenv('DJANGO_RUNSERVER_PORT', '8080')
     runserver.default_port = default_port
     execute_from_command_line(sys.argv)
 
