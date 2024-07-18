@@ -682,6 +682,10 @@ def getTripPlan(request):
 
 @api_view(['GET'])
 def getTripViaId(request, id=None):
+    
+    if not Plan.objects.filter(id=id).exists():
+        return JsonResponse({'message': 'Plan does not exist'},safe=False, status=status.HTTP_404_NOT_FOUND)
+    
     plans = Plan.objects.filter(id=id).select_related('city').values(
         'id', 'name', 'city__id', 'city__name', 'city__images'
     )
