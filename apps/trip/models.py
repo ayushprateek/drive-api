@@ -494,3 +494,14 @@ class UserLikesAttraction(models.Model):
  
     def __str__(self):
         return self.user.first_name
+    
+    
+class Country(models.Model):
+    class Meta:
+        db_table = '"country"'
+    iso = models.CharField(max_length=2)
+    name = models.CharField(max_length=80)
+    nicename = models.CharField(max_length=80)
+    iso3 = models.CharField(max_length=3)
+    numeric_code = models.IntegerField(null=True)
+    phone_code = models.IntegerField(null=True)
