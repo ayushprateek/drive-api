@@ -44,4 +44,9 @@ urlpatterns = [
     path('is-place-liked-in-plan/', isPlaceLikedInPlan,name='create-trip'),
     path('add-user-to-plan/', addUserToPlan,name='add-user'),
     path('get-liked-sites-via-plan/', getLikedSitesViaPlan,name='add-user'),
+    path('add-country/', addCountry,name='add-user'),
+    path('get-all-country/', getAllCountry,name='add-user'),
+    path('get-all-priority/', getAllPriority,name='add-user'),
+    path('get-all-travel-goal/', getAllTravelGoal,name='add-user'),
+    path('get-all-motivation/', getAllMotivation,name='add-user'),
 ]

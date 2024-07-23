@@ -65,6 +65,120 @@ import math
 from drive_ai import settings
 
 
+@api_view(['GET'])
+def getAllCountry(request):
+    countries = Country.objects.all().values(
+        'id',
+        'iso', 
+        'name', 
+        'nicename', 
+        'iso3', 
+        'numeric_code', 
+        'phone_code'
+    )
+    print(len(countries))
+    country_list = list(countries)
+    return JsonResponse(country_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getAllPriority(request):
+    priorities = Priority.objects.all().values(
+        'id',
+        'name'
+    )
+    print(len(priorities))
+    priosity_list = list(priorities)
+    return JsonResponse(priosity_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getAllTravelGoal(request):
+    priorities = TravelGoal.objects.all().values(
+        'id',
+        'name'
+    )
+    print(len(priorities))
+    priosity_list = list(priorities)
+    return JsonResponse(priosity_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getAllMotivation(request):
+    priorities = Motivation.objects.all().values(
+        'id',
+        'name',
+        'emoji'
+    )
+    print(len(priorities))
+    priosity_list = list(priorities)
+    return JsonResponse(priosity_list, safe=False,status=status.HTTP_200_OK)
+
+
+def addCountry(request):
+    Country.objects.create(
+        iso = '',
+    name = 'India',
+    nicename = 'IN',
+    iso3 = 'IN',
+    numeric_code = '91',
+    phone_code = '+91',
+    )
+    Country.objects.create(
+        iso = '',
+    name = 'America',
+    nicename = 'US',
+    iso3 = 'US',
+    numeric_code = '1',
+    phone_code = '+1'
+    )
+    priorityList=[
+        'Planning a vacation',
+        'Taking a road trip',
+        'Save Money',
+    ]
+    for priorityName in priorityList:
+        Priority.objects.create(
+            name=priorityName
+        )
+    travelGoalList=[
+        '✈️ Travel abroad',
+        '✴️ Diverse cultures',
+        '🎓 education',
+        '👁️ spectacular views',
+        '🌲 Seeing wildlife',
+        '🏴 metropolitan',
+        '🥘 Trying new food',
+        '🤠 Adventure',
+        '🤝 Events',
+        '🏖️Tropical',
+        '📴 Off-grid',
+        '🌊 Water',
+    ]
+    for goalName in travelGoalList:
+        TravelGoal.objects.create(
+            name=goalName
+        )
+    Motivation.objects.create(
+        name='Price',
+        emoji='🤑'
+    )
+    Motivation.objects.create(
+        name='Comfort',
+        emoji='😌'
+    )
+    Motivation.objects.create(
+        name='Convenience',
+        emoji='😇'
+    )
+    Motivation.objects.create(
+        name='Loyalty Miles',
+        emoji='🤩'
+    )
+    Motivation.objects.create(
+        name='Speed',
+        emoji='😎'
+    )
+    
+    return JsonResponse({'message': 'Country added'})
+    
 def printRoot(request):
     print(settings.STATIC_ROOT+'Temp.png')
     print(settings.STATIC_URL)

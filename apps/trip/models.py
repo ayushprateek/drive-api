@@ -495,7 +495,8 @@ class UserLikesAttraction(models.Model):
     def __str__(self):
         return self.user.first_name
     
-    
+ 
+ #-------- add values to the follwoing -------------   
 class Country(models.Model):
     class Meta:
         db_table = '"country"'
@@ -505,3 +506,20 @@ class Country(models.Model):
     iso3 = models.CharField(max_length=3)
     numeric_code = models.IntegerField(null=True)
     phone_code = models.IntegerField(null=True)
+    
+class Priority(models.Model):
+    class Meta:
+        db_table = '"priority"'
+    name = models.CharField(max_length=80)
+    
+
+class TravelGoal(models.Model):
+    class Meta:
+        db_table = '"travel_goal"'
+    name = models.CharField(max_length=80)
+    
+class Motivation(models.Model):
+    class Meta:
+        db_table = '"motivation"'
+    name = models.CharField(max_length=80)
+    emoji = models.CharField(max_length=80)
