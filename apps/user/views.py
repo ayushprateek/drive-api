@@ -10,6 +10,7 @@ This view file has:
 import datetime
 import uuid
 
+from django.http import JsonResponse
 from django.utils import timezone
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -27,8 +28,26 @@ from apps.user.user_auth import get_headers, get_apple_user_data
 from common import cloud_service, permissions, caches
 from common.caches import USER_TOKEN
 from common.constants import ApplicationMessages, Constant
+from django.conf import settings
+import os
+from rest_framework.decorators import api_view
 
+@api_view(['POST'])
+def uploadImage(request):
+    mediaId = None
+    if request.method == 'POST' and bool(request.FILES['file']) == True:
+        uploaded_file = request.FILES['file']
+        with open(os.path.join(settings.BASE_DIR,'static', uploaded_file.name), 'wb+') as destination:
+            for chunk in uploaded_file.chunks():
+                destination.write(chunk)
+        mediaObj = user_models.Media(
+            media_key='',
+            media_url=os.path.join('static', uploaded_file.name)
+            )
+        mediaObj.save()
+        mediaId = mediaObj.id
 
+    return JsonResponse({'message': 'File uploaded successfully.'})
 class MediaAPIView(generics.GenericAPIView):
     """Media api view"""
 
