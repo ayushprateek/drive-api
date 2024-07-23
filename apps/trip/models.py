@@ -523,3 +523,16 @@ class Motivation(models.Model):
         db_table = '"motivation"'
     name = models.CharField(max_length=80)
     emoji = models.CharField(max_length=80)
+    
+class AirlineBrand(models.Model):
+    class Meta:
+        db_table = '"airline_brand"'
+    name = models.CharField(max_length=80)
+class HotelBrand(models.Model):
+    class Meta:
+        db_table = '"hotel_brand"'
+    name = models.CharField(max_length=80)
+class RestaurantBrand(models.Model):
+    class Meta:
+        db_table = '"restaurant_brand"'
+    name = models.CharField(max_length=80)

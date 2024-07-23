@@ -49,4 +49,8 @@ urlpatterns = [
     path('get-all-priority/', getAllPriority,name='add-user'),
     path('get-all-travel-goal/', getAllTravelGoal,name='add-user'),
     path('get-all-motivation/', getAllMotivation,name='add-user'),
+    path('get-all-hotel-brand/', getAllHotelBrand,name='add-user'),
+    path('get-all-airline-brand/', getAllAirlineBrand,name='add-user'),
+    path('get-all-restaurant-brand/', getAllRestaurantBrand,name='add-user'),
+    
 ]

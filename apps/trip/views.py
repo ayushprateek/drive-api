@@ -112,70 +112,121 @@ def getAllMotivation(request):
     return JsonResponse(priosity_list, safe=False,status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+def getAllHotelBrand(request):
+    hotelBrands = HotelBrand.objects.all().values(
+        'id',
+        'name'
+    )
+    print(len(hotelBrands))
+    hotel_brand_list = list(hotelBrands)
+    return JsonResponse(hotel_brand_list, safe=False,status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def getAllAirlineBrand(request):
+    airline_brands = AirlineBrand.objects.all().values(
+        'id',
+        'name'
+    )
+    print(len(airline_brands))
+    airline_brand_list = list(airline_brands)
+    return JsonResponse(airline_brand_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getAllRestaurantBrand(request):
+    restaurant_brands = RestaurantBrand.objects.all().values(
+        'id',
+        'name'
+    )
+    print(len(restaurant_brands))
+    restaurant_brand_list = list(restaurant_brands)
+    return JsonResponse(restaurant_brand_list, safe=False,status=status.HTTP_200_OK)
+
+
 def addCountry(request):
-    Country.objects.create(
-        iso = '',
-    name = 'India',
-    nicename = 'IN',
-    iso3 = 'IN',
-    numeric_code = '91',
-    phone_code = '+91',
+    # Country.objects.create(
+    #     iso = '',
+    # name = 'India',
+    # nicename = 'IN',
+    # iso3 = 'IN',
+    # numeric_code = '91',
+    # phone_code = '+91',
+    # )
+    # Country.objects.create(
+    #     iso = '',
+    # name = 'America',
+    # nicename = 'US',
+    # iso3 = 'US',
+    # numeric_code = '1',
+    # phone_code = '+1'
+    # )
+    # priorityList=[
+    #     'Planning a vacation',
+    #     'Taking a road trip',
+    #     'Save Money',
+    # ]
+    # for priorityName in priorityList:
+    #     Priority.objects.create(
+    #         name=priorityName
+    #     )
+    # travelGoalList=[
+    #     '✈️ Travel abroad',
+    #     '✴️ Diverse cultures',
+    #     '🎓 education',
+    #     '👁️ spectacular views',
+    #     '🌲 Seeing wildlife',
+    #     '🏴 metropolitan',
+    #     '🥘 Trying new food',
+    #     '🤠 Adventure',
+    #     '🤝 Events',
+    #     '🏖️Tropical',
+    #     '📴 Off-grid',
+    #     '🌊 Water',
+    # ]
+    # for goalName in travelGoalList:
+    #     TravelGoal.objects.create(
+    #         name=goalName
+    #     )
+    # Motivation.objects.create(
+    #     name='Price',
+    #     emoji='🤑'
+    # )
+    # Motivation.objects.create(
+    #     name='Comfort',
+    #     emoji='😌'
+    # )
+    # Motivation.objects.create(
+    #     name='Convenience',
+    #     emoji='😇'
+    # )
+    # Motivation.objects.create(
+    #     name='Loyalty Miles',
+    #     emoji='🤩'
+    # )
+    # Motivation.objects.create(
+    #     name='Speed',
+    #     emoji='😎'
+    # )
+    AirlineBrand.objects.create(
+        name='Delta'
     )
-    Country.objects.create(
-        iso = '',
-    name = 'America',
-    nicename = 'US',
-    iso3 = 'US',
-    numeric_code = '1',
-    phone_code = '+1'
+    AirlineBrand.objects.create(
+        name='Air India'
     )
-    priorityList=[
-        'Planning a vacation',
-        'Taking a road trip',
-        'Save Money',
-    ]
-    for priorityName in priorityList:
-        Priority.objects.create(
-            name=priorityName
-        )
-    travelGoalList=[
-        '✈️ Travel abroad',
-        '✴️ Diverse cultures',
-        '🎓 education',
-        '👁️ spectacular views',
-        '🌲 Seeing wildlife',
-        '🏴 metropolitan',
-        '🥘 Trying new food',
-        '🤠 Adventure',
-        '🤝 Events',
-        '🏖️Tropical',
-        '📴 Off-grid',
-        '🌊 Water',
-    ]
-    for goalName in travelGoalList:
-        TravelGoal.objects.create(
-            name=goalName
-        )
-    Motivation.objects.create(
-        name='Price',
-        emoji='🤑'
+    HotelBrand.objects.create(
+        name='Marriott'
     )
-    Motivation.objects.create(
-        name='Comfort',
-        emoji='😌'
+    HotelBrand.objects.create(
+        name='Hilton Hotels & Resorts'
     )
-    Motivation.objects.create(
-        name='Convenience',
-        emoji='😇'
+    RestaurantBrand.objects.create(
+        name='KFC'
     )
-    Motivation.objects.create(
-        name='Loyalty Miles',
-        emoji='🤩'
+    RestaurantBrand.objects.create(
+        name='Pizza Hut'
     )
-    Motivation.objects.create(
-        name='Speed',
-        emoji='😎'
-    )
+    
     
     return JsonResponse({'message': 'Country added'})
     
