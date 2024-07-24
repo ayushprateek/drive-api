@@ -312,3 +312,9 @@ class UserPlanTripLogs(BaseModel):
         String representation of a UserPlanTripLogs instance.
         """
         return f"User: {self.user}, Origin: {self.origin}, Destination: {self.destination}"
+    
+class LoyaltyProgram(models.Model):
+    class Meta:
+        db_table = '"loyalty_program"'
+    name = models.CharField(max_length=80)
+    type=models.CharField(max_length=1,default='A')

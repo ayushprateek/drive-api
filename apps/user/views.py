@@ -32,6 +32,35 @@ from django.conf import settings
 import os
 from rest_framework.decorators import api_view
 
+def addLoyaltyProgram(request):
+    user_models.LoyaltyProgram.objects.create(
+        name='American Airlines',
+        type='A'
+    )
+    user_models.LoyaltyProgram.objects.create(
+        name='Delta Air Lines',
+        type='A'
+    )
+    user_models.LoyaltyProgram.objects.create(
+        name='United Airlines',
+        type='A'
+    )
+    user_models.LoyaltyProgram.objects.create(
+        name='Best Western',
+        type='H'
+    )
+    user_models.LoyaltyProgram.objects.create(
+        name='Choice',
+        type='H'
+    )
+    user_models.LoyaltyProgram.objects.create(
+        name='Drury',
+        type='H'
+    )
+    
+    
+    return JsonResponse({'message': 'Loyalty Program added'})
+
 @api_view(['POST'])
 def uploadImage(request):
     mediaId = None

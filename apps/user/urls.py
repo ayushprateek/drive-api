@@ -22,4 +22,5 @@ urlpatterns = [
     path("logout/", user_views.UserLogoutAPIView.as_view(), name="user-logout"),
     path("send-otp/", user_views.SendEmailOTP.as_view(), name="send-otp"),
     path('upload-image/',user_views.uploadImage),
+    path('add-loyalty-program/',user_views.addLoyaltyProgram),
 ]
