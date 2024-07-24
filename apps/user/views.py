@@ -149,6 +149,7 @@ class UserSignUpAPIView(generics.GenericAPIView):
 
 
 class UserProfileAPIView(generics.GenericAPIView):
+    
     serializer_class = user_serializer.UserProfileUpdateSerializer
     permission_classes = [permissions.IsUser]
 
@@ -156,13 +157,35 @@ class UserProfileAPIView(generics.GenericAPIView):
         """Update User Profile"""
         try:
             user = request.user
-            serializer = self.serializer_class(user, data=request.data, partial=True)
+            tempData=request.data
+            mediaId = None
+            print('with_file = ',tempData['with_file'])
+            print('with_file = ',tempData['with_file']==1 is True)
+            with_file = int(tempData.get('with_file', 0))
+            print('with_file = ', with_file == 1) 
+            if with_file==1 and 'file' in request.FILES and bool(request.FILES['file']) == True:
+                uploaded_file = request.FILES['file']
+                with open(os.path.join(settings.BASE_DIR,'static', uploaded_file.name), 'wb+') as destination:
+                    for chunk in uploaded_file.chunks():
+                        destination.write(chunk)
+                mediaObj = user_models.Media(
+                    media_key='',
+                    media_url=os.path.join('static', uploaded_file.name)
+                    )
+                mediaObj.save()
+                mediaId = mediaObj.id
+                tempData['profile_pic']=mediaId
+            print("tempData = ",tempData)
+            serializer = self.serializer_class(user, data=tempData, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(ApplicationMessages.USER_PROFILE_UPDATED, status=status.HTTP_200_OK)
             else:
+                print('Validation errors:')
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            print('An error occurred:')
+            
             raise ValidationError(ApplicationMessages.SOMETHING_WENT_WRONG)
 
     def get(self, request, *args, **kwargs):

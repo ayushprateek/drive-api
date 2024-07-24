@@ -293,6 +293,7 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
 class UserProfileGetSerializer(serializers.ModelSerializer):
     """User profile serializer"""
     profile_pic_url = serializers.SerializerMethodField(read_only=True)
+    profile_pic = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = user_models.User
@@ -302,8 +303,15 @@ class UserProfileGetSerializer(serializers.ModelSerializer):
         """take id and return the s3 url"""
         image_url = None
         if obj.profile_pic:
-            s3_url = cloud_service.convert_s3_key_to_s3_signed_url(obj.profile_pic.media_key)
-            return s3_url if s3_url else obj.profile_pic.media_key
+            # s3_url = cloud_service.convert_s3_key_to_s3_signed_url(obj.profile_pic.media_key)
+            return obj.profile_pic.media_url
+        return image_url
+    def get_profile_pic(self, obj):
+        """take id and return the s3 url"""
+        image_url = None
+        if obj.profile_pic.id:
+            # s3_url = cloud_service.convert_s3_key_to_s3_signed_url(obj.profile_pic.media_key)
+            return obj.profile_pic.id
         return image_url
 
 
