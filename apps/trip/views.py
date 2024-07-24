@@ -145,69 +145,69 @@ def getAllRestaurantBrand(request):
 
 
 def addCountry(request):
-    # Country.objects.create(
-    #     iso = '',
-    # name = 'India',
-    # nicename = 'IN',
-    # iso3 = 'IN',
-    # numeric_code = '91',
-    # phone_code = '+91',
-    # )
-    # Country.objects.create(
-    #     iso = '',
-    # name = 'America',
-    # nicename = 'US',
-    # iso3 = 'US',
-    # numeric_code = '1',
-    # phone_code = '+1'
-    # )
-    # priorityList=[
-    #     'Planning a vacation',
-    #     'Taking a road trip',
-    #     'Save Money',
-    # ]
-    # for priorityName in priorityList:
-    #     Priority.objects.create(
-    #         name=priorityName
-    #     )
-    # travelGoalList=[
-    #     '✈️ Travel abroad',
-    #     '✴️ Diverse cultures',
-    #     '🎓 education',
-    #     '👁️ spectacular views',
-    #     '🌲 Seeing wildlife',
-    #     '🏴 metropolitan',
-    #     '🥘 Trying new food',
-    #     '🤠 Adventure',
-    #     '🤝 Events',
-    #     '🏖️Tropical',
-    #     '📴 Off-grid',
-    #     '🌊 Water',
-    # ]
-    # for goalName in travelGoalList:
-    #     TravelGoal.objects.create(
-    #         name=goalName
-    #     )
-    # Motivation.objects.create(
-    #     name='Price',
-    #     emoji='🤑'
-    # )
-    # Motivation.objects.create(
-    #     name='Comfort',
-    #     emoji='😌'
-    # )
-    # Motivation.objects.create(
-    #     name='Convenience',
-    #     emoji='😇'
-    # )
-    # Motivation.objects.create(
-    #     name='Loyalty Miles',
-    #     emoji='🤩'
-    # )
-    # Motivation.objects.create(
-    #     name='Speed',
-    #     emoji='😎'
-    # )
+    Country.objects.create(
+        iso = '',
+    name = 'India',
+    nicename = 'IN',
+    iso3 = 'IN',
+    numeric_code = '91',
+    phone_code = '+91',
+    )
+    Country.objects.create(
+        iso = '',
+    name = 'America',
+    nicename = 'US',
+    iso3 = 'US',
+    numeric_code = '1',
+    phone_code = '+1'
+    )
+    priorityList=[
+        'Planning a vacation',
+        'Taking a road trip',
+        'Save Money',
+    ]
+    for priorityName in priorityList:
+        Priority.objects.create(
+            name=priorityName
+        )
+    travelGoalList=[
+        '✈️ Travel abroad',
+        '✴️ Diverse cultures',
+        '🎓 education',
+        '👁️ spectacular views',
+        '🌲 Seeing wildlife',
+        '🏴 metropolitan',
+        '🥘 Trying new food',
+        '🤠 Adventure',
+        '🤝 Events',
+        '🏖️Tropical',
+        '📴 Off-grid',
+        '🌊 Water',
+    ]
+    for goalName in travelGoalList:
+        TravelGoal.objects.create(
+            name=goalName
+        )
+    Motivation.objects.create(
+        name='Price',
+        emoji='🤑'
+    )
+    Motivation.objects.create(
+        name='Comfort',
+        emoji='😌'
+    )
+    Motivation.objects.create(
+        name='Convenience',
+        emoji='😇'
+    )
+    Motivation.objects.create(
+        name='Loyalty Miles',
+        emoji='🤩'
+    )
+    Motivation.objects.create(
+        name='Speed',
+        emoji='😎'
+    )
     AirlineBrand.objects.create(
         name='Delta'
     )
