@@ -309,7 +309,7 @@ class UserProfileGetSerializer(serializers.ModelSerializer):
     def get_profile_pic(self, obj):
         """take id and return the s3 url"""
         image_url = None
-        if obj.profile_pic.id:
+        if obj.profile_pic:
             # s3_url = cloud_service.convert_s3_key_to_s3_signed_url(obj.profile_pic.media_key)
             return obj.profile_pic.id
         return image_url
