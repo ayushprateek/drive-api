@@ -505,7 +505,7 @@ class Country(models.Model):
     nicename = models.CharField(max_length=80)
     iso3 = models.CharField(max_length=3)
     numeric_code = models.IntegerField(null=True)
-    phone_code = models.IntegerField(null=True)
+    phone_code = models.CharField(max_length=10,null=True)
     
 class Priority(models.Model):
     class Meta:

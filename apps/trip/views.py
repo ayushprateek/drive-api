@@ -145,87 +145,336 @@ def getAllRestaurantBrand(request):
 
 
 def addCountry(request):
-    Country.objects.create(
-        iso = '',
-    name = 'India',
-    nicename = 'IN',
-    iso3 = 'IN',
-    numeric_code = '91',
-    phone_code = '+91',
-    )
-    Country.objects.create(
-        iso = '',
-    name = 'America',
-    nicename = 'US',
-    iso3 = 'US',
-    numeric_code = '1',
-    phone_code = '+1'
-    )
-    priorityList=[
-        'Planning a vacation',
-        'Taking a road trip',
-        'Save Money',
-    ]
-    for priorityName in priorityList:
-        Priority.objects.create(
-            name=priorityName
-        )
-    travelGoalList=[
-        '✈️ Travel abroad',
-        '✴️ Diverse cultures',
-        '🎓 education',
-        '👁️ spectacular views',
-        '🌲 Seeing wildlife',
-        '🏴 metropolitan',
-        '🥘 Trying new food',
-        '🤠 Adventure',
-        '🤝 Events',
-        '🏖️Tropical',
-        '📴 Off-grid',
-        '🌊 Water',
-    ]
-    for goalName in travelGoalList:
-        TravelGoal.objects.create(
-            name=goalName
-        )
-    Motivation.objects.create(
-        name='Price',
-        emoji='🤑'
-    )
-    Motivation.objects.create(
-        name='Comfort',
-        emoji='😌'
-    )
-    Motivation.objects.create(
-        name='Convenience',
-        emoji='😇'
-    )
-    Motivation.objects.create(
-        name='Loyalty Miles',
-        emoji='🤩'
-    )
-    Motivation.objects.create(
-        name='Speed',
-        emoji='😎'
-    )
-    AirlineBrand.objects.create(
-        name='Delta'
-    )
-    AirlineBrand.objects.create(
-        name='Air India'
-    )
-    HotelBrand.objects.create(
-        name='Marriott'
-    )
-    HotelBrand.objects.create(
-        name='Hilton Hotels & Resorts'
-    )
-    RestaurantBrand.objects.create(
-        name='KFC'
-    )
-    RestaurantBrand.objects.create(
-        name='Pizza Hut'
-    )
+    countries = [
+    {'iso': 'AD', 'name': 'Andorra', 'nicename': 'Andorra', 'iso3': 'AND', 'numeric_code': '020', 'phone_code': '+376'},
+    {'iso': 'AE', 'name': 'United Arab Emirates', 'nicename': 'United Arab Emirates', 'iso3': 'ARE', 'numeric_code': '784', 'phone_code': '+971'},
+    {'iso': 'AF', 'name': 'Afghanistan', 'nicename': 'Afghanistan', 'iso3': 'AFG', 'numeric_code': '004', 'phone_code': '+93'},
+    {'iso': 'AG', 'name': 'Antigua and Barbuda', 'nicename': 'Antigua and Barbuda', 'iso3': 'ATG', 'numeric_code': '028', 'phone_code': '+1268'},
+    {'iso': 'AI', 'name': 'Anguilla', 'nicename': 'Anguilla', 'iso3': 'AIA', 'numeric_code': '660', 'phone_code': '+1264'},
+    {'iso': 'AL', 'name': 'Albania', 'nicename': 'Albania', 'iso3': 'ALB', 'numeric_code': '008', 'phone_code': '+355'},
+    {'iso': 'AM', 'name': 'Armenia', 'nicename': 'Armenia', 'iso3': 'ARM', 'numeric_code': '051', 'phone_code': '+374'},
+    {'iso': 'AO', 'name': 'Angola', 'nicename': 'Angola', 'iso3': 'AGO', 'numeric_code': '024', 'phone_code': '+244'},
+    {'iso': 'AR', 'name': 'Argentina', 'nicename': 'Argentina', 'iso3': 'ARG', 'numeric_code': '032', 'phone_code': '+54'},
+    {'iso': 'AS', 'name': 'American Samoa', 'nicename': 'American Samoa', 'iso3': 'ASM', 'numeric_code': '016', 'phone_code': '+1684'},
+    {'iso': 'AT', 'name': 'Austria', 'nicename': 'Austria', 'iso3': 'AUT', 'numeric_code': '040', 'phone_code': '+43'},
+    {'iso': 'AU', 'name': 'Australia', 'nicename': 'Australia', 'iso3': 'AUS', 'numeric_code': '036', 'phone_code': '+61'},
+    {'iso': 'AW', 'name': 'Aruba', 'nicename': 'Aruba', 'iso3': 'ABW', 'numeric_code': '533', 'phone_code': '+297'},
+    {'iso': 'AX', 'name': 'Åland Islands', 'nicename': 'Åland Islands', 'iso3': 'ALA', 'numeric_code': '248', 'phone_code': '+35818'},
+    {'iso': 'AZ', 'name': 'Azerbaijan', 'nicename': 'Azerbaijan', 'iso3': 'AZE', 'numeric_code': '031', 'phone_code': '+994'},
+    {'iso': 'BA', 'name': 'Bosnia and Herzegovina', 'nicename': 'Bosnia and Herzegovina', 'iso3': 'BIH', 'numeric_code': '070', 'phone_code': '+387'},
+    {'iso': 'BB', 'name': 'Barbados', 'nicename': 'Barbados', 'iso3': 'BRB', 'numeric_code': '052', 'phone_code': '+1246'},
+    {'iso': 'BD', 'name': 'Bangladesh', 'nicename': 'Bangladesh', 'iso3': 'BGD', 'numeric_code': '050', 'phone_code': '+880'},
+    {'iso': 'BE', 'name': 'Belgium', 'nicename': 'Belgium', 'iso3': 'BEL', 'numeric_code': '056', 'phone_code': '+32'},
+    {'iso': 'BF', 'name': 'Burkina Faso', 'nicename': 'Burkina Faso', 'iso3': 'BFA', 'numeric_code': '854', 'phone_code': '+226'},
+    {'iso': 'BG', 'name': 'Bulgaria', 'nicename': 'Bulgaria', 'iso3': 'BGR', 'numeric_code': '100', 'phone_code': '+359'},
+    {'iso': 'BH', 'name': 'Bahrain', 'nicename': 'Bahrain', 'iso3': 'BHR', 'numeric_code': '048', 'phone_code': '+973'},
+    {'iso': 'BI', 'name': 'Burundi', 'nicename': 'Burundi', 'iso3': 'BDI', 'numeric_code': '108', 'phone_code': '+257'},
+    {'iso': 'BJ', 'name': 'Benin', 'nicename': 'Benin', 'iso3': 'BEN', 'numeric_code': '204', 'phone_code': '+229'},
+    {'iso': 'BL', 'name': 'Saint Barthélemy', 'nicename': 'Saint Barthélemy', 'iso3': 'BLM', 'numeric_code': '652', 'phone_code': '+590'},
+    {'iso': 'BM', 'name': 'Bermuda', 'nicename': 'Bermuda', 'iso3': 'BMU', 'numeric_code': '060', 'phone_code': '+1441'},
+    {'iso': 'BN', 'name': 'Brunei Darussalam', 'nicename': 'Brunei Darussalam', 'iso3': 'BRN', 'numeric_code': '096', 'phone_code': '+673'},
+    {'iso': 'BO', 'name': 'Bolivia', 'nicename': 'Bolivia', 'iso3': 'BOL', 'numeric_code': '068', 'phone_code': '+591'},
+    {'iso': 'BQ', 'name': 'Bonaire, Sint Eustatius and Saba', 'nicename': 'Bonaire, Sint Eustatius and Saba', 'iso3': 'BES', 'numeric_code': '535', 'phone_code': '+599'},
+    {'iso': 'BR', 'name': 'Brazil', 'nicename': 'Brazil', 'iso3': 'BRA', 'numeric_code': '076', 'phone_code': '+55'},
+    {'iso': 'BS', 'name': 'Bahamas', 'nicename': 'Bahamas', 'iso3': 'BHS', 'numeric_code': '044', 'phone_code': '+1242'},
+    {'iso': 'BT', 'name': 'Bhutan', 'nicename': 'Bhutan', 'iso3': 'BTN', 'numeric_code': '064', 'phone_code': '+975'},
+    {'iso': 'BV', 'name': 'Bouvet Island', 'nicename': 'Bouvet Island', 'iso3': 'BVT', 'numeric_code': '074', 'phone_code': '+47'},
+    {'iso': 'BW', 'name': 'Botswana', 'nicename': 'Botswana', 'iso3': 'BWA', 'numeric_code': '072', 'phone_code': '+267'},
+    {'iso': 'BY', 'name': 'Belarus', 'nicename': 'Belarus', 'iso3': 'BLR', 'numeric_code': '112', 'phone_code': '+375'},
+    {'iso': 'BZ', 'name': 'Belize', 'nicename': 'Belize', 'iso3': 'BLZ', 'numeric_code': '084', 'phone_code': '+501'},
+    {'iso': 'CA', 'name': 'Canada', 'nicename': 'Canada', 'iso3': 'CAN', 'numeric_code': '124', 'phone_code': '+1'},
+    {'iso': 'CC', 'name': 'Cocos (Keeling) Islands', 'nicename': 'Cocos (Keeling) Islands', 'iso3': 'CCK', 'numeric_code': '166', 'phone_code': '+61'},
+    {'iso': 'CD', 'name': 'Congo', 'nicename': 'Congo', 'iso3': 'COD', 'numeric_code': '180', 'phone_code': '+243'},
+    {'iso': 'CF', 'name': 'Central African Republic', 'nicename': 'Central African Republic', 'iso3': 'CAF', 'numeric_code': '140', 'phone_code': '+236'},
+    {'iso': 'CG', 'name': 'Congo', 'nicename': 'Congo', 'iso3': 'COG', 'numeric_code': '178', 'phone_code': '+242'},
+    {'iso': 'CH', 'name': 'Switzerland', 'nicename': 'Switzerland', 'iso3': 'CHE', 'numeric_code': '756', 'phone_code': '+41'},
+    {'iso': 'CI', 'name': 'Ivory Coast', 'nicename': 'Ivory Coast', 'iso3': 'CIV', 'numeric_code': '384', 'phone_code': '+225'},
+    {'iso': 'CK', 'name': 'Cook Islands', 'nicename': 'Cook Islands', 'iso3': 'COK', 'numeric_code': '184', 'phone_code': '+682'},
+    {'iso': 'CL', 'name': 'Chile', 'nicename': 'Chile', 'iso3': 'CHL', 'numeric_code': '152', 'phone_code': '+56'},
+    {'iso': 'CM', 'name': 'Cameroon', 'nicename': 'Cameroon', 'iso3': 'CMR', 'numeric_code': '120', 'phone_code': '+237'},
+    {'iso': 'CN', 'name': 'China', 'nicename': 'China', 'iso3': 'CHN', 'numeric_code': '156', 'phone_code': '+86'},
+    {'iso': 'CO', 'name': 'Colombia', 'nicename': 'Colombia', 'iso3': 'COL', 'numeric_code': '170', 'phone_code': '+57'},
+    {'iso': 'CR', 'name': 'Costa Rica', 'nicename': 'Costa Rica', 'iso3': 'CRI', 'numeric_code': '188', 'phone_code': '+506'},
+    {'iso': 'CU', 'name': 'Cuba', 'nicename': 'Cuba', 'iso3': 'CUB', 'numeric_code': '192', 'phone_code': '+53'},
+    {'iso': 'CV', 'name': 'Cape Verde', 'nicename': 'Cape Verde', 'iso3': 'CPV', 'numeric_code': '132', 'phone_code': '+238'},
+    {'iso': 'CW', 'name': 'Curaçao', 'nicename': 'Curaçao', 'iso3': 'CUW', 'numeric_code': '531', 'phone_code': '+599'},
+    {'iso': 'CX', 'name': 'Christmas Island', 'nicename': 'Christmas Island', 'iso3': 'CXR', 'numeric_code': '162', 'phone_code': '+61'},
+    {'iso': 'CY', 'name': 'Cyprus', 'nicename': 'Cyprus', 'iso3': 'CYP', 'numeric_code': '196', 'phone_code': '+357'},
+    {'iso': 'CZ', 'name': 'Czech Republic', 'nicename': 'Czech Republic', 'iso3': 'CZE', 'numeric_code': '203', 'phone_code': '+420'},
+    {'iso': 'DE', 'name': 'Germany', 'nicename': 'Germany', 'iso3': 'DEU', 'numeric_code': '276', 'phone_code': '+49'},
+    {'iso': 'DJ', 'name': 'Djibouti', 'nicename': 'Djibouti', 'iso3': 'DJI', 'numeric_code': '262', 'phone_code': '+253'},
+    {'iso': 'DK', 'name': 'Denmark', 'nicename': 'Denmark', 'iso3': 'DNK', 'numeric_code': '208', 'phone_code': '+45'},
+    {'iso': 'DM', 'name': 'Dominica', 'nicename': 'Dominica', 'iso3': 'DMA', 'numeric_code': '212', 'phone_code': '+1767'},
+    {'iso': 'DO', 'name': 'Dominican Republic', 'nicename': 'Dominican Republic', 'iso3': 'DOM', 'numeric_code': '214', 'phone_code': '+1809'},
+    {'iso': 'DZ', 'name': 'Algeria', 'nicename': 'Algeria', 'iso3': 'DZA', 'numeric_code': '012', 'phone_code': '+213'},
+    {'iso': 'EC', 'name': 'Ecuador', 'nicename': 'Ecuador', 'iso3': 'ECU', 'numeric_code': '218', 'phone_code': '+593'},
+    {'iso': 'EE', 'name': 'Estonia', 'nicename': 'Estonia', 'iso3': 'EST', 'numeric_code': '233', 'phone_code': '+372'},
+    {'iso': 'EG', 'name': 'Egypt', 'nicename': 'Egypt', 'iso3': 'EGY', 'numeric_code': '818', 'phone_code': '+20'},
+    {'iso': 'EH', 'name': 'Western Sahara', 'nicename': 'Western Sahara', 'iso3': 'ESH', 'numeric_code': '732', 'phone_code': '+212'},
+    {'iso': 'ER', 'name': 'Eritrea', 'nicename': 'Eritrea', 'iso3': 'ERI', 'numeric_code': '232', 'phone_code': '+291'},
+    {'iso': 'ES', 'name': 'Spain', 'nicename': 'Spain', 'iso3': 'ESP', 'numeric_code': '724', 'phone_code': '+34'},
+    {'iso': 'ET', 'name': 'Ethiopia', 'nicename': 'Ethiopia', 'iso3': 'ETH', 'numeric_code': '231', 'phone_code': '+251'},
+    {'iso': 'FI', 'name': 'Finland', 'nicename': 'Finland', 'iso3': 'FIN', 'numeric_code': '246', 'phone_code': '+358'},
+    {'iso': 'FJ', 'name': 'Fiji', 'nicename': 'Fiji', 'iso3': 'FJI', 'numeric_code': '242', 'phone_code': '+679'},
+    {'iso': 'FM', 'name': 'Micronesia', 'nicename': 'Micronesia', 'iso3': 'FSM', 'numeric_code': '583', 'phone_code': '+691'},
+    {'iso': 'FO', 'name': 'Faroe Islands', 'nicename': 'Faroe Islands', 'iso3': 'FRO', 'numeric_code': '234', 'phone_code': '+298'},
+    {'iso': 'FR', 'name': 'France', 'nicename': 'France', 'iso3': 'FRA', 'numeric_code': '250', 'phone_code': '+33'},
+    {'iso': 'GA', 'name': 'Gabon', 'nicename': 'Gabon', 'iso3': 'GAB', 'numeric_code': '266', 'phone_code': '+241'},
+    {'iso': 'GB', 'name': 'United Kingdom', 'nicename': 'United Kingdom', 'iso3': 'GBR', 'numeric_code': '826', 'phone_code': '+44'},
+    {'iso': 'GD', 'name': 'Grenada', 'nicename': 'Grenada', 'iso3': 'GRD', 'numeric_code': '308', 'phone_code': '+1473'},
+    {'iso': 'GE', 'name': 'Georgia', 'nicename': 'Georgia', 'iso3': 'GEO', 'numeric_code': '268', 'phone_code': '+995'},
+    {'iso': 'GF', 'name': 'French Guiana', 'nicename': 'French Guiana', 'iso3': 'GUF', 'numeric_code': '254', 'phone_code': '+594'},
+    {'iso': 'GG', 'name': 'Guernsey', 'nicename': 'Guernsey', 'iso3': 'GGY', 'numeric_code': '831', 'phone_code': '+441481'},
+    {'iso': 'GH', 'name': 'Ghana', 'nicename': 'Ghana', 'iso3': 'GHA', 'numeric_code': '288', 'phone_code': '+233'},
+    {'iso': 'GI', 'name': 'Gibraltar', 'nicename': 'Gibraltar', 'iso3': 'GIB', 'numeric_code': '292', 'phone_code': '+350'},
+    {'iso': 'GL', 'name': 'Greenland', 'nicename': 'Greenland', 'iso3': 'GRL', 'numeric_code': '304', 'phone_code': '+299'},
+    {'iso': 'GM', 'name': 'Gambia', 'nicename': 'Gambia', 'iso3': 'GMB', 'numeric_code': '270', 'phone_code': '+220'},
+    {'iso': 'GN', 'name': 'Guinea', 'nicename': 'Guinea', 'iso3': 'GIN', 'numeric_code': '324', 'phone_code': '+224'},
+    {'iso': 'GP', 'name': 'Guadeloupe', 'nicename': 'Guadeloupe', 'iso3': 'GLP', 'numeric_code': '312', 'phone_code': '+590'},
+    {'iso': 'GQ', 'name': 'Equatorial Guinea', 'nicename': 'Equatorial Guinea', 'iso3': 'GNQ', 'numeric_code': '226', 'phone_code': '+240'},
+    {'iso': 'GR', 'name': 'Greece', 'nicename': 'Greece', 'iso3': 'GRC', 'numeric_code': '300', 'phone_code': '+30'},
+    {'iso': 'GT', 'name': 'Guatemala', 'nicename': 'Guatemala', 'iso3': 'GTM', 'numeric_code': '320', 'phone_code': '+502'},
+    {'iso': 'GU', 'name': 'Guam', 'nicename': 'Guam', 'iso3': 'GUM', 'numeric_code': '316', 'phone_code': '+1671'},
+    {'iso': 'GW', 'name': 'Guinea-Bissau', 'nicename': 'Guinea-Bissau', 'iso3': 'GNB', 'numeric_code': '624', 'phone_code': '+245'},
+    {'iso': 'GY', 'name': 'Guyana', 'nicename': 'Guyana', 'iso3': 'GUY', 'numeric_code': '328', 'phone_code': '+592'},
+    {'iso': 'HK', 'name': 'Hong Kong', 'nicename': 'Hong Kong', 'iso3': 'HKG', 'numeric_code': '344', 'phone_code': '+852'},
+    {'iso': 'HM', 'name': 'Heard Island and McDonald Islands', 'nicename': 'Heard Island and McDonald Islands', 'iso3': 'HMD', 'numeric_code': '334', 'phone_code': '+61'},
+    {'iso': 'HN', 'name': 'Honduras', 'nicename': 'Honduras', 'iso3': 'HND', 'numeric_code': '340', 'phone_code': '+504'},
+    {'iso': 'HR', 'name': 'Croatia', 'nicename': 'Croatia', 'iso3': 'HRV', 'numeric_code': '191', 'phone_code': '+385'},
+    {'iso': 'HT', 'name': 'Haiti', 'nicename': 'Haiti', 'iso3': 'HTI', 'numeric_code': '332', 'phone_code': '+509'},
+    {'iso': 'HU', 'name': 'Hungary', 'nicename': 'Hungary', 'iso3': 'HUN', 'numeric_code': '348', 'phone_code': '+36'},
+    {'iso': 'ID', 'name': 'Indonesia', 'nicename': 'Indonesia', 'iso3': 'IDN', 'numeric_code': '360', 'phone_code': '+62'},
+    {'iso': 'IE', 'name': 'Ireland', 'nicename': 'Ireland', 'iso3': 'IRL', 'numeric_code': '372', 'phone_code': '+353'},
+    {'iso': 'IL', 'name': 'Israel', 'nicename': 'Israel', 'iso3': 'ISR', 'numeric_code': '376', 'phone_code': '+972'},
+    {'iso': 'IM', 'name': 'Isle of Man', 'nicename': 'Isle of Man', 'iso3': 'IMN', 'numeric_code': '833', 'phone_code': '+441624'},
+    {'iso': 'IN', 'name': 'India', 'nicename': 'India', 'iso3': 'IND', 'numeric_code': '356', 'phone_code': '+91'},
+    {'iso': 'IO', 'name': 'British Indian Ocean Territory', 'nicename': 'British Indian Ocean Territory', 'iso3': 'IOT', 'numeric_code': '086', 'phone_code': '+246'},
+    {'iso': 'IQ', 'name': 'Iraq', 'nicename': 'Iraq', 'iso3': 'IRQ', 'numeric_code': '368', 'phone_code': '+964'},
+    {'iso': 'IR', 'name': 'Iran', 'nicename': 'Iran', 'iso3': 'IRN', 'numeric_code': '364', 'phone_code': '+98'},
+    {'iso': 'IS', 'name': 'Iceland', 'nicename': 'Iceland', 'iso3': 'ISL', 'numeric_code': '352', 'phone_code': '+354'},
+    {'iso': 'IT', 'name': 'Italy', 'nicename': 'Italy', 'iso3': 'ITA', 'numeric_code': '380', 'phone_code': '+39'},
+    {'iso': 'JE', 'name': 'Jersey', 'nicename': 'Jersey', 'iso3': 'JEY', 'numeric_code': '832', 'phone_code': '+441534'},
+    {'iso': 'JM', 'name': 'Jamaica', 'nicename': 'Jamaica', 'iso3': 'JAM', 'numeric_code': '388', 'phone_code': '+1876'},
+    {'iso': 'JO', 'name': 'Jordan', 'nicename': 'Jordan', 'iso3': 'JOR', 'numeric_code': '400', 'phone_code': '+962'},
+    {'iso': 'JP', 'name': 'Japan', 'nicename': 'Japan', 'iso3': 'JPN', 'numeric_code': '392', 'phone_code': '+81'},
+    {'iso': 'KE', 'name': 'Kenya', 'nicename': 'Kenya', 'iso3': 'KEN', 'numeric_code': '404', 'phone_code': '+254'},
+    {'iso': 'KG', 'name': 'Kyrgyzstan', 'nicename': 'Kyrgyzstan', 'iso3': 'KGZ', 'numeric_code': '417', 'phone_code': '+996'},
+    {'iso': 'KH', 'name': 'Cambodia', 'nicename': 'Cambodia', 'iso3': 'KHM', 'numeric_code': '116', 'phone_code': '+855'},
+    {'iso': 'KI', 'name': 'Kiribati', 'nicename': 'Kiribati', 'iso3': 'KIR', 'numeric_code': '296', 'phone_code': '+686'},
+    {'iso': 'KM', 'name': 'Comoros', 'nicename': 'Comoros', 'iso3': 'COM', 'numeric_code': '174', 'phone_code': '+269'},
+    {'iso': 'KN', 'name': 'Saint Kitts and Nevis', 'nicename': 'Saint Kitts and Nevis', 'iso3': 'KNA', 'numeric_code': '659', 'phone_code': '+1869'},
+    {'iso': 'KP', 'name': 'North Korea', 'nicename': 'North Korea', 'iso3': 'PRK', 'numeric_code': '408', 'phone_code': '+850'},
+    {'iso': 'KR', 'name': 'South Korea', 'nicename': 'South Korea', 'iso3': 'KOR', 'numeric_code': '410', 'phone_code': '+82'},
+    {'iso': 'KW', 'name': 'Kuwait', 'nicename': 'Kuwait', 'iso3': 'KWT', 'numeric_code': '414', 'phone_code': '+965'},
+    {'iso': 'KY', 'name': 'Cayman Islands', 'nicename': 'Cayman Islands', 'iso3': 'CYM', 'numeric_code': '136', 'phone_code': '+1345'},
+    {'iso': 'KZ', 'name': 'Kazakhstan', 'nicename': 'Kazakhstan', 'iso3': 'KAZ', 'numeric_code': '398', 'phone_code': '+7'},
+    {'iso': 'LA', 'name': 'Laos', 'nicename': 'Laos', 'iso3': 'LAO', 'numeric_code': '418', 'phone_code': '+856'},
+    {'iso': 'LB', 'name': 'Lebanon', 'nicename': 'Lebanon', 'iso3': 'LBN', 'numeric_code': '422', 'phone_code': '+961'},
+    {'iso': 'LC', 'name': 'Saint Lucia', 'nicename': 'Saint Lucia', 'iso3': 'LCA', 'numeric_code': '662', 'phone_code': '+1758'},
+    {'iso': 'LI', 'name': 'Liechtenstein', 'nicename': 'Liechtenstein', 'iso3': 'LIE', 'numeric_code': '438', 'phone_code': '+423'},
+    {'iso': 'LK', 'name': 'Sri Lanka', 'nicename': 'Sri Lanka', 'iso3': 'LKA', 'numeric_code': '144', 'phone_code': '+94'},
+    {'iso': 'LR', 'name': 'Liberia', 'nicename': 'Liberia', 'iso3': 'LBR', 'numeric_code': '430', 'phone_code': '+231'},
+    {'iso': 'LS', 'name': 'Lesotho', 'nicename': 'Lesotho', 'iso3': 'LSO', 'numeric_code': '426', 'phone_code': '+266'},
+    {'iso': 'LT', 'name': 'Lithuania', 'nicename': 'Lithuania', 'iso3': 'LTU', 'numeric_code': '440', 'phone_code': '+370'},
+    {'iso': 'LU', 'name': 'Luxembourg', 'nicename': 'Luxembourg', 'iso3': 'LUX', 'numeric_code': '442', 'phone_code': '+352'},
+    {'iso': 'LV', 'name': 'Latvia', 'nicename': 'Latvia', 'iso3': 'LVA', 'numeric_code': '428', 'phone_code': '+371'},
+    {'iso': 'LY', 'name': 'Libya', 'nicename': 'Libya', 'iso3': 'LBY', 'numeric_code': '434', 'phone_code': '+218'},
+    {'iso': 'MA', 'name': 'Morocco', 'nicename': 'Morocco', 'iso3': 'MAR', 'numeric_code': '504', 'phone_code': '+212'},
+    {'iso': 'MC', 'name': 'Monaco', 'nicename': 'Monaco', 'iso3': 'MCO', 'numeric_code': '492', 'phone_code': '+377'},
+    {'iso': 'MD', 'name': 'Moldova', 'nicename': 'Moldova', 'iso3': 'MDA', 'numeric_code': '498', 'phone_code': '+373'},
+    {'iso': 'ME', 'name': 'Montenegro', 'nicename': 'Montenegro', 'iso3': 'MNE', 'numeric_code': '499', 'phone_code': '+382'},
+    {'iso': 'MF', 'name': 'Saint Martin', 'nicename': 'Saint Martin', 'iso3': 'MAF', 'numeric_code': '663', 'phone_code': '+590'},
+    {'iso': 'MG', 'name': 'Madagascar', 'nicename': 'Madagascar', 'iso3': 'MDG', 'numeric_code': '450', 'phone_code': '+261'},
+    {'iso': 'MH', 'name': 'Marshall Islands', 'nicename': 'Marshall Islands', 'iso3': 'MHL', 'numeric_code': '584', 'phone_code': '+692'},
+    {'iso': 'MK', 'name': 'North Macedonia', 'nicename': 'North Macedonia', 'iso3': 'MKD', 'numeric_code': '807', 'phone_code': '+389'},
+    {'iso': 'ML', 'name': 'Mali', 'nicename': 'Mali', 'iso3': 'MLI', 'numeric_code': '466', 'phone_code': '+223'},
+    {'iso': 'MM', 'name': 'Myanmar', 'nicename': 'Myanmar', 'iso3': 'MMR', 'numeric_code': '104', 'phone_code': '+95'},
+    {'iso': 'MN', 'name': 'Mongolia', 'nicename': 'Mongolia', 'iso3': 'MNG', 'numeric_code': '496', 'phone_code': '+976'},
+    {'iso': 'MO', 'name': 'Macau', 'nicename': 'Macau', 'iso3': 'MAC', 'numeric_code': '446', 'phone_code': '+853'},
+    {'iso': 'MP', 'name': 'Northern Mariana Islands', 'nicename': 'Northern Mariana Islands', 'iso3': 'MNP', 'numeric_code': '580', 'phone_code': '+1670'},
+    {'iso': 'MQ', 'name': 'Martinique', 'nicename': 'Martinique', 'iso3': 'MTQ', 'numeric_code': '474', 'phone_code': '+596'},
+    {'iso': 'MR', 'name': 'Mauritania', 'nicename': 'Mauritania', 'iso3': 'MRT', 'numeric_code': '478', 'phone_code': '+222'},
+    {'iso': 'MS', 'name': 'Montserrat', 'nicename': 'Montserrat', 'iso3': 'MSR', 'numeric_code': '500', 'phone_code': '+1664'},
+    {'iso': 'MT', 'name': 'Malta', 'nicename': 'Malta', 'iso3': 'MLT', 'numeric_code': '470', 'phone_code': '+356'},
+    {'iso': 'MU', 'name': 'Mauritius', 'nicename': 'Mauritius', 'iso3': 'MUS', 'numeric_code': '480', 'phone_code': '+230'},
+    {'iso': 'MV', 'name': 'Maldives', 'nicename': 'Maldives', 'iso3': 'MDV', 'numeric_code': '462', 'phone_code': '+960'},
+    {'iso': 'MW', 'name': 'Malawi', 'nicename': 'Malawi', 'iso3': 'MWI', 'numeric_code': '454', 'phone_code': '+265'},
+    {'iso': 'MX', 'name': 'Mexico', 'nicename': 'Mexico', 'iso3': 'MEX', 'numeric_code': '484', 'phone_code': '+52'},
+    {'iso': 'MY', 'name': 'Malaysia', 'nicename': 'Malaysia', 'iso3': 'MYS', 'numeric_code': '458', 'phone_code': '+60'},
+    {'iso': 'MZ', 'name': 'Mozambique', 'nicename': 'Mozambique', 'iso3': 'MOZ', 'numeric_code': '508', 'phone_code': '+258'},
+    {'iso': 'NA', 'name': 'Namibia', 'nicename': 'Namibia', 'iso3': 'NAM', 'numeric_code': '516', 'phone_code': '+264'},
+    {'iso': 'NC', 'name': 'New Caledonia', 'nicename': 'New Caledonia', 'iso3': 'NCL', 'numeric_code': '540', 'phone_code': '+687'},
+    {'iso': 'NE', 'name': 'Niger', 'nicename': 'Niger', 'iso3': 'NER', 'numeric_code': '562', 'phone_code': '+227'},
+    {'iso': 'NF', 'name': 'Norfolk Island', 'nicename': 'Norfolk Island', 'iso3': 'NFK', 'numeric_code': '574', 'phone_code': '+672'},
+    {'iso': 'NG', 'name': 'Nigeria', 'nicename': 'Nigeria', 'iso3': 'NGA', 'numeric_code': '566', 'phone_code': '+234'},
+    {'iso': 'NI', 'name': 'Nicaragua', 'nicename': 'Nicaragua', 'iso3': 'NIC', 'numeric_code': '558', 'phone_code': '+505'},
+    {'iso': 'NL', 'name': 'Netherlands', 'nicename': 'Netherlands', 'iso3': 'NLD', 'numeric_code': '528', 'phone_code': '+31'},
+    {'iso': 'NO', 'name': 'Norway', 'nicename': 'Norway', 'iso3': 'NOR', 'numeric_code': '578', 'phone_code': '+47'},
+    {'iso': 'NP', 'name': 'Nepal', 'nicename': 'Nepal', 'iso3': 'NPL', 'numeric_code': '524', 'phone_code': '+977'},
+    {'iso': 'NR', 'name': 'Nauru', 'nicename': 'Nauru', 'iso3': 'NRU', 'numeric_code': '520', 'phone_code': '+674'},
+    {'iso': 'NU', 'name': 'Niue', 'nicename': 'Niue', 'iso3': 'NIU', 'numeric_code': '570', 'phone_code': '+683'},
+    {'iso': 'NZ', 'name': 'New Zealand', 'nicename': 'New Zealand', 'iso3': 'NZL', 'numeric_code': '554', 'phone_code': '+64'},
+    {'iso': 'OM', 'name': 'Oman', 'nicename': 'Oman', 'iso3': 'OMN', 'numeric_code': '512', 'phone_code': '+968'},
+    {'iso': 'PA', 'name': 'Panama', 'nicename': 'Panama', 'iso3': 'PAN', 'numeric_code': '591', 'phone_code': '+507'},
+    {'iso': 'PE', 'name': 'Peru', 'nicename': 'Peru', 'iso3': 'PER', 'numeric_code': '604', 'phone_code': '+51'},
+    {'iso': 'PF', 'name': 'French Polynesia', 'nicename': 'French Polynesia', 'iso3': 'PYF', 'numeric_code': '258', 'phone_code': '+689'},
+    {'iso': 'PG', 'name': 'Papua New Guinea', 'nicename': 'Papua New Guinea', 'iso3': 'PNG', 'numeric_code': '598', 'phone_code': '+675'},
+    {'iso': 'PH', 'name': 'Philippines', 'nicename': 'Philippines', 'iso3': 'PHL', 'numeric_code': '608', 'phone_code': '+63'},
+    {'iso': 'PK', 'name': 'Pakistan', 'nicename': 'Pakistan', 'iso3': 'PAK', 'numeric_code': '586', 'phone_code': '+92'},
+    {'iso': 'PL', 'name': 'Poland', 'nicename': 'Poland', 'iso3': 'POL', 'numeric_code': '616', 'phone_code': '+48'},
+    {'iso': 'PM', 'name': 'Saint Pierre and Miquelon', 'nicename': 'Saint Pierre and Miquelon', 'iso3': 'SPM', 'numeric_code': '666', 'phone_code': '+508'},
+    {'iso': 'PN', 'name': 'Pitcairn Islands', 'nicename': 'Pitcairn Islands', 'iso3': 'PCN', 'numeric_code': '612', 'phone_code': '+872'},
+    {'iso': 'PR', 'name': 'Puerto Rico', 'nicename': 'Puerto Rico', 'iso3': 'PRI', 'numeric_code': '630', 'phone_code': '+1787'},
+    {'iso': 'PT', 'name': 'Portugal', 'nicename': 'Portugal', 'iso3': 'PRT', 'numeric_code': '620', 'phone_code': '+351'},
+    {'iso': 'PW', 'name': 'Palau', 'nicename': 'Palau', 'iso3': 'PLW', 'numeric_code': '585', 'phone_code': '+680'},
+    {'iso': 'PY', 'name': 'Paraguay', 'nicename': 'Paraguay', 'iso3': 'PRY', 'numeric_code': '600', 'phone_code': '+595'},
+    {'iso': 'QA', 'name': 'Qatar', 'nicename': 'Qatar', 'iso3': 'QAT', 'numeric_code': '634', 'phone_code': '+974'},
+    {'iso': 'RE', 'name': 'Réunion', 'nicename': 'Réunion', 'iso3': 'REU', 'numeric_code': '638', 'phone_code': '+262'},
+    {'iso': 'RO', 'name': 'Romania', 'nicename': 'Romania', 'iso3': 'ROU', 'numeric_code': '642', 'phone_code': '+40'},
+    {'iso': 'RS', 'name': 'Serbia', 'nicename': 'Serbia', 'iso3': 'SRB', 'numeric_code': '688', 'phone_code': '+381'},
+    {'iso': 'RU', 'name': 'Russia', 'nicename': 'Russia', 'iso3': 'RUS', 'numeric_code': '643', 'phone_code': '+7'},
+    {'iso': 'RW', 'name': 'Rwanda', 'nicename': 'Rwanda', 'iso3': 'RWA', 'numeric_code': '646', 'phone_code': '+250'},
+    {'iso': 'SA', 'name': 'Saudi Arabia', 'nicename': 'Saudi Arabia', 'iso3': 'SAU', 'numeric_code': '682', 'phone_code': '+966'},
+    {'iso': 'SB', 'name': 'Solomon Islands', 'nicename': 'Solomon Islands', 'iso3': 'SLB', 'numeric_code': '090', 'phone_code': '+677'},
+    {'iso': 'SC', 'name': 'Seychelles', 'nicename': 'Seychelles', 'iso3': 'SYC', 'numeric_code': '690', 'phone_code': '+248'},
+    {'iso': 'SD', 'name': 'Sudan', 'nicename': 'Sudan', 'iso3': 'SDN', 'numeric_code': '729', 'phone_code': '+249'},
+    {'iso': 'SE', 'name': 'Sweden', 'nicename': 'Sweden', 'iso3': 'SWE', 'numeric_code': '752', 'phone_code': '+46'},
+    {'iso': 'SG', 'name': 'Singapore', 'nicename': 'Singapore', 'iso3': 'SGP', 'numeric_code': '702', 'phone_code': '+65'},
+    {'iso': 'SH', 'name': 'Saint Helena', 'nicename': 'Saint Helena', 'iso3': 'SHN', 'numeric_code': '654', 'phone_code': '+290'},
+    {'iso': 'SI', 'name': 'Slovenia', 'nicename': 'Slovenia', 'iso3': 'SVN', 'numeric_code': '705', 'phone_code': '+386'},
+    {'iso': 'SJ', 'name': 'Svalbard and Jan Mayen', 'nicename': 'Svalbard and Jan Mayen', 'iso3': 'SJM', 'numeric_code': '744', 'phone_code': '+47'},
+    {'iso': 'SK', 'name': 'Slovakia', 'nicename': 'Slovakia', 'iso3': 'SVK', 'numeric_code': '703', 'phone_code': '+421'},
+    {'iso': 'SL', 'name': 'Sierra Leone', 'nicename': 'Sierra Leone', 'iso3': 'SLE', 'numeric_code': '694', 'phone_code': '+232'},
+    {'iso': 'SM', 'name': 'San Marino', 'nicename': 'San Marino', 'iso3': 'SMR', 'numeric_code': '674', 'phone_code': '+378'},
+    {'iso': 'SN', 'name': 'Senegal', 'nicename': 'Senegal', 'iso3': 'SEN', 'numeric_code': '686', 'phone_code': '+221'},
+    {'iso': 'SO', 'name': 'Somalia', 'nicename': 'Somalia', 'iso3': 'SOM', 'numeric_code': '706', 'phone_code': '+252'},
+    {'iso': 'SR', 'name': 'Suriname', 'nicename': 'Suriname', 'iso3': 'SUR', 'numeric_code': '740', 'phone_code': '+597'},
+    {'iso': 'SS', 'name': 'South Sudan', 'nicename': 'South Sudan', 'iso3': 'SSD', 'numeric_code': '728', 'phone_code': '+211'},
+    {'iso': 'ST', 'name': 'São Tomé and Príncipe', 'nicename': 'São Tomé and Príncipe', 'iso3': 'STP', 'numeric_code': '678', 'phone_code': '+239'},
+    {'iso': 'SV', 'name': 'El Salvador', 'nicename': 'El Salvador', 'iso3': 'SLV', 'numeric_code': '222', 'phone_code': '+503'},
+    {'iso': 'SX', 'name': 'Sint Maarten', 'nicename': 'Sint Maarten', 'iso3': 'SXM', 'numeric_code': '534', 'phone_code': '+1721'},
+    {'iso': 'SY', 'name': 'Syria', 'nicename': 'Syria', 'iso3': 'SYR', 'numeric_code': '760', 'phone_code': '+963'},
+    {'iso': 'SZ', 'name': 'Eswatini', 'nicename': 'Eswatini', 'iso3': 'SWZ', 'numeric_code': '748', 'phone_code': '+268'},
+    {'iso': 'TC', 'name': 'Turks and Caicos Islands', 'nicename': 'Turks and Caicos Islands', 'iso3': 'TCA', 'numeric_code': '796', 'phone_code': '+1649'},
+    {'iso': 'TD', 'name': 'Chad', 'nicename': 'Chad', 'iso3': 'TCD', 'numeric_code': '148', 'phone_code': '+235'},
+    {'iso': 'TF', 'name': 'French Southern Territories', 'nicename': 'French Southern Territories', 'iso3': 'ATF', 'numeric_code': '260', 'phone_code': '+262'},
+    {'iso': 'TG', 'name': 'Togo', 'nicename': 'Togo', 'iso3': 'TGO', 'numeric_code': '768', 'phone_code': '+228'},
+    {'iso': 'TH', 'name': 'Thailand', 'nicename': 'Thailand', 'iso3': 'THA', 'numeric_code': '764', 'phone_code': '+66'},
+    {'iso': 'TJ', 'name': 'Tajikistan', 'nicename': 'Tajikistan', 'iso3': 'TJK', 'numeric_code': '762', 'phone_code': '+992'},
+    {'iso': 'TK', 'name': 'Tokelau', 'nicename': 'Tokelau', 'iso3': 'TKL', 'numeric_code': '772', 'phone_code': '+690'},
+    {'iso': 'TL', 'name': 'Timor-Leste', 'nicename': 'Timor-Leste', 'iso3': 'TLS', 'numeric_code': '626', 'phone_code': '+670'},
+    {'iso': 'TM', 'name': 'Turkmenistan', 'nicename': 'Turkmenistan', 'iso3': 'TKM', 'numeric_code': '795', 'phone_code': '+993'},
+    {'iso': 'TN', 'name': 'Tunisia', 'nicename': 'Tunisia', 'iso3': 'TUN', 'numeric_code': '788', 'phone_code': '+216'},
+    {'iso': 'TO', 'name': 'Tonga', 'nicename': 'Tonga', 'iso3': 'TON', 'numeric_code': '776', 'phone_code': '+676'},
+    {'iso': 'TR', 'name': 'Turkey', 'nicename': 'Turkey', 'iso3': 'TUR', 'numeric_code': '792', 'phone_code': '+90'},
+    {'iso': 'TT', 'name': 'Trinidad and Tobago', 'nicename': 'Trinidad and Tobago', 'iso3': 'TTO', 'numeric_code': '780', 'phone_code': '+1868'},
+    {'iso': 'TV', 'name': 'Tuvalu', 'nicename': 'Tuvalu', 'iso3': 'TUV', 'numeric_code': '798', 'phone_code': '+688'},
+    {'iso': 'TZ', 'name': 'Tanzania', 'nicename': 'Tanzania', 'iso3': 'TZA', 'numeric_code': '834', 'phone_code': '+255'},
+    {'iso': 'UA', 'name': 'Ukraine', 'nicename': 'Ukraine', 'iso3': 'UKR', 'numeric_code': '804', 'phone_code': '+380'},
+    {'iso': 'UG', 'name': 'Uganda', 'nicename': 'Uganda', 'iso3': 'UGA', 'numeric_code': '800', 'phone_code': '+256'},
+    # {'iso': 'UM', 'name': 'United States Minor Outlying Islands', 'nicename': 'United States Minor Outlying Islands', 'iso3': 'UMI', 'numeric_code': '581', 'phone_code': '+1-'},
+    {'iso': 'US', 'name': 'United States', 'nicename': 'United States', 'iso3': 'USA', 'numeric_code': '840', 'phone_code': '+1'},
+    {'iso': 'UY', 'name': 'Uruguay', 'nicename': 'Uruguay', 'iso3': 'URY', 'numeric_code': '858', 'phone_code': '+598'},
+    {'iso': 'UZ', 'name': 'Uzbekistan', 'nicename': 'Uzbekistan', 'iso3': 'UZB', 'numeric_code': '860', 'phone_code': '+998'},
+    {'iso': 'VA', 'name': 'Vatican City', 'nicename': 'Vatican City', 'iso3': 'VAT', 'numeric_code': '336', 'phone_code': '+379'},
+    {'iso': 'VC', 'name': 'Saint Vincent and the Grenadines', 'nicename': 'Saint Vincent and the Grenadines', 'iso3': 'VCT', 'numeric_code': '670', 'phone_code': '+1784'},
+    {'iso': 'VE', 'name': 'Venezuela', 'nicename': 'Venezuela', 'iso3': 'VEN', 'numeric_code': '862', 'phone_code': '+58'},
+    {'iso': 'VG', 'name': 'British Virgin Islands', 'nicename': 'British Virgin Islands', 'iso3': 'VGB', 'numeric_code': '092', 'phone_code': '+1284'},
+    {'iso': 'VI', 'name': 'United States Virgin Islands', 'nicename': 'United States Virgin Islands', 'iso3': 'VIR', 'numeric_code': '850', 'phone_code': '+1340'},
+    {'iso': 'VN', 'name': 'Vietnam', 'nicename': 'Vietnam', 'iso3': 'VNM', 'numeric_code': '704', 'phone_code': '+84'},
+    {'iso': 'VU', 'name': 'Vanuatu', 'nicename': 'Vanuatu', 'iso3': 'VUT', 'numeric_code': '548', 'phone_code': '+678'},
+    {'iso': 'WF', 'name': 'Wallis and Futuna', 'nicename': 'Wallis and Futuna', 'iso3': 'WLF', 'numeric_code': '876', 'phone_code': '+681'},
+    {'iso': 'WS', 'name': 'Samoa', 'nicename': 'Samoa', 'iso3': 'WSM', 'numeric_code': '882', 'phone_code': '+685'},
+    {'iso': 'YE', 'name': 'Yemen', 'nicename': 'Yemen', 'iso3': 'YEM', 'numeric_code': '887', 'phone_code': '+967'},
+    {'iso': 'YT', 'name': 'Mayotte', 'nicename': 'Mayotte', 'iso3': 'MYT', 'numeric_code': '175', 'phone_code': '+262'},
+    {'iso': 'ZA', 'name': 'South Africa', 'nicename': 'South Africa', 'iso3': 'ZAF', 'numeric_code': '710', 'phone_code': '+27'},
+    {'iso': 'ZM', 'name': 'Zambia', 'nicename': 'Zambia', 'iso3': 'ZMB', 'numeric_code': '894', 'phone_code': '+260'},
+    {'iso': 'ZW', 'name': 'Zimbabwe', 'nicename': 'Zimbabwe', 'iso3': 'ZWE', 'numeric_code': '716', 'phone_code': '+263'}
+]
+
+    for country in countries:
+        Country.objects.create(**country)
+    # Country.objects.create(
+    #     iso = '',
+    # name = 'India',
+    # nicename = 'IN',
+    # iso3 = 'IN',
+    # numeric_code = '91',
+    # phone_code = '+91',
+    # )
+    # Country.objects.create(
+    #     iso = '',
+    # name = 'America',
+    # nicename = 'US',
+    # iso3 = 'US',
+    # numeric_code = '1',
+    # phone_code = '+1'
+    # )
+    # priorityList=[
+    #     'Planning a vacation',
+    #     'Taking a road trip',
+    #     'Save Money',
+    # ]
+    # for priorityName in priorityList:
+    #     Priority.objects.create(
+    #         name=priorityName
+    #     )
+    # travelGoalList=[
+    #     '✈️ Travel abroad',
+    #     '✴️ Diverse cultures',
+    #     '🎓 education',
+    #     '👁️ spectacular views',
+    #     '🌲 Seeing wildlife',
+    #     '🏴 metropolitan',
+    #     '🥘 Trying new food',
+    #     '🤠 Adventure',
+    #     '🤝 Events',
+    #     '🏖️Tropical',
+    #     '📴 Off-grid',
+    #     '🌊 Water',
+    # ]
+    # for goalName in travelGoalList:
+    #     TravelGoal.objects.create(
+    #         name=goalName
+    #     )
+    # Motivation.objects.create(
+    #     name='Price',
+    #     emoji='🤑'
+    # )
+    # Motivation.objects.create(
+    #     name='Comfort',
+    #     emoji='😌'
+    # )
+    # Motivation.objects.create(
+    #     name='Convenience',
+    #     emoji='😇'
+    # )
+    # Motivation.objects.create(
+    #     name='Loyalty Miles',
+    #     emoji='🤩'
+    # )
+    # Motivation.objects.create(
+    #     name='Speed',
+    #     emoji='😎'
+    # )
+    # AirlineBrand.objects.create(
+    #     name='Delta'
+    # )
+    # AirlineBrand.objects.create(
+    #     name='Air India'
+    # )
+    # HotelBrand.objects.create(
+    #     name='Marriott'
+    # )
+    # HotelBrand.objects.create(
+    #     name='Hilton Hotels & Resorts'
+    # )
+    # RestaurantBrand.objects.create(
+    #     name='KFC'
+    # )
+    # RestaurantBrand.objects.create(
+    #     name='Pizza Hut'
+    # )
     
     
     return JsonResponse({'message': 'Country added'})
