@@ -159,8 +159,8 @@ class UserProfileAPIView(generics.GenericAPIView):
             user = request.user
             tempData=request.data
             mediaId = None
-            print('with_file = ',tempData['with_file'])
-            print('with_file = ',tempData['with_file']==1 is True)
+            # print('with_file = ',tempData['with_file'])
+            # print('with_file = ',tempData['with_file']==1 is True)
             with_file = int(tempData.get('with_file', 0))
             print('with_file = ', with_file == 1) 
             if with_file==1 and 'file' in request.FILES and bool(request.FILES['file']) == True:
