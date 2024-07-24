@@ -422,10 +422,10 @@ def addCountry(request):
     # travelGoalList=[
     #     '✈️ Travel abroad',
     #     '✴️ Diverse cultures',
-    #     '🎓 education',
-    #     '👁️ spectacular views',
+    #     '🎓 Education',
+    #     '👁️ Spectacular views',
     #     '🌲 Seeing wildlife',
-    #     '🏴 metropolitan',
+    #     '🏴 Metropolitan',
     #     '🥘 Trying new food',
     #     '🤠 Adventure',
     #     '🤝 Events',
