@@ -184,7 +184,7 @@ class UserProfileAPIView(generics.GenericAPIView):
                 print('Validation errors:')
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
-            print('An error occurred:')
+            print('An error occurred:',ex)
             
             raise ValidationError(ApplicationMessages.SOMETHING_WENT_WRONG)
 
