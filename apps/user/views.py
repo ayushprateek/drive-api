@@ -61,6 +61,17 @@ def addLoyaltyProgram(request):
     
     return JsonResponse({'message': 'Loyalty Program added'})
 
+@api_view(['GET'])
+def getAllLoyaltyProgram(request, type=None):
+    loyaltyPrograms = user_models.LoyaltyProgram.objects.filter(type=type).all().values(
+        'id',
+        'name', 
+        'type'
+    )
+    print(len(loyaltyPrograms))
+    loyalty_program_list = list(loyaltyPrograms)
+    return JsonResponse(loyalty_program_list, safe=False,status=status.HTTP_200_OK)
+
 @api_view(['POST'])
 def uploadImage(request):
     mediaId = None

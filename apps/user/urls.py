@@ -23,4 +23,5 @@ urlpatterns = [
     path("send-otp/", user_views.SendEmailOTP.as_view(), name="send-otp"),
     path('upload-image/',user_views.uploadImage),
     path('add-loyalty-program/',user_views.addLoyaltyProgram),
+    path('get-all-loyalty-program/<type>',user_views.getAllLoyaltyProgram),
 ]
