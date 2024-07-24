@@ -8,6 +8,8 @@ This view file has:
 
 """
 import datetime
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 import uuid
 
 from django.http import JsonResponse
@@ -165,16 +167,14 @@ class UserProfileAPIView(generics.GenericAPIView):
             print('with_file = ', with_file == 1) 
             if with_file==1 and 'file' in request.FILES and bool(request.FILES['file']) == True:
                 uploaded_file = request.FILES['file']
-                with open(os.path.join(settings.BASE_DIR,'static', uploaded_file.name), 'wb+') as destination:
-                    for chunk in uploaded_file.chunks():
-                        destination.write(chunk)
+                file_path = default_storage.save(uploaded_file.name, ContentFile(uploaded_file.read()))
                 mediaObj = user_models.Media(
                     media_key='',
-                    media_url=os.path.join('static', uploaded_file.name)
-                    )
+                    media_url=file_path
+                )
                 mediaObj.save()
                 mediaId = mediaObj.id
-                tempData['profile_pic']=mediaId
+                tempData['profile_pic'] = mediaId
             print("tempData = ",tempData)
             serializer = self.serializer_class(user, data=tempData, partial=True)
             if serializer.is_valid():
