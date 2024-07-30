@@ -1172,6 +1172,27 @@ def getEventSites(request):
     
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
 
+def getUsersForLikes(plan_id):
+    imageList=[]
+    userList =UserLikesHistoricalSite.objects.filter(plan_id=plan_id).all()\
+                .values('historicalsite_id','id','userlikes_id')\
+                    .annotate(user_id=F('userlikes__user_id'))\
+                        .values('historicalsite_id','id','userlikes_id','user_id')
+            
+            
+    for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).values(
+    'profile_pic_id', profile_picture=F('profile_pic__media_url')
+)
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+                print('profile_pic = ',profile_pic)
+    return imageList
+
+
 @api_view(['POST'])
 def getLikedSitesViaPlan(request):
     data = json.loads(request.body)
@@ -1208,9 +1229,25 @@ def getLikedSitesViaPlan(request):
             'city_id',
             'city_name'
             )
+            imageList=[]
+            userList =UserLikesHistoricalSite.objects.filter(plan_id=plan_id).all()\
+                .values('historicalsite_id','id','userlikes_id')\
+                    .annotate(user_id=F('userlikes__user_id'))\
+                        .values('historicalsite_id','id','userlikes_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+                print('profile_pic = ',profile_pic)
             
             for plan in plans:
-                plan['users']=len(userLikesHistoricalSite)
+                plan['user_count']=len(userLikesHistoricalSite)
+                plan['users']=list(imageList)
             historicalSiteList.append(list(plans))
             
     if userLikesEvent:
@@ -1226,8 +1263,29 @@ def getLikedSitesViaPlan(request):
             'city_id',
             'city_name'
             )
+            
+            
+            imageList=[]
+            userList =UserLikesEvent.objects.filter(plan_id=plan_id).all()\
+                .values('event_id','id','userlikes_id')\
+                    .annotate(user_id=F('userlikes__user_id'))\
+                        .values('event_id','id','userlikes_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+                print('profile_pic = ',profile_pic)
+            
+            
+            
             for plan in plans:
-                plan['users']=len(userLikesEvent)
+                plan['user_count']=len(userLikesEvent)
+                plan['users']=list(imageList)
             # plans_list.append({"Event":list(plans)})
             eventList.append(list(plans))
     
@@ -1244,9 +1302,28 @@ def getLikedSitesViaPlan(request):
             'city_id',
             'city_name'
             )
-            # plans_list.append({"Park":list(plans)})
+            
+            
+            imageList=[]
+            userList =UserLikesPark.objects.filter(plan_id=plan_id).all()\
+                .values('park_id','id','userlikes_id')\
+                    .annotate(user_id=F('userlikes__user_id'))\
+                        .values('park_id','id','userlikes_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+                print('profile_pic = ',profile_pic)
+            
+            
             for plan in plans:
-                plan['users']=len(userLikesPark)
+                plan['user_count']=len(userLikesPark)
+                plan['users']=list(imageList)
             parkList.append(list(plans))
     
     if userLikesHotel:
@@ -1262,9 +1339,29 @@ def getLikedSitesViaPlan(request):
             'city_id',
             'city_name'
             )
-            # plans_list.append({"Hotel":list(plans)})
+            
+            
+            imageList=[]
+            userList =UserLikesHotel.objects.filter(plan_id=plan_id).all()\
+                .values('hotel_id','id','userlikes_id')\
+                    .annotate(user_id=F('userlikes__user_id'))\
+                        .values('hotel_id','id','userlikes_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+                print('profile_pic = ',profile_pic)
+            
+            
+            
             for plan in plans:
-                plan['users']=len(userLikesHotel)
+                plan['user_count']=len(userLikesHotel)
+                plan['users']=list(imageList)
             hotelList.append(list(plans))
     
     if userLikesWeirdAndWacky:
@@ -1280,8 +1377,27 @@ def getLikedSitesViaPlan(request):
             'city_id',
             'city_name'
             )
+            
+            imageList=[]
+            userList =UserLikesWeirdAndWacky.objects.filter(plan_id=plan_id).all()\
+                .values('weirdandwacky_id','id','userlikes_id')\
+                    .annotate(user_id=F('userlikes__user_id'))\
+                        .values('weirdandwacky_id','id','userlikes_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+                print('profile_pic = ',profile_pic)
+            
+            
             for plan in plans:
-                plan['users']=len(userLikesWeirdAndWacky)
+                plan['user_count']=len(userLikesWeirdAndWacky)
+                plan['users']=list(imageList)
             weirdAndWackyList.append(list(plans))
             # plans_list.append({"WeirdAndWacky":list(plans)})
             
@@ -1299,9 +1415,29 @@ def getLikedSitesViaPlan(request):
             'city_id',
             'city_name'
             )
-            # plans_list.append({"ExtremeSport":list(plans)})
+            
+            
+            imageList=[]
+            userList =UserLikesExtremeSport.objects.filter(plan_id=plan_id).all()\
+                .values('extremesport_id','id','userlikes_id')\
+                    .annotate(user_id=F('userlikes__user_id'))\
+                        .values('extremesport_id','id','userlikes_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+                print('profile_pic = ',profile_pic)
+            
+            
+            
             for plan in plans:
-                plan['users']=len(userLikesExtremeSport)
+                plan['user_count']=len(userLikesExtremeSport)
+                plan['users']=list(imageList)
             extremeSportList.append(list(plans))
     
     if userLikesAttraction:
@@ -1318,9 +1454,29 @@ def getLikedSitesViaPlan(request):
             'city_id',
             'city_name'
             )
-            # plans_list.append({"Attraction":list(plans)})
+            
+            
+            imageList=[]
+            userList =UserLikesAttraction.objects.filter(plan_id=plan_id).all()\
+                .values('attraction_id','id','userlikes_id')\
+                    .annotate(user_id=F('userlikes__user_id'))\
+                        .values('attraction_id','id','userlikes_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+                print('profile_pic = ',profile_pic)
+            
+            
+            
             for plan in plans:
-                plan['users']=len(userLikesAttraction)
+                plan['user_count']=len(userLikesAttraction)
+                plan['users']=list(imageList)
             attractionList.append(list(plans))
     
     plans_list.append({"HistoricalSite":list(historicalSiteList)})
