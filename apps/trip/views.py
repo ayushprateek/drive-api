@@ -75,7 +75,7 @@ def getAllCountry(request):
         'iso3', 
         'numeric_code', 
         'phone_code'
-    )
+    ).order_by('name')
     print(len(countries))
     country_list = list(countries)
     return JsonResponse(country_list, safe=False,status=status.HTTP_200_OK)
