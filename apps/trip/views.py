@@ -1041,7 +1041,21 @@ def createTripPlan(request):
         plan=plan,
         user=user
     )
-    return JsonResponse({'message': 'Trip Created'})
+    
+    if not Plan.objects.filter(id=plan.id).exists():
+        return JsonResponse({'message': 'Plan does not exist'},safe=False, status=status.HTTP_404_NOT_FOUND)
+    
+    plans = Plan.objects.filter(id=plan.id).select_related('city').values(
+        'id', 'name', 'city__id', 'city__name', 'city__images'
+    )
+    print(len(plans))
+    plans_list = list(plans)
+    for plan in plans_list:
+        plan['city_name'] = plan.pop('city__name')
+        plan['city_images'] = plan.pop('city__images')
+        plan['city_id'] = plan.pop('city__id')
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def addUserToPlan(request):
@@ -1192,7 +1206,30 @@ def getUsersForLikes(plan_id):
                 print('profile_pic = ',profile_pic)
     return imageList
 
-
+@api_view(['POST'])
+def getUserAssignedToPlan(request):
+    data=json.loads(request.body)
+    plan_id=data['plan_id']
+    imageList=[]
+    userList =PlanUser.objects.filter(plan_id=plan_id).all()\
+               .values('id','user_id')
+    print("userList = ",len(userList))
+               
+    for users in userList:
+               profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                   values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+               for pic in profile_pic:
+                   imageList.append({
+                   "user_id":users['user_id'],
+                   "profile_pic_id":pic['profile_pic_id'],
+                   "profile_picture":pic['profile_picture'],
+               })
+                   users["profile_pic_id"]=pic['profile_pic_id']
+                   users["profile_picture"]=pic['profile_picture']
+               print('profile_pic = ',profile_pic)
+    # for plan in userList:
+    #              plan['users']=list(imageList)
+    return JsonResponse(list(userList) ,safe=False,status=status.HTTP_200_OK)
 @api_view(['POST'])
 def getLikedSitesViaPlan(request):
     data = json.loads(request.body)
