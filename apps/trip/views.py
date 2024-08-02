@@ -1232,11 +1232,13 @@ def getUserAssignedToPlan(request):
     #              plan['users']=list(imageList)
     return JsonResponse(list(userList) ,safe=False,status=status.HTTP_200_OK)
 @api_view(['POST'])
-def getLikedSitesCityViaPlan(request):
+def getTripFilter(request):
     data = json.loads(request.body)
     plan_id=data['plan_id']
-    plans_list=[]
-    unique_cities = set()
+    cityList=[]
+    categoryList=[]
+    uniqueCities = set()
+    uniqueCategories = set()
     historicalSiteList=[]
     eventList=[]
     parkList=[]
@@ -1259,19 +1261,27 @@ def getLikedSitesCityViaPlan(request):
         userLikesHistoricalSiteData = userLikesHistoricalSite[0]
         if HistoricalSite.objects.filter(id=userLikesHistoricalSiteData['historicalsite_id']).exists():
             plans = HistoricalSite.objects.filter(id=userLikesHistoricalSiteData['historicalsite_id']).all().values(
+            'city_id',
+            'category_id'
+            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
             
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            
+            'category_id',
+            'category_name',
             'city_id',
             'city_name'
             )
             for plan in plans:
-                if plan['city_id'] not in unique_cities:
-                    unique_cities.add(plan['city_id'])
-                    plans_list.append({
+                if plan['city_id'] and plan['city_id'] not in uniqueCities:
+                    uniqueCities.add(plan['city_id'])
+                    cityList.append({
                         "city_id":plan['city_id'],
                         "city_name":plan['city_name'],
+                    })
+                if plan['category_id'] and plan['category_id']  not in uniqueCategories:
+                    uniqueCategories.add(plan['category_id'])
+                    categoryList.append({
+                        "category_id":plan['category_id'],
+                        "category_name":plan['category_name'],
                     })
             historicalSiteList.append(list(plans))
             
@@ -1280,18 +1290,26 @@ def getLikedSitesCityViaPlan(request):
         if Event.objects.filter(id=userLikesEventData['event_id']).exists():
             plans = Event.objects.filter(id=userLikesEventData['event_id']).all().values(
             
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            
+            'city_id',
+            'category_id'
+            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
+            'category_id',
+            'category_name',
             'city_id',
             'city_name'
             )
             for plan in plans:
-                if plan['city_id'] not in unique_cities:
-                    unique_cities.add(plan['city_id'])
-                    plans_list.append({
+                if plan['city_id'] and plan['city_id'] not in uniqueCities:
+                    uniqueCities.add(plan['city_id'])
+                    cityList.append({
                         "city_id":plan['city_id'],
                         "city_name":plan['city_name'],
+                    })
+                if plan['category_id'] and plan['category_id']  not in uniqueCategories:
+                    uniqueCategories.add(plan['category_id'])
+                    categoryList.append({
+                        "category_id":plan['category_id'],
+                        "category_name":plan['category_name'],
                     })
             eventList.append(list(plans))
     
@@ -1300,20 +1318,27 @@ def getLikedSitesCityViaPlan(request):
         if Park.objects.filter(id=userLikesParkData['park_id']).exists():
             plans = Park.objects.filter(id=userLikesParkData['park_id']).all().values(
            
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            
+            'city_id',
+            'category_id'
+            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
+            'category_id',
+            'category_name',
             'city_id',
             'city_name'
             )
             for plan in plans:
-                if plan['city_id'] not in unique_cities:
-                    unique_cities.add(plan['city_id'])
-                    plans_list.append({
+                if plan['city_id'] and plan['city_id'] not in uniqueCities:
+                    uniqueCities.add(plan['city_id'])
+                    cityList.append({
                         "city_id":plan['city_id'],
                         "city_name":plan['city_name'],
                     })
-            
+                if plan['category_id'] and plan['category_id']  not in uniqueCategories:
+                    uniqueCategories.add(plan['category_id'])
+                    categoryList.append({
+                        "category_id":plan['category_id'],
+                        "category_name":plan['category_name'],
+                    })
             parkList.append(list(plans))
     
     if userLikesHotel:
@@ -1321,18 +1346,26 @@ def getLikedSitesCityViaPlan(request):
         if Hotel.objects.filter(id=userLikesHotelData['hotel_id']).exists():
             plans = Hotel.objects.filter(id=userLikesHotelData['hotel_id']).all().values(
             
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            
+            'city_id',
+            'category_id'
+            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
+            'category_id',
+            'category_name',
             'city_id',
             'city_name'
             )
             for plan in plans:
-                if plan['city_id'] not in unique_cities:
-                    unique_cities.add(plan['city_id'])
-                    plans_list.append({
+                if plan['city_id'] and plan['city_id'] not in uniqueCities:
+                    uniqueCities.add(plan['city_id'])
+                    cityList.append({
                         "city_id":plan['city_id'],
                         "city_name":plan['city_name'],
+                    })
+                if plan['category_id'] and plan['category_id']  not in uniqueCategories:
+                    uniqueCategories.add(plan['category_id'])
+                    categoryList.append({
+                        "category_id":plan['category_id'],
+                        "category_name":plan['category_name'],
                     })
             hotelList.append(list(plans))
     
@@ -1341,18 +1374,26 @@ def getLikedSitesCityViaPlan(request):
         if WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id']).exists():
             plans = WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id']).all().values(
             
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-           
+            'city_id',
+            'category_id'
+            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
+           'category_id',
+            'category_name',
             'city_id',
             'city_name'
             )
             for plan in plans:
-                if plan['city_id'] not in unique_cities:
-                    unique_cities.add(plan['city_id'])
-                    plans_list.append({
+                if plan['city_id'] and plan['city_id'] not in uniqueCities:
+                    uniqueCities.add(plan['city_id'])
+                    cityList.append({
                         "city_id":plan['city_id'],
                         "city_name":plan['city_name'],
+                    })
+                if plan['category_id'] and plan['category_id']  not in uniqueCategories:
+                    uniqueCategories.add(plan['category_id'])
+                    categoryList.append({
+                        "category_id":plan['category_id'],
+                        "category_name":plan['category_name'],
                     })
             weirdAndWackyList.append(list(plans))
             # plans_list.append({"WeirdAndWacky":list(plans)})
@@ -1363,18 +1404,26 @@ def getLikedSitesCityViaPlan(request):
         if ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id']).exists():
             plans = ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id']).all().values(
             
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            
+            'city_id',
+            'category_id'
+            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
+            'category_id',
+            'category_name',
             'city_id',
             'city_name'
             )
             for plan in plans:
-                if plan['city_id'] not in unique_cities:
-                    unique_cities.add(plan['city_id'])
-                    plans_list.append({
+                if plan['city_id'] and plan['city_id'] not in uniqueCities:
+                    uniqueCities.add(plan['city_id'])
+                    cityList.append({
                         "city_id":plan['city_id'],
                         "city_name":plan['city_name'],
+                    })
+                if plan['category_id'] and plan['category_id']  not in uniqueCategories:
+                    uniqueCategories.add(plan['category_id'])
+                    categoryList.append({
+                        "category_id":plan['category_id'],
+                        "category_name":plan['category_name'],
                     })
             extremeSportList.append(list(plans))
     
@@ -1383,23 +1432,34 @@ def getLikedSitesCityViaPlan(request):
         userLikesAttractionData = userLikesAttraction[0]
         if Attraction.objects.filter(id=userLikesAttractionData['attraction_id']).exists():
             plans = Attraction.objects.filter(id=userLikesAttractionData['attraction_id']).all().values(
-           'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            
+           'city_id',
+           'category_id'
+            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
+            'category_id',
+            'category_name',
             'city_id',
             'city_name'
             )
             for plan in plans:
-                if plan['city_id'] not in unique_cities:
-                    unique_cities.add(plan['city_id'])
-                    plans_list.append({
+                if plan['city_id'] and plan['city_id'] not in uniqueCities:
+                    uniqueCities.add(plan['city_id'])
+                    cityList.append({
                         "city_id":plan['city_id'],
                         "city_name":plan['city_name'],
+                    })
+                if plan['category_id'] and plan['category_id']  not in uniqueCategories:
+                    uniqueCategories.add(plan['category_id'])
+                    categoryList.append({
+                        "category_id":plan['category_id'],
+                        "category_name":plan['category_name'],
                     })
             attractionList.append(list(plans))
     
     
-    return JsonResponse(plans_list ,safe=False,status=status.HTTP_200_OK)
+    return JsonResponse({
+        "city":list(cityList),
+        "category":list(categoryList),
+        } ,safe=False,status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def getUserAssignedToPlan(request):
@@ -1429,6 +1489,9 @@ def getUserAssignedToPlan(request):
 def getLikedSitesViaPlan(request):
     data = json.loads(request.body)
     plan_id=data['plan_id']
+    selectedCity=data['selected_cities']
+    selectedCategory=data['selected_categories']
+    
     plans_list=[]
     historicalSiteList=[]
     eventList=[]
@@ -1451,7 +1514,11 @@ def getLikedSitesViaPlan(request):
     if userLikesHistoricalSite:
         userLikesHistoricalSiteData = userLikesHistoricalSite[0]
         if HistoricalSite.objects.filter(id=userLikesHistoricalSiteData['historicalsite_id']).exists():
-            plans = HistoricalSite.objects.filter(id=userLikesHistoricalSiteData['historicalsite_id']).all().values(
+            if selectedCity:
+                fetch=HistoricalSite.objects.filter(id=userLikesHistoricalSiteData['historicalsite_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=HistoricalSite.objects.filter(id=userLikesHistoricalSiteData['historicalsite_id'])
+            plans = fetch.all().values(
             'id', 'name', 
             'description', 'images',
             'city_id'
@@ -1485,7 +1552,11 @@ def getLikedSitesViaPlan(request):
     if userLikesEvent:
         userLikesEventData = userLikesEvent[0]
         if Event.objects.filter(id=userLikesEventData['event_id']).exists():
-            plans = Event.objects.filter(id=userLikesEventData['event_id']).all().values(
+            if selectedCity:
+                fetch=Event.objects.filter(id=userLikesEventData['event_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=Event.objects.filter(id=userLikesEventData['event_id'])
+            plans = fetch.all().values(
             'id', 'name', 
             'description', 'images',
             'city_id'
@@ -1524,7 +1595,11 @@ def getLikedSitesViaPlan(request):
     if userLikesPark:
         userLikesParkData = userLikesPark[0]
         if Park.objects.filter(id=userLikesParkData['park_id']).exists():
-            plans = Park.objects.filter(id=userLikesParkData['park_id']).all().values(
+            if selectedCity:
+                fetch=Park.objects.filter(id=userLikesParkData['park_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=Park.objects.filter(id=userLikesParkData['park_id'])
+            plans = fetch.all().values(
             'id', 'name', 
             'description', 'images',
             'city_id'
@@ -1561,7 +1636,11 @@ def getLikedSitesViaPlan(request):
     if userLikesHotel:
         userLikesHotelData = userLikesHotel[0]
         if Hotel.objects.filter(id=userLikesHotelData['hotel_id']).exists():
-            plans = Hotel.objects.filter(id=userLikesHotelData['hotel_id']).all().values(
+            if selectedCity:
+                fetch= Hotel.objects.filter(id=userLikesHotelData['hotel_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch= Hotel.objects.filter(id=userLikesHotelData['hotel_id'])
+            plans =fetch.all().values(
             'id', 'name', 
             'description', 'images',
             'city_id'
@@ -1599,7 +1678,12 @@ def getLikedSitesViaPlan(request):
     if userLikesWeirdAndWacky:
         userLikesWeirdAndWackyData = userLikesWeirdAndWacky[0]
         if WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id']).exists():
-            plans = WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id']).all().values(
+            if selectedCity:
+                fetch=WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id'])
+                
+            plans = fetch.all().values(
             'id', 'name', 
             'description', 'images',
             'city_id'
@@ -1637,7 +1721,12 @@ def getLikedSitesViaPlan(request):
         
         userLikesExtremeSportData = userLikesExtremeSport[0]
         if ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id']).exists():
-            plans = ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id']).all().values(
+            if selectedCity:
+                fetch=ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id'])
+            
+            plans = fetch.all().values(
             'id', 'name', 
             'description', 'images',
             'city_id'
@@ -1676,7 +1765,11 @@ def getLikedSitesViaPlan(request):
         
         userLikesAttractionData = userLikesAttraction[0]
         if Attraction.objects.filter(id=userLikesAttractionData['attraction_id']).exists():
-            plans = Attraction.objects.filter(id=userLikesAttractionData['attraction_id']).all().values(
+            if selectedCity:
+                fetch=Attraction.objects.filter(id=userLikesAttractionData['attraction_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=Attraction.objects.filter(id=userLikesAttractionData['attraction_id'])
+            plans = fetch.all().values(
             'id', 'name', 
             'description', 'images',
             'city_id'
