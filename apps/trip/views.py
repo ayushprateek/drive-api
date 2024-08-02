@@ -1833,7 +1833,7 @@ def getLikedSitesViaPlan(request):
          "Park":list(parkList),
          "Hotel":list(hotelList),
          "WeirdAndWacky":list(weirdAndWackyList),
-         "ExtremeSport":list(extremeSportList),
+         "ExtremeSports":list(extremeSportList),
          "Attraction":list(attractionList)
          },
         default=str
