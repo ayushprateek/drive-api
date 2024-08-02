@@ -1518,6 +1518,8 @@ def getLikedSitesViaPlan(request):
                 fetch=HistoricalSite.objects.filter(id=userLikesHistoricalSiteData['historicalsite_id']).filter(city_id__in=selectedCity)
             else:
                 fetch=HistoricalSite.objects.filter(id=userLikesHistoricalSiteData['historicalsite_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
             plans = fetch.all().values(
             'id', 'name', 
             'description', 'images',
@@ -1542,12 +1544,13 @@ def getLikedSitesViaPlan(request):
                     "profile_pic_id":pic['profile_pic_id'],
                     "profile_picture":pic['profile_picture'],
                 })
-                print('profile_pic = ',profile_pic)
+                # print('profile_pic = ',profile_pic)
             
             for plan in plans:
+                print('plan = ',plan)
                 plan['user_count']=len(userLikesHistoricalSite)
                 plan['users']=list(imageList)
-            historicalSiteList.append(list(plans))
+                historicalSiteList.append(plan)
             
     if userLikesEvent:
         userLikesEventData = userLikesEvent[0]
@@ -1556,6 +1559,8 @@ def getLikedSitesViaPlan(request):
                 fetch=Event.objects.filter(id=userLikesEventData['event_id']).filter(city_id__in=selectedCity)
             else:
                 fetch=Event.objects.filter(id=userLikesEventData['event_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
             plans = fetch.all().values(
             'id', 'name', 
             'description', 'images',
@@ -1590,7 +1595,7 @@ def getLikedSitesViaPlan(request):
                 plan['user_count']=len(userLikesEvent)
                 plan['users']=list(imageList)
             # plans_list.append({"Event":list(plans)})
-            eventList.append(list(plans))
+                eventList.append(plan)
     
     if userLikesPark:
         userLikesParkData = userLikesPark[0]
@@ -1599,6 +1604,8 @@ def getLikedSitesViaPlan(request):
                 fetch=Park.objects.filter(id=userLikesParkData['park_id']).filter(city_id__in=selectedCity)
             else:
                 fetch=Park.objects.filter(id=userLikesParkData['park_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
             plans = fetch.all().values(
             'id', 'name', 
             'description', 'images',
@@ -1631,7 +1638,7 @@ def getLikedSitesViaPlan(request):
             for plan in plans:
                 plan['user_count']=len(userLikesPark)
                 plan['users']=list(imageList)
-            parkList.append(list(plans))
+                parkList.append(plan)
     
     if userLikesHotel:
         userLikesHotelData = userLikesHotel[0]
@@ -1640,6 +1647,8 @@ def getLikedSitesViaPlan(request):
                 fetch= Hotel.objects.filter(id=userLikesHotelData['hotel_id']).filter(city_id__in=selectedCity)
             else:
                 fetch= Hotel.objects.filter(id=userLikesHotelData['hotel_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
             plans =fetch.all().values(
             'id', 'name', 
             'description', 'images',
@@ -1673,7 +1682,7 @@ def getLikedSitesViaPlan(request):
             for plan in plans:
                 plan['user_count']=len(userLikesHotel)
                 plan['users']=list(imageList)
-            hotelList.append(list(plans))
+                hotelList.append(plan)
     
     if userLikesWeirdAndWacky:
         userLikesWeirdAndWackyData = userLikesWeirdAndWacky[0]
@@ -1682,6 +1691,8 @@ def getLikedSitesViaPlan(request):
                 fetch=WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id']).filter(city_id__in=selectedCity)
             else:
                 fetch=WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
                 
             plans = fetch.all().values(
             'id', 'name', 
@@ -1714,7 +1725,7 @@ def getLikedSitesViaPlan(request):
             for plan in plans:
                 plan['user_count']=len(userLikesWeirdAndWacky)
                 plan['users']=list(imageList)
-            weirdAndWackyList.append(list(plans))
+                weirdAndWackyList.append(plan)
             # plans_list.append({"WeirdAndWacky":list(plans)})
             
     if userLikesExtremeSport:
@@ -1725,6 +1736,8 @@ def getLikedSitesViaPlan(request):
                 fetch=ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id']).filter(city_id__in=selectedCity)
             else:
                 fetch=ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
             
             plans = fetch.all().values(
             'id', 'name', 
@@ -1759,7 +1772,7 @@ def getLikedSitesViaPlan(request):
             for plan in plans:
                 plan['user_count']=len(userLikesExtremeSport)
                 plan['users']=list(imageList)
-            extremeSportList.append(list(plans))
+                extremeSportList.append(plan)
     
     if userLikesAttraction:
         
@@ -1769,6 +1782,8 @@ def getLikedSitesViaPlan(request):
                 fetch=Attraction.objects.filter(id=userLikesAttractionData['attraction_id']).filter(city_id__in=selectedCity)
             else:
                 fetch=Attraction.objects.filter(id=userLikesAttractionData['attraction_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
             plans = fetch.all().values(
             'id', 'name', 
             'description', 'images',
@@ -1802,7 +1817,7 @@ def getLikedSitesViaPlan(request):
             for plan in plans:
                 plan['user_count']=len(userLikesAttraction)
                 plan['users']=list(imageList)
-            attractionList.append(list(plans))
+                attractionList.append(plan)
     
     plans_list.append({"HistoricalSite":list(historicalSiteList)})
     plans_list.append({"Event":list(eventList)})
