@@ -118,6 +118,7 @@ class Attraction(BaseModel):
     description = models.TextField(null=True, blank=True)
     images = ArrayField(models.TextField(null=True), default=list)
     meta_data = models.JSONField(default=dict)
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
 
 
     class Meta:
@@ -141,6 +142,7 @@ class WeirdAndWacky(BaseModel):
     description = models.TextField(null=True, blank=True)
     images = ArrayField(models.TextField(null=True), default=list)
     meta_data = models.JSONField(default=dict)
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
 
     class Meta:
         verbose_name = "Weird And Wacky"
@@ -186,6 +188,7 @@ class Park(BaseModel):
     description = models.TextField(null=True, blank=True)
     images = ArrayField(models.TextField(null=True), default=list)
     meta_data = models.JSONField(default=dict)
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
 
 
     class Meta:
@@ -230,6 +233,7 @@ class Event(BaseModel):
     description = models.TextField(null=True, blank=True)
     images = ArrayField(models.TextField(null=True), default=list)
     meta_data = models.JSONField(default=dict)
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
 
     class Meta:
         verbose_name = "Event"
@@ -252,6 +256,7 @@ class HistoricalSite(BaseModel):
     description = models.TextField(null=True)
     images = ArrayField(models.TextField(null=True), default=list)
     meta_data = models.JSONField(default=dict)
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
 
 
     class Meta:
@@ -275,6 +280,7 @@ class ExtremeSport(BaseModel):
     description = models.TextField(null=True)
     images = ArrayField(models.TextField(null=True), default=list)
     meta_data = models.JSONField(default=dict)
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
 
     class Meta:
         verbose_name = "Extreme Sport"
@@ -390,6 +396,7 @@ class Hotel(BaseModel):
     - images (ArrayField): A list of URLs or texts representing various images of the hotel.
     """
     place_id = models.CharField(max_length=500, unique=True,default='')
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
     name = models.TextField()
     city = models.ForeignKey(City, on_delete=models.SET_NULL, related_name="hotels_city", null=True)
     description = models.TextField(null=True)

@@ -53,5 +53,6 @@ urlpatterns = [
     path('get-all-airline-brand/', getAllAirlineBrand,name='add-user'),
     path('get-all-restaurant-brand/', getAllRestaurantBrand,name='add-user'),
     path('get-plan-users/', getUserAssignedToPlan,name='add-user'),
+    path('get-trip-filter/', getTripFilter,name='add-user'),
     
 ]
