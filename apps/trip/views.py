@@ -78,6 +78,10 @@ def getAllCountry(request):
     ).order_by('name')
     print(len(countries))
     country_list = list(countries)
+    us_country = next((country for country in country_list if country['iso'] == 'US'), None)
+    if us_country:
+        country_list.remove(us_country)
+        country_list.insert(0, us_country)
     return JsonResponse(country_list, safe=False,status=status.HTTP_200_OK)
 
 @api_view(['GET'])
