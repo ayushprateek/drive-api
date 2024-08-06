@@ -20,6 +20,7 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework.validators import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from apps.trip.models import AirlineBrand, Country, HotelBrand, Motivation, Priority, RestaurantBrand, TravelGoal
 from apps.user import (
     serializers as user_serializer,
     models as user_models, schema,
@@ -71,6 +72,74 @@ def getAllLoyaltyProgram(request, type=None):
     print(len(loyaltyPrograms))
     loyalty_program_list = list(loyaltyPrograms)
     return JsonResponse(loyalty_program_list, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getProfileOptions(request):
+    
+    loyaltyAirlines = user_models.LoyaltyProgram.objects.filter(type='A').all().values(
+        'id',
+        'name', 
+        'type'
+    )
+    loyaltyHotels = user_models.LoyaltyProgram.objects.filter(type='H').all().values(
+        'id',
+        'name', 
+        'type'
+    )
+    travelGoal = TravelGoal.objects.all().values(
+        'id',
+        'name'
+    )
+    motivation = Motivation.objects.all().values(
+        'id',
+        'name',
+        'emoji'
+    )
+    countries = Country.objects.all().values(
+        'id',
+        'iso', 
+        'name', 
+        'nicename', 
+        'iso3', 
+        'numeric_code', 
+        'phone_code'
+    ).order_by('name')
+    print(len(countries))
+    country_list = list(countries)
+    us_country = next((country for country in country_list if country['iso'] == 'US'), None)
+    if us_country:
+        country_list.remove(us_country)
+        country_list.insert(0, us_country)
+    
+    airline_brands = AirlineBrand.objects.all().values(
+        'id',
+        'name'
+    )
+    hotelBrands = HotelBrand.objects.all().values(
+        'id',
+        'name'
+    )
+    restaurant_brands = RestaurantBrand.objects.all().values(
+        'id',
+        'name'
+    )
+    priorities = Priority.objects.all().values(
+        'id',
+        'name'
+    )
+    
+    
+    return JsonResponse({
+        "loyalty_airlines":list(loyaltyAirlines),
+        "loyalty_hotels":list(loyaltyHotels),
+        "travel_goals":list(travelGoal),
+        "motivations":list(motivation),
+        "countries":list(country_list),
+        "airline_brands":list(airline_brands),
+        "hotel_brands":list(hotelBrands),
+        "restaurant_brands":list(restaurant_brands),
+        "priorities":list(priorities),
+        }, safe=False,status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def uploadImage(request):
