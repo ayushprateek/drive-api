@@ -24,4 +24,5 @@ urlpatterns = [
     path('upload-image/',user_views.uploadImage),
     path('add-loyalty-program/',user_views.addLoyaltyProgram),
     path('get-all-loyalty-program/<type>',user_views.getAllLoyaltyProgram),
+    path('profile/form-options/',user_views.getProfileOptions),
 ]
