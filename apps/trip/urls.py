@@ -54,5 +54,7 @@ urlpatterns = [
     path('get-all-restaurant-brand/', getAllRestaurantBrand,name='add-user'),
     path('get-plan-users/', getUserAssignedToPlan,name='add-user'),
     path('get-trip-filter/', getTripFilter,name='add-user'),
+    path('addtripplancategory/', addTrip,name='add trip plan'),
+    path('get-trip-plan-category/', getTripPlanCategory,name='add trip plan'),
     
 ]

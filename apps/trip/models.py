@@ -31,6 +31,30 @@ class Category(BaseModel):
     def __str__(self):
         return self.name
 
+class PlanCategory(BaseModel):
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,)
+
+
+    class Meta:
+        verbose_name = "Plan Category"
+        verbose_name_plural = "Plan Categories"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+    
+class TripCategory(BaseModel):
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,)
+
+
+    class Meta:
+        verbose_name = "Plan Category"
+        verbose_name_plural = "Plan Categories"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
 
 class City(BaseModel):
     """

@@ -147,6 +147,18 @@ def getAllRestaurantBrand(request):
     restaurant_brand_list = list(restaurant_brands)
     return JsonResponse(restaurant_brand_list, safe=False,status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+def addTrip(request):
+    print('Called')
+    results=Category.objects.all()
+    for row in results:
+        PlanCategory.objects.create(
+            category=row
+        )
+        TripCategory.objects.create(
+            category=row
+        )
+    return JsonResponse({'message': 'Trip Plan added'})
 
 def addCountry(request):
     countries = [
@@ -1235,6 +1247,14 @@ def getUserAssignedToPlan(request):
     # for plan in userList:
     #              plan['users']=list(imageList)
     return JsonResponse(list(userList) ,safe=False,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getTripPlanCategory(request):
+    results=TripCategory.objects.all().values('id','category_id')\
+    .annotate(name=F('category__name'),icon_url=F('category__icon_url'))\
+        .values('id','category_id','name','icon_url')
+    
+    return JsonResponse(list(results) ,safe=False,status=status.HTTP_200_OK)
 @api_view(['POST'])
 def getTripFilter(request):
     data = json.loads(request.body)
