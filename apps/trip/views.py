@@ -2368,13 +2368,18 @@ def fetch_latestHotels(request):
     return JsonResponse(results, safe=False)
 
 def haversine(lat1, lon1, lat2, lon2):
-    R = 6371  # Radius of the Earth in kilometers
-    dlat = math.radians(lat2 - lat1)
-    dlon = math.radians(lon2 - lon1)
-    a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-    distance = R * c
-    return distance
+    # Convert decimal degrees to radians
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+
+    # Haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+    c = 2 * math.asin(math.sqrt(a))
+
+    # Radius of Earth in kilometers is 6371
+    km = 6371 * c
+    return km
 
 def is_distance_one(lat,lng, polyline,threshold_distance):
     for poly_point in polyline:
@@ -2431,6 +2436,27 @@ def get_coordinates_along_polyline(request):
     west_lon = float(request.data['west_lon'])
     north_lat = float(request.data['north_lat'])
     east_lon = float(request.data['east_lon'])
+    
+    # Create a bounding box using shapely
+    bounding_box = box(west_lon, south_lat, east_lon, north_lat)
+
+    print(lat1,lon1)
+    print(lat2,lon2)
+
+
+    decoded_points=[]
+    
+    # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
+    url = f"https://maps.googleapis.com/maps/api/directions/json?origin={lat1},{lon1}&destination={lat2},{lon2}&key={settings.GOOGLE_API_KEY}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data=response.json()
+        print("Data = ",data)
+        decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
+    
+    threshold_distance = float(request.data['threshold_distance'])
+    
+    
     plans=[]
     
     for category in categoryList:
@@ -2490,20 +2516,22 @@ def get_coordinates_along_polyline(request):
             for plan in data:
                 plans.append(plan)
         if Hotel.objects.filter(category_id=category).exists():
-            data=hotels = Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
+            data=Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
             for plan in data:
-                images=[]
-                for photo in plan.photos.all():
-                    images.append(photo.photo_reference)
-                plans.append({
-            "id": plan.id,
-            "name": plan.name,
-            "description":plan.description,
-            "icon_url":plan.icon_url,
-            "images": list(images),
-            "latitude": plan.geometry.location.lat,
-            "longitude": plan.geometry.location.lng
-        })
+                point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
+            
+                if is_distance_one(plan.geometry.location.lat,plan.geometry.location.lng, decoded_points,threshold_distance) and bounding_box.contains(point):
+                    plans.append({
+                                    "id": plan.id,
+                                    "name": plan.name,
+                                    "description":plan.description,
+                                    "icon_url":plan.icon_url,
+                                    "images": [plan.place_id],
+                                    "latitude": plan.geometry.location.lat,
+                                    "longitude": plan.geometry.location.lng,
+                                     "rating": plan.rating,
+                                     "user_ratings_total": plan.user_ratings_total,
+                                })
         
     print(len(plans))
     plans_list = {
@@ -2514,24 +2542,7 @@ def get_coordinates_along_polyline(request):
     
     
     
-    # Create a bounding box using shapely
-    bounding_box = box(west_lon, south_lat, east_lon, north_lat)
-
-    print(lat1,lon1)
-    print(lat2,lon2)
-
-
-    decoded_points=[]
     
-    # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
-    url = f"https://maps.googleapis.com/maps/api/directions/json?origin={lat1},{lon1}&destination={lat2},{lon2}&key={settings.GOOGLE_API_KEY}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        data=response.json()
-        print("Data = ",data)
-        decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
-    
-    threshold_distance = float(request.GET.get('threshold_distance'))
     hotels = Hotel.objects.all()
     results = []
 
