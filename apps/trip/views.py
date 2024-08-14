@@ -2468,7 +2468,11 @@ def get_coordinates_along_polyline(request):
                         .values('id', 'name', 
                 'description', 'images','latitude','longitude','icon_url')
             for plan in data:
-                plans.append(plan)
+                point = Point(plan['longitude'], plan['latitude'])
+                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+                print("WeirdAndWacky Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+                if isOne and bounding_box.contains(point):
+                    plans.append(plan)
         if Attraction.objects.filter(category_id=category).exists():
             data=Attraction.objects.filter(category_id=category).all().values(
                 'id', 'name', 
@@ -2477,7 +2481,11 @@ def get_coordinates_along_polyline(request):
                         .values('id', 'name', 
                 'description', 'images','latitude','longitude','icon_url')
             for plan in data:
-                plans.append(plan)
+                point = Point(plan['longitude'], plan['latitude'])
+                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+                print("Attraction Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+                if isOne and bounding_box.contains(point):
+                    plans.append(plan)
         if Park.objects.filter(category_id=category).exists():
             data=Park.objects.filter(category_id=category).all().values(
                 'id', 'name', 
@@ -2485,8 +2493,13 @@ def get_coordinates_along_polyline(request):
                     .annotate(icon_url=F('category__icon_url'))\
                         .values('id', 'name', 
                 'description', 'images','latitude','longitude','icon_url')
+            print("Len = ",len(data))       
             for plan in data:
-                plans.append(plan)
+                point = Point(plan['longitude'], plan['latitude'])
+                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+                print("Park Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+                if isOne and bounding_box.contains(point):
+                    plans.append(plan)
         if Event.objects.filter(category_id=category).exists():
             data=Event.objects.filter(category_id=category).all().values(
                 'id', 'name', 
@@ -2495,7 +2508,11 @@ def get_coordinates_along_polyline(request):
                         .values('id', 'name', 
                 'description', 'images','latitude','longitude','icon_url')
             for plan in data:
-                plans.append(plan)
+                point = Point(plan['longitude'], plan['latitude'])
+                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+                print("Event Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+                if isOne and bounding_box.contains(point):
+                    plans.append(plan)
         if HistoricalSite.objects.filter(category_id=category).exists():
             data=HistoricalSite.objects.filter(category_id=category).all().values(
                 'id', 'name', 
@@ -2505,7 +2522,11 @@ def get_coordinates_along_polyline(request):
                 'description', 'images','latitude','longitude','icon_url')
                         
             for plan in data:
-                plans.append(plan)
+                point = Point(plan['longitude'], plan['latitude'])
+                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+                print("HistoricalSite Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+                if isOne and bounding_box.contains(point):
+                    plans.append(plan)
         if ExtremeSport.objects.filter(category_id=category).exists():
             data=ExtremeSport.objects.filter(category_id=category).all().values(
                 'id', 'name', 
@@ -2514,11 +2535,16 @@ def get_coordinates_along_polyline(request):
                         .values('id', 'name', 
                 'description', 'images','latitude','longitude','icon_url')
             for plan in data:
-                plans.append(plan)
+                point = Point(plan['longitude'], plan['latitude'])
+                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+                print("ExtremeSport Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+                if isOne and bounding_box.contains(point):
+                    plans.append(plan)
         if Hotel.objects.filter(category_id=category).exists():
             data=Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
             for plan in data:
                 point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
+                print('Hotel point')
             
                 if is_distance_one(plan.geometry.location.lat,plan.geometry.location.lng, decoded_points,threshold_distance) and bounding_box.contains(point):
                     plans.append({
