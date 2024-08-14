@@ -559,6 +559,11 @@ class AirlineBrand(models.Model):
     class Meta:
         db_table = '"airline_brand"'
     name = models.CharField(max_length=80)
+
+class RentalCars(models.Model):
+    class Meta:
+        db_table = '"rental_cars"'
+    name = models.CharField(max_length=80)
 class HotelBrand(models.Model):
     class Meta:
         db_table = '"hotel_brand"'

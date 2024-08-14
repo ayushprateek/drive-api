@@ -20,7 +20,7 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework.validators import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.trip.models import AirlineBrand, Country, HotelBrand, Motivation, Priority, RestaurantBrand, TravelGoal
+from apps.trip.models import *
 from apps.user import (
     serializers as user_serializer,
     models as user_models, schema,
@@ -34,45 +34,45 @@ import os
 from rest_framework.decorators import api_view
 
 def addLoyaltyProgram(request):
-    user_models.LoyaltyProgram.objects.create(
+    RentalCars.objects.create(
         name='Hertz',
-        type='R'
+        
     )
-    user_models.LoyaltyProgram.objects.create(
+    RentalCars.objects.create(
         name='Alamo Rent A Car',
-        type='R'
+        
     )
-    user_models.LoyaltyProgram.objects.create(
+    RentalCars.objects.create(
         name='Avis',
-        type='R'
+        
     )
-    user_models.LoyaltyProgram.objects.create(
+    RentalCars.objects.create(
         name='Budget',
-        type='R'
+        
     )
-    user_models.LoyaltyProgram.objects.create(
+    RentalCars.objects.create(
         name='Enterprise',
-        type='R'
+        
     )
-    user_models.LoyaltyProgram.objects.create(
+    RentalCars.objects.create(
         name='Rent-A-Car',
-        type='R'
+        
     )
-    user_models.LoyaltyProgram.objects.create(
+    RentalCars.objects.create(
         name='National Car Rental',
-        type='R'
+        
     )
-    user_models.LoyaltyProgram.objects.create(
+    RentalCars.objects.create(
         name='Sixt Rent a Car',
-        type='R'
+        
     )
-    user_models.LoyaltyProgram.objects.create(
+    RentalCars.objects.create(
         name='Thrifty',
-        type='R'
+        
     )
-    user_models.LoyaltyProgram.objects.create(
+    RentalCars.objects.create(
         name='Dollar',
-        type='R'
+        
     )
     
     # user_models.LoyaltyProgram.objects.create(
@@ -152,7 +152,7 @@ def getProfileOptions(request):
         country_list.remove(us_country)
         country_list.insert(0, us_country)
     
-    airline_brands = AirlineBrand.objects.all().values(
+    renral_cars = RentalCars.objects.all().values(
         'id',
         'name'
     )
@@ -176,7 +176,7 @@ def getProfileOptions(request):
         "travel_goals":list(travelGoal),
         "motivations":list(motivation),
         "countries":list(country_list),
-        "airline_brands":list(airline_brands),
+        "airline_brands":list(renral_cars),
         "hotel_brands":list(hotelBrands),
         "restaurant_brands":list(restaurant_brands),
         "priorities":list(priorities),
