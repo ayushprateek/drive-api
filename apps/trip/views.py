@@ -2437,49 +2437,70 @@ def get_coordinates_along_polyline(request):
         if WeirdAndWacky.objects.filter(category_id=category).exists():
             data=WeirdAndWacky.objects.filter(category_id=category).all().values(
                 'id', 'name', 
-                'description', 'images','latitude','longitude')
+                'description', 'images','latitude','longitude')\
+                    .annotate(icon_url=F('category__icon_url'))\
+                        .values('id', 'name', 
+                'description', 'images','latitude','longitude','icon_url')
             for plan in data:
                 plans.append(plan)
         if Attraction.objects.filter(category_id=category).exists():
             data=Attraction.objects.filter(category_id=category).all().values(
                 'id', 'name', 
-                'description', 'images','latitude','longitude')
+                'description', 'images','latitude','longitude')\
+                    .annotate(icon_url=F('category__icon_url'))\
+                        .values('id', 'name', 
+                'description', 'images','latitude','longitude','icon_url')
             for plan in data:
                 plans.append(plan)
         if Park.objects.filter(category_id=category).exists():
             data=Park.objects.filter(category_id=category).all().values(
                 'id', 'name', 
-                'description', 'images','latitude','longitude')
+                'description', 'images','latitude','longitude')\
+                    .annotate(icon_url=F('category__icon_url'))\
+                        .values('id', 'name', 
+                'description', 'images','latitude','longitude','icon_url')
             for plan in data:
                 plans.append(plan)
         if Event.objects.filter(category_id=category).exists():
             data=Event.objects.filter(category_id=category).all().values(
                 'id', 'name', 
-                'description', 'images','latitude','longitude')
+                'description', 'images','latitude','longitude')\
+                    .annotate(icon_url=F('category__icon_url'))\
+                        .values('id', 'name', 
+                'description', 'images','latitude','longitude','icon_url')
             for plan in data:
                 plans.append(plan)
         if HistoricalSite.objects.filter(category_id=category).exists():
             data=HistoricalSite.objects.filter(category_id=category).all().values(
                 'id', 'name', 
-                'description', 'images','latitude','longitude')
+                'description', 'images','latitude','longitude')\
+                    .annotate(icon_url=F('category__icon_url'))\
+                        .values('id', 'name', 
+                'description', 'images','latitude','longitude','icon_url')
+                        
             for plan in data:
                 plans.append(plan)
         if ExtremeSport.objects.filter(category_id=category).exists():
             data=ExtremeSport.objects.filter(category_id=category).all().values(
                 'id', 'name', 
-                'description', 'images','latitude','longitude')
+                'description', 'images','latitude','longitude')\
+                    .annotate(icon_url=F('category__icon_url'))\
+                        .values('id', 'name', 
+                'description', 'images','latitude','longitude','icon_url')
             for plan in data:
                 plans.append(plan)
         if Hotel.objects.filter(category_id=category).exists():
-            data=Hotel.objects.filter(category_id=category).all()
+            data=hotels = Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
             for plan in data:
+                images=[]
+                for photo in plan.photos.all():
+                    images.append(photo.photo_reference)
                 plans.append({
             "id": plan.id,
             "name": plan.name,
             "description":plan.description,
-            "images": [
-                "static/WeirdAndWacky1.png"
-            ],
+            "icon_url":plan.icon_url,
+            "images": list(images),
             "latitude": plan.geometry.location.lat,
             "longitude": plan.geometry.location.lng
         })
