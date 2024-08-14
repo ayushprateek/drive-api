@@ -76,7 +76,7 @@ def getAllCountry(request):
         'numeric_code', 
         'phone_code'
     ).order_by('name')
-    print(len(countries))
+    #print(len(countries))
     country_list = list(countries)
     us_country = next((country for country in country_list if country['iso'] == 'US'), None)
     if us_country:
@@ -90,7 +90,7 @@ def getAllPriority(request):
         'id',
         'name'
     )
-    print(len(priorities))
+    #print(len(priorities))
     priosity_list = list(priorities)
     return JsonResponse(priosity_list, safe=False,status=status.HTTP_200_OK)
 
@@ -100,7 +100,7 @@ def getAllTravelGoal(request):
         'id',
         'name'
     )
-    print(len(priorities))
+    #print(len(priorities))
     priosity_list = list(priorities)
     return JsonResponse(priosity_list, safe=False,status=status.HTTP_200_OK)
 
@@ -111,7 +111,7 @@ def getAllMotivation(request):
         'name',
         'emoji'
     )
-    print(len(priorities))
+    #print(len(priorities))
     priosity_list = list(priorities)
     return JsonResponse(priosity_list, safe=False,status=status.HTTP_200_OK)
 
@@ -122,7 +122,7 @@ def getAllHotelBrand(request):
         'id',
         'name'
     )
-    print(len(hotelBrands))
+    #print(len(hotelBrands))
     hotel_brand_list = list(hotelBrands)
     return JsonResponse(hotel_brand_list, safe=False,status=status.HTTP_200_OK)
 
@@ -133,7 +133,7 @@ def getAllAirlineBrand(request):
         'id',
         'name'
     )
-    print(len(airline_brands))
+    #print(len(airline_brands))
     airline_brand_list = list(airline_brands)
     return JsonResponse(airline_brand_list, safe=False,status=status.HTTP_200_OK)
 
@@ -143,13 +143,13 @@ def getAllRestaurantBrand(request):
         'id',
         'name'
     )
-    print(len(restaurant_brands))
+    #print(len(restaurant_brands))
     restaurant_brand_list = list(restaurant_brands)
     return JsonResponse(restaurant_brand_list, safe=False,status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def addTrip(request):
-    print('Called')
+    #print('Called')
     results=Category.objects.all()
     for row in results:
         if not PlanCategory.objects.filter(category_id=row.id).exists():
@@ -523,8 +523,8 @@ def addCountry(request):
     return JsonResponse({'message': 'Country added'})
     
 def printRoot(request):
-    print(settings.STATIC_ROOT+'Temp.png')
-    print(settings.STATIC_URL)
+    #print(settings.STATIC_ROOT+'Temp.png')
+    #print(settings.STATIC_URL)
     
     Category.objects.create(
     name='Experiences',
@@ -570,7 +570,7 @@ def printRoot(request):
     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
 
 def cityScrape(request):
-    print('cityScrape')
+    #print('cityScrape')
     
     City.objects.create(
         name='Orlando',
@@ -742,9 +742,9 @@ def weird(request):
 
 @api_view(['POST'])
 def likePlace(request):
-    print('createPlan called')
+    #print('createPlan called')
     data = json.loads(request.body)
-    print(data)
+    #print(data)
     planModel=Plan.objects.filter(id=data['plan_id']).first()
     
     userdata=User.objects.filter(id=data['user_id']).first()
@@ -1065,9 +1065,9 @@ def unlikePlace(request):
 
 @api_view(['POST'])
 def createTripPlan(request):
-    print('createPlan called')
+    #print('createPlan called')
     data = json.loads(request.body)
-    print(data)
+    #print(data)
     city=City.objects.filter(id=data['city_id']).first()
     user=User.objects.filter(id=data['user_id']).first()
     plan=Plan(
@@ -1091,7 +1091,7 @@ def createTripPlan(request):
     plans = Plan.objects.filter(id=plan.id).select_related('city').values(
         'id', 'name', 'city__id', 'city__name', 'city__images'
     )
-    print(len(plans))
+    #print(len(plans))
     plans_list = list(plans)
     for plan in plans_list:
         plan['city_name'] = plan.pop('city__name')
@@ -1102,7 +1102,7 @@ def createTripPlan(request):
 
 @api_view(['POST'])
 def addUserToPlan(request):
-    print('createPlan called')
+    #print('createPlan called')
     data = json.loads(request.body)
     if not User.objects.filter(id=data['user_id']).exists():
         return JsonResponse({'message': 'User does not exist'},safe=False, status=400)
@@ -1160,7 +1160,7 @@ def getTripViaId(request, id=None):
     plans = Plan.objects.filter(id=id).select_related('city').values(
         'id', 'name', 'city__id', 'city__name', 'city__images'
     )
-    print(len(plans))
+    #print(len(plans))
     plans_list = list(plans)
     for plan in plans_list:
         plan['city_name'] = plan.pop('city__name')
@@ -1176,7 +1176,7 @@ def getHistoricalsites(request):
         'id', 'name', 
         'description', 'images',
     )
-    print(len(plans))
+    #print(len(plans))
     plans_list = list(plans)
     
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
@@ -1188,7 +1188,7 @@ def getExperienceSites(request):
         'id', 'name', 
         'description', 'images',
     )
-    print(len(plans))
+    #print(len(plans))
     plans_list = list(plans)
     
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
@@ -1200,7 +1200,7 @@ def getHotelSites(request):
         'id', 'name', 
         'description', 'images',
     )
-    print(len(plans))
+    #print(len(plans))
     plans_list = list(plans)
     
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
@@ -1212,7 +1212,7 @@ def getParkSites(request):
         'id', 'name', 
         'description', 'images',
     )
-    print(len(plans))
+    #print(len(plans))
     plans_list = list(plans)
     
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
@@ -1224,7 +1224,7 @@ def getEventSites(request):
         'id', 'name', 
         'description', 'images',
     )
-    print(len(plans))
+    #print(len(plans))
     plans_list = list(plans)
     
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
@@ -1246,7 +1246,7 @@ def getUsersForLikes(plan_id):
                     "profile_pic_id":pic['profile_pic_id'],
                     "profile_picture":pic['profile_picture'],
                 })
-                print('profile_pic = ',profile_pic)
+                #print('profile_pic = ',profile_pic)
     return imageList
 
 
@@ -1257,7 +1257,7 @@ def getUserAssignedToPlan(request):
     imageList=[]
     userList =PlanUser.objects.filter(plan_id=plan_id).all()\
                .values('id','user_id')
-    print("userList = ",len(userList))
+    #print("userList = ",len(userList))
                
     for users in userList:
                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
@@ -1270,7 +1270,7 @@ def getUserAssignedToPlan(request):
                })
                    users["profile_pic_id"]=pic['profile_pic_id']
                    users["profile_picture"]=pic['profile_picture']
-               print('profile_pic = ',profile_pic)
+               #print('profile_pic = ',profile_pic)
     # for plan in userList:
     #              plan['users']=list(imageList)
     return JsonResponse(list(userList) ,safe=False,status=status.HTTP_200_OK)
@@ -1519,7 +1519,7 @@ def getUserAssignedToPlan(request):
     imageList=[]
     userList =PlanUser.objects.filter(plan_id=plan_id).all()\
                .values('id','user_id')
-    print("userList = ",len(userList))
+    #print("userList = ",len(userList))
                
     for users in userList:
                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
@@ -1532,7 +1532,7 @@ def getUserAssignedToPlan(request):
                })
                    users["profile_pic_id"]=pic['profile_pic_id']
                    users["profile_picture"]=pic['profile_picture']
-               print('profile_pic = ',profile_pic)
+               #print('profile_pic = ',profile_pic)
     # for plan in userList:
     #              plan['users']=list(imageList)
     return JsonResponse(list(userList) ,safe=False,status=status.HTTP_200_OK)
@@ -1595,10 +1595,10 @@ def getLikedSitesViaPlan(request):
                     "profile_pic_id":pic['profile_pic_id'],
                     "profile_picture":pic['profile_picture'],
                 })
-                # print('profile_pic = ',profile_pic)
+                # #print('profile_pic = ',profile_pic)
             
             for plan in plans:
-                print('plan = ',plan)
+                #print('plan = ',plan)
                 plan['user_count']=len(userLikesHistoricalSite)
                 plan['users']=list(imageList)
                 historicalSiteList.append(plan)
@@ -1638,7 +1638,7 @@ def getLikedSitesViaPlan(request):
                     "profile_pic_id":pic['profile_pic_id'],
                     "profile_picture":pic['profile_picture'],
                 })
-                print('profile_pic = ',profile_pic)
+                #print('profile_pic = ',profile_pic)
             
             
             
@@ -1683,7 +1683,7 @@ def getLikedSitesViaPlan(request):
                     "profile_pic_id":pic['profile_pic_id'],
                     "profile_picture":pic['profile_picture'],
                 })
-                print('profile_pic = ',profile_pic)
+                #print('profile_pic = ',profile_pic)
             
             
             for plan in plans:
@@ -1726,7 +1726,7 @@ def getLikedSitesViaPlan(request):
                     "profile_pic_id":pic['profile_pic_id'],
                     "profile_picture":pic['profile_picture'],
                 })
-                print('profile_pic = ',profile_pic)
+                #print('profile_pic = ',profile_pic)
             
             
             
@@ -1770,7 +1770,7 @@ def getLikedSitesViaPlan(request):
                     "profile_pic_id":pic['profile_pic_id'],
                     "profile_picture":pic['profile_picture'],
                 })
-                print('profile_pic = ',profile_pic)
+                #print('profile_pic = ',profile_pic)
             
             
             for plan in plans:
@@ -1816,7 +1816,7 @@ def getLikedSitesViaPlan(request):
                     "profile_pic_id":pic['profile_pic_id'],
                     "profile_picture":pic['profile_picture'],
                 })
-                print('profile_pic = ',profile_pic)
+                #print('profile_pic = ',profile_pic)
             
             
             
@@ -1861,7 +1861,7 @@ def getLikedSitesViaPlan(request):
                     "profile_pic_id":pic['profile_pic_id'],
                     "profile_picture":pic['profile_picture'],
                 })
-                print('profile_pic = ',profile_pic)
+                #print('profile_pic = ',profile_pic)
             
             
             
@@ -1899,7 +1899,7 @@ def getWeirdAndWacky(request):
         'id', 'name', 
         'description', 'images',
     )
-    print(len(plans))
+    #print(len(plans))
     plans_list = list(plans)
     
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
@@ -1911,11 +1911,11 @@ def getExtremeSport(request):
         'id', 'name', 
         'description', 'images',
     )
-    print(len(plans))
+    #print(len(plans))
     plans_list = list(plans)
     
     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
-    # print(data)
+    # #print(data)
     # city=City.objects.filter(id=data['city_id']).first()
     # user=User.objects.filter(id=data['user_id']).first()
     # Plan.objects.create(
@@ -2040,7 +2040,7 @@ class ScrapeHotelsView(View):
 ]
 
         for data in latlang:
-            # print(data['latitude'], data['longitude'])
+            # #print(data['latitude'], data['longitude'])
             hotels = self.fetch_hotels_from_google(data['latitude'], data['longitude'])
             self.save_hotels_to_db(hotels)
 
@@ -2057,7 +2057,7 @@ class ScrapeHotelsView(View):
         hotels = []
         
         for result in results:
-            print("Icon : ",result.get('icon'),result['icon'])
+            #print("Icon : ",result.get('icon'),result['icon'])
             hotel = {
                 'place_id': result['place_id'],
                 'name': result['name'],
@@ -2085,11 +2085,11 @@ class ScrapeHotelsView(View):
 def getAllHotels(request):
     results = Hotel.objects.all().values('id','place_id','name','address','rating','latitude','longitude','icon')
     customers = []
-    print('Result')
-    print(len(results))
+    #print('Result')
+    #print(len(results))
     for row in results:
         customers.append(json.dumps(row, default=str,))
-    print(len(customers))
+    #print(len(customers))
     return JsonResponse(customers, safe=False)
 from django.http import JsonResponse
 
@@ -2170,7 +2170,7 @@ def saveToDb(api_response):
                 hotel.photos.add(photo_obj)
 
             hotel.save()
-            print("Hotel ",hotel.id,'-->',hotel.name)
+            #print("Hotel ",hotel.id,'-->',hotel.name)
 
  
 
@@ -2296,13 +2296,13 @@ def saveHotel(request):
                 if not Hotel.objects.filter(place_id=data.get('place_id')).exists():
                     saveToDb(data)
                     next_page_token = data.get('next_page_token')
-                    print('next_page_token = ',next_page_token)
+                    #print('next_page_token = ',next_page_token)
                     while next_page_token:
                         newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next_page_token}&key={settings.GOOGLE_API_KEY}"
                         res = requests.get(newUrl)
                         newData=res.json()
                         next_page_token = newData.get('next_page_token')
-                        # print('2nd calling next page url, Status = ',res.status_code)
+                        # #print('2nd calling next page url, Status = ',res.status_code)
                         if res.status_code == 200:
                             if not Hotel.objects.filter(place_id=data.get('place_id')).exists():
                                 saveToDb(newData)
@@ -2384,7 +2384,7 @@ def haversine(lat1, lon1, lat2, lon2):
 def is_distance_one(lat,lng, polyline,threshold_distance):
     for poly_point in polyline:
         distance = haversine(lat, lng, poly_point.lat, poly_point.lng)
-        print('distance = ',distance)
+        # #print('distance = ',distance)
         if distance <= threshold_distance:
             return True
     return False
@@ -2427,125 +2427,44 @@ def decode_poly(encoded):
 
 @api_view(['POST'])
 def get_coordinates_along_polyline(request):
-    # print("Category list = ",request.data['categories'])
-    categoryList=request.data['categories']
-    # Get coordinates A and B from request
+    category_list = request.data['categories']
     lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
     lat2, lon2 = float(request.data['lat2']), float(request.data['lon2'])
-    south_lat = float(request.data['south_lat'])
-    west_lon = float(request.data['west_lon'])
-    north_lat = float(request.data['north_lat'])
-    east_lon = float(request.data['east_lon'])
-    
+    south_lat, west_lon = float(request.data['south_lat']), float(request.data['west_lon'])
+    north_lat, east_lon = float(request.data['north_lat']), float(request.data['east_lon'])
+    threshold_distance = float(request.data['threshold_distance'])
+
     # Create a bounding box using shapely
     bounding_box = box(west_lon, south_lat, east_lon, north_lat)
 
-    print(lat1,lon1)
-    print(lat2,lon2)
-
-
-    decoded_points=[]
-    
-    # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
+    # Get polyline data from Google API
     url = f"https://maps.googleapis.com/maps/api/directions/json?origin={lat1},{lon1}&destination={lat2},{lon2}&key={settings.GOOGLE_API_KEY}"
     response = requests.get(url)
+    decoded_points = []
+    print("response.status_code = ",response.status_code)
     if response.status_code == 200:
-        data=response.json()
-        print("Data = ",data)
+        data = response.json()
         decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
+        print("overview_polyline = ",decoded_points)
+
+    plans = []
     
-    threshold_distance = float(request.data['threshold_distance'])
+
+    def process_data(queryset):
+        for plan in queryset:
+            point = Point(plan['longitude'], plan['latitude'])
+            if is_distance_one(float(plan['latitude']), float(plan['longitude']), decoded_points, threshold_distance) and bounding_box.contains(point):
+                plans.append(plan)
+
+    model_list = [WeirdAndWacky, Attraction, Park, Event, HistoricalSite, ExtremeSport]
     
-    
-    plans=[]
-    
-    for category in categoryList:
-        if WeirdAndWacky.objects.filter(category_id=category).exists():
-            data=WeirdAndWacky.objects.filter(category_id=category).all().values(
-                'id', 'name', 
-                'description', 'images','latitude','longitude')\
-                    .annotate(icon_url=F('category__icon_url'))\
-                        .values('id', 'name', 
-                'description', 'images','latitude','longitude','icon_url')
-            for plan in data:
-                point = Point(plan['longitude'], plan['latitude'])
-                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-                print("WeirdAndWacky Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-                if isOne and bounding_box.contains(point):
-                    plans.append(plan)
-        if Attraction.objects.filter(category_id=category).exists():
-            data=Attraction.objects.filter(category_id=category).all().values(
-                'id', 'name', 
-                'description', 'images','latitude','longitude')\
-                    .annotate(icon_url=F('category__icon_url'))\
-                        .values('id', 'name', 
-                'description', 'images','latitude','longitude','icon_url')
-            for plan in data:
-                point = Point(plan['longitude'], plan['latitude'])
-                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-                print("Attraction Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-                if isOne and bounding_box.contains(point):
-                    plans.append(plan)
-        if Park.objects.filter(category_id=category).exists():
-            data=Park.objects.filter(category_id=category).all().values(
-                'id', 'name', 
-                'description', 'images','latitude','longitude')\
-                    .annotate(icon_url=F('category__icon_url'))\
-                        .values('id', 'name', 
-                'description', 'images','latitude','longitude','icon_url')
-            print("Len = ",len(data))       
-            for plan in data:
-                point = Point(plan['longitude'], plan['latitude'])
-                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-                print("Park Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-                if isOne and bounding_box.contains(point):
-                    plans.append(plan)
-        if Event.objects.filter(category_id=category).exists():
-            data=Event.objects.filter(category_id=category).all().values(
-                'id', 'name', 
-                'description', 'images','latitude','longitude')\
-                    .annotate(icon_url=F('category__icon_url'))\
-                        .values('id', 'name', 
-                'description', 'images','latitude','longitude','icon_url')
-            for plan in data:
-                point = Point(plan['longitude'], plan['latitude'])
-                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-                print("Event Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-                if isOne and bounding_box.contains(point):
-                    plans.append(plan)
-        if HistoricalSite.objects.filter(category_id=category).exists():
-            data=HistoricalSite.objects.filter(category_id=category).all().values(
-                'id', 'name', 
-                'description', 'images','latitude','longitude')\
-                    .annotate(icon_url=F('category__icon_url'))\
-                        .values('id', 'name', 
-                'description', 'images','latitude','longitude','icon_url')
-                        
-            for plan in data:
-                point = Point(plan['longitude'], plan['latitude'])
-                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-                print("HistoricalSite Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-                if isOne and bounding_box.contains(point):
-                    plans.append(plan)
-        if ExtremeSport.objects.filter(category_id=category).exists():
-            data=ExtremeSport.objects.filter(category_id=category).all().values(
-                'id', 'name', 
-                'description', 'images','latitude','longitude')\
-                    .annotate(icon_url=F('category__icon_url'))\
-                        .values('id', 'name', 
-                'description', 'images','latitude','longitude','icon_url')
-            for plan in data:
-                point = Point(plan['longitude'], plan['latitude'])
-                isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-                print("ExtremeSport Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-                if isOne and bounding_box.contains(point):
-                    plans.append(plan)
+    for category in category_list:
         if Hotel.objects.filter(category_id=category).exists():
             data=Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
             for plan in data:
                 point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
-                print('Hotel point')
-            
+                #print('Hotel point')
+    
                 if is_distance_one(plan.geometry.location.lat,plan.geometry.location.lng, decoded_points,threshold_distance) and bounding_box.contains(point):
                     plans.append({
                                     "id": plan.id,
@@ -2558,76 +2477,221 @@ def get_coordinates_along_polyline(request):
                                      "rating": plan.rating,
                                      "user_ratings_total": plan.user_ratings_total,
                                 })
+        else:
+            for model in model_list:
+                queryset = model.objects.filter(category_id=category).annotate(
+                    icon_url=F('category__icon_url')
+                ).values(
+                    'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url'
+                )
+                process_data(queryset)
+
+    plans_list = {"markers": list(plans)}
+
+    return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
+# @api_view(['POST'])
+# def get_coordinates_along_polyline(request):
+#     # #print("Category list = ",request.data['categories'])
+#     categoryList=request.data['categories']
+#     # Get coordinates A and B from request
+#     lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
+#     lat2, lon2 = float(request.data['lat2']), float(request.data['lon2'])
+#     south_lat = float(request.data['south_lat'])
+#     west_lon = float(request.data['west_lon'])
+#     north_lat = float(request.data['north_lat'])
+#     east_lon = float(request.data['east_lon'])
+    
+#     # Create a bounding box using shapely
+#     bounding_box = box(west_lon, south_lat, east_lon, north_lat)
+
+#     #print(lat1,lon1)
+#     #print(lat2,lon2)
+
+
+#     decoded_points=[]
+    
+#     # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
+#     url = f"https://maps.googleapis.com/maps/api/directions/json?origin={lat1},{lon1}&destination={lat2},{lon2}&key={settings.GOOGLE_API_KEY}"
+#     response = requests.get(url)
+#     if response.status_code == 200:
+#         data=response.json()
+#         #print("Data = ",data)
+#         decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
+    
+#     threshold_distance = float(request.data['threshold_distance'])
+    
+    
+#     plans=[]
+    
+#     for category in categoryList:
+#         if WeirdAndWacky.objects.filter(category_id=category).exists():
+#             data=WeirdAndWacky.objects.filter(category_id=category).all().values(
+#                 'id', 'name', 
+#                 'description', 'images','latitude','longitude')\
+#                     .annotate(icon_url=F('category__icon_url'))\
+#                         .values('id', 'name', 
+#                 'description', 'images','latitude','longitude','icon_url')
+#             for plan in data:
+#                 point = Point(plan['longitude'], plan['latitude'])
+#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+#                 #print("WeirdAndWacky Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+#                 if isOne and bounding_box.contains(point):
+#                     plans.append(plan)
+#         if Attraction.objects.filter(category_id=category).exists():
+#             data=Attraction.objects.filter(category_id=category).all().values(
+#                 'id', 'name', 
+#                 'description', 'images','latitude','longitude')\
+#                     .annotate(icon_url=F('category__icon_url'))\
+#                         .values('id', 'name', 
+#                 'description', 'images','latitude','longitude','icon_url')
+#             for plan in data:
+#                 point = Point(plan['longitude'], plan['latitude'])
+#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+#                 print("Attraction Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+#                 if isOne and bounding_box.contains(point):
+#                     plans.append(plan)
+#         if Park.objects.filter(category_id=category).exists():
+#             data=Park.objects.filter(category_id=category).all().values(
+#                 'id', 'name', 
+#                 'description', 'images','latitude','longitude')\
+#                     .annotate(icon_url=F('category__icon_url'))\
+#                         .values('id', 'name', 
+#                 'description', 'images','latitude','longitude','icon_url')
+#             print("Len = ",len(data))       
+#             for plan in data:
+#                 point = Point(plan['longitude'], plan['latitude'])
+#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+#                 #print("Park Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+#                 if isOne and bounding_box.contains(point):
+#                     plans.append(plan)
+#         if Event.objects.filter(category_id=category).exists():
+#             data=Event.objects.filter(category_id=category).all().values(
+#                 'id', 'name', 
+#                 'description', 'images','latitude','longitude')\
+#                     .annotate(icon_url=F('category__icon_url'))\
+#                         .values('id', 'name', 
+#                 'description', 'images','latitude','longitude','icon_url')
+#             for plan in data:
+#                 point = Point(plan['longitude'], plan['latitude'])
+#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+#                 #print("Event Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+#                 if isOne and bounding_box.contains(point):
+#                     plans.append(plan)
+#         if HistoricalSite.objects.filter(category_id=category).exists():
+#             data=HistoricalSite.objects.filter(category_id=category).all().values(
+#                 'id', 'name', 
+#                 'description', 'images','latitude','longitude')\
+#                     .annotate(icon_url=F('category__icon_url'))\
+#                         .values('id', 'name', 
+#                 'description', 'images','latitude','longitude','icon_url')
+                        
+#             for plan in data:
+#                 point = Point(plan['longitude'], plan['latitude'])
+#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+#                 #print("HistoricalSite Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+#                 if isOne and bounding_box.contains(point):
+#                     plans.append(plan)
+#         if ExtremeSport.objects.filter(category_id=category).exists():
+#             data=ExtremeSport.objects.filter(category_id=category).all().values(
+#                 'id', 'name', 
+#                 'description', 'images','latitude','longitude')\
+#                     .annotate(icon_url=F('category__icon_url'))\
+#                         .values('id', 'name', 
+#                 'description', 'images','latitude','longitude','icon_url')
+#             for plan in data:
+#                 point = Point(plan['longitude'], plan['latitude'])
+#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
+#                 #print("ExtremeSport Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
+#                 if isOne and bounding_box.contains(point):
+#                     plans.append(plan)
+#         if Hotel.objects.filter(category_id=category).exists():
+#             data=Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
+#             for plan in data:
+#                 point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
+#                 #print('Hotel point')
+            
+#                 if is_distance_one(plan.geometry.location.lat,plan.geometry.location.lng, decoded_points,threshold_distance) and bounding_box.contains(point):
+#                     plans.append({
+#                                     "id": plan.id,
+#                                     "name": plan.name,
+#                                     "description":plan.description,
+#                                     "icon_url":plan.icon_url,
+#                                     "images": [plan.place_id],
+#                                     "latitude": plan.geometry.location.lat,
+#                                     "longitude": plan.geometry.location.lng,
+#                                      "rating": plan.rating,
+#                                      "user_ratings_total": plan.user_ratings_total,
+#                                 })
         
-    print(len(plans))
-    plans_list = {
-        "markers":list(plans)
-    }
+#     #print(len(plans))
+#     plans_list = {
+#         "markers":list(plans)
+#     }
     
-    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
-    
-    
+#     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
     
     
-    hotels = Hotel.objects.all()
-    results = []
+    
+    
+#     hotels = Hotel.objects.all()
+#     results = []
 
-    for hotel in hotels:
-        result = {
-            "business_status": hotel.business_status,
-            "geometry": {
-                "location": {
-                    "lat": hotel.geometry.location.lat,
-                    "lng": hotel.geometry.location.lng
-                },
-                "viewport": {
-                    "northeast": {
-                        "lat": hotel.geometry.viewport.northeast_lat,
-                        "lng": hotel.geometry.viewport.northeast_lng
-                    },
-                    "southwest": {
-                        "lat": hotel.geometry.viewport.southwest_lat,
-                        "lng": hotel.geometry.viewport.southwest_lng
-                    }
-                }
-            },
-            "icon": hotel.icon,
-            "icon_background_color": hotel.icon_background_color,
-            "icon_mask_base_uri": hotel.icon_mask_base_uri,
-            "name": hotel.name,
-            "opening_hours": {
-                "open_now": hotel.open_now
-            },
-            "photos": [{
-                "height": photo.height,
-                "html_attributions": photo.html_attributions.split(','),
-                "photo_reference": photo.photo_reference,
-                "width": photo.width
-            } for photo in hotel.photos.all()],
-            "place_id": hotel.place_id,
-            "plus_code": {
-                "compound_code": hotel.plus_code.compound_code,
-                "global_code": hotel.plus_code.global_code
-            },
-            "rating": hotel.rating,
-            "reference": hotel.reference,
-            "scope": hotel.scope,
-            "types": hotel.types.split(','),
-            "user_ratings_total": hotel.user_ratings_total,
-            "vicinity": hotel.vicinity
-        }
-        results.append(result)
-    result = []
-    for hotel in results:
-        point = Point(hotel['geometry']['location']['lng'], hotel['geometry']['location']['lat'])
-        if is_distance_one(hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'], decoded_points,threshold_distance) and bounding_box.contains(point):
-            print('inserting')
-            result.append(hotel)
-    print('Len', len(results))
+#     for hotel in hotels:
+#         result = {
+#             "business_status": hotel.business_status,
+#             "geometry": {
+#                 "location": {
+#                     "lat": hotel.geometry.location.lat,
+#                     "lng": hotel.geometry.location.lng
+#                 },
+#                 "viewport": {
+#                     "northeast": {
+#                         "lat": hotel.geometry.viewport.northeast_lat,
+#                         "lng": hotel.geometry.viewport.northeast_lng
+#                     },
+#                     "southwest": {
+#                         "lat": hotel.geometry.viewport.southwest_lat,
+#                         "lng": hotel.geometry.viewport.southwest_lng
+#                     }
+#                 }
+#             },
+#             "icon": hotel.icon,
+#             "icon_background_color": hotel.icon_background_color,
+#             "icon_mask_base_uri": hotel.icon_mask_base_uri,
+#             "name": hotel.name,
+#             "opening_hours": {
+#                 "open_now": hotel.open_now
+#             },
+#             "photos": [{
+#                 "height": photo.height,
+#                 "html_attributions": photo.html_attributions.split(','),
+#                 "photo_reference": photo.photo_reference,
+#                 "width": photo.width
+#             } for photo in hotel.photos.all()],
+#             "place_id": hotel.place_id,
+#             "plus_code": {
+#                 "compound_code": hotel.plus_code.compound_code,
+#                 "global_code": hotel.plus_code.global_code
+#             },
+#             "rating": hotel.rating,
+#             "reference": hotel.reference,
+#             "scope": hotel.scope,
+#             "types": hotel.types.split(','),
+#             "user_ratings_total": hotel.user_ratings_total,
+#             "vicinity": hotel.vicinity
+#         }
+#         results.append(result)
+#     result = []
+#     for hotel in results:
+#         point = Point(hotel['geometry']['location']['lng'], hotel['geometry']['location']['lat'])
+#         if is_distance_one(hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'], decoded_points,threshold_distance) and bounding_box.contains(point):
+#             #print('inserting')
+#             result.append(hotel)
+#     #print('Len', len(results))
 
 
     
-    return JsonResponse(result, safe=False)
+#     return JsonResponse(result, safe=False)
 
 
 
@@ -2649,7 +2713,7 @@ def handle_scraping(row, city_name, city_obj):
     has already been scraped to avoid duplication.
     """
 
-    print(f"Scrapping Started For URL {row['url']}")
+    #print(f"Scrapping Started For URL {row['url']}")
 
     # Mapping categories to their corresponding models
     category_to_model = {
