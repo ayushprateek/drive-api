@@ -152,7 +152,7 @@ def getProfileOptions(request):
         country_list.remove(us_country)
         country_list.insert(0, us_country)
     
-    renral_cars = RentalCars.objects.all().values(
+    rental_cars = RentalCars.objects.all().values(
         'id',
         'name'
     )
@@ -176,7 +176,7 @@ def getProfileOptions(request):
         "travel_goals":list(travelGoal),
         "motivations":list(motivation),
         "countries":list(country_list),
-        "airline_brands":list(renral_cars),
+        "rental_cars":list(rental_cars),
         "hotel_brands":list(hotelBrands),
         "restaurant_brands":list(restaurant_brands),
         "priorities":list(priorities),
