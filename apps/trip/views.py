@@ -2420,24 +2420,86 @@ def decode_poly(encoded):
     return points
 
 
-
+@api_view(['POST'])
 def get_coordinates_along_polyline(request):
+    # print("Category list = ",request.data['categories'])
+    categoryList=request.data['categories']
     # Get coordinates A and B from request
-    lat1, lon1 = float(request.GET.get('lat1')), float(request.GET.get('lon1'))
-    lat2, lon2 = float(request.GET.get('lat2')), float(request.GET.get('lon2'))
-    south_lat = float(request.GET.get('south_lat'))
-    west_lon = float(request.GET.get('west_lon'))
-    north_lat = float(request.GET.get('north_lat'))
-    east_lon = float(request.GET.get('east_lon'))
+    lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
+    lat2, lon2 = float(request.data['lat2']), float(request.data['lon2'])
+    south_lat = float(request.data['south_lat'])
+    west_lon = float(request.data['west_lon'])
+    north_lat = float(request.data['north_lat'])
+    east_lon = float(request.data['east_lon'])
+    plans=[]
+    
+    for category in categoryList:
+        if WeirdAndWacky.objects.filter(category_id=category).exists():
+            data=WeirdAndWacky.objects.filter(category_id=category).all().values(
+                'id', 'name', 
+                'description', 'images','latitude','longitude')
+            for plan in data:
+                plans.append(plan)
+        if Attraction.objects.filter(category_id=category).exists():
+            data=Attraction.objects.filter(category_id=category).all().values(
+                'id', 'name', 
+                'description', 'images','latitude','longitude')
+            for plan in data:
+                plans.append(plan)
+        if Park.objects.filter(category_id=category).exists():
+            data=Park.objects.filter(category_id=category).all().values(
+                'id', 'name', 
+                'description', 'images','latitude','longitude')
+            for plan in data:
+                plans.append(plan)
+        if Event.objects.filter(category_id=category).exists():
+            data=Event.objects.filter(category_id=category).all().values(
+                'id', 'name', 
+                'description', 'images','latitude','longitude')
+            for plan in data:
+                plans.append(plan)
+        if HistoricalSite.objects.filter(category_id=category).exists():
+            data=HistoricalSite.objects.filter(category_id=category).all().values(
+                'id', 'name', 
+                'description', 'images','latitude','longitude')
+            for plan in data:
+                plans.append(plan)
+        if ExtremeSport.objects.filter(category_id=category).exists():
+            data=ExtremeSport.objects.filter(category_id=category).all().values(
+                'id', 'name', 
+                'description', 'images','latitude','longitude')
+            for plan in data:
+                plans.append(plan)
+        if Hotel.objects.filter(category_id=category).exists():
+            data=Hotel.objects.filter(category_id=category).all()
+            for plan in data:
+                plans.append({
+            "id": plan.id,
+            "name": plan.name,
+            "description":plan.description,
+            "images": [
+                "static/WeirdAndWacky1.png"
+            ],
+            "latitude": plan.geometry.location.lat,
+            "longitude": plan.geometry.location.lng
+        })
+        
+    print(len(plans))
+    plans_list = {
+        "markers":list(plans)
+    }
+    
+    return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+    
+    
     
     # Create a bounding box using shapely
     bounding_box = box(west_lon, south_lat, east_lon, north_lat)
 
     print(lat1,lon1)
     print(lat2,lon2)
-    
-    # Create LineString from A to B
-        # line = LineString([(lon1, lat1), (lon2, lat2)])
+
+
     decoded_points=[]
     
     # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
@@ -2447,11 +2509,6 @@ def get_coordinates_along_polyline(request):
         data=response.json()
         print("Data = ",data)
         decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
-        # for point in decoded_points:
-            # print(f"Lat: {point.lat}, Lng: {point.lng}")
-
-    
-    # Threshold distance for points to be considered 'alongside' the polyline
     
     threshold_distance = float(request.GET.get('threshold_distance'))
     hotels = Hotel.objects.all()
@@ -2502,23 +2559,9 @@ def get_coordinates_along_polyline(request):
             "vicinity": hotel.vicinity
         }
         results.append(result)
-
-
-    
-    # Get all coordinates from the database
-    # allHotelList = Hotel.objects.all().values('id','place_id','name','address','rating','latitude','longitude','icon')
-    
-    # Filter coordinates that are alongside the polyline
     result = []
-    # for hotel in allHotelList:
-    #     # print("latitude == ? mm",hotel['latitude'])
-    #     point = Point(hotel['longitude'], hotel['latitude'])
-    #     if line.distance(point) <= threshold_distance and bounding_box.contains(point):
-    #         result.append(json.dumps(hotel, default=str,))
     for hotel in results:
-        # print("latitude == ",hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'])
         point = Point(hotel['geometry']['location']['lng'], hotel['geometry']['location']['lat'])
-        # print("distance from point == ",line.distance(point),bounding_box.contains(point))
         if is_distance_one(hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'], decoded_points,threshold_distance) and bounding_box.contains(point):
             print('inserting')
             result.append(hotel)
