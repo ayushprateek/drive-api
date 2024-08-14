@@ -147,19 +147,24 @@ def getAllRestaurantBrand(request):
     restaurant_brand_list = list(restaurant_brands)
     return JsonResponse(restaurant_brand_list, safe=False,status=status.HTTP_200_OK)
 
+
 @api_view(['POST'])
 def addTrip(request):
     #print('Called')
-    results=Category.objects.all()
-    for row in results:
-        if not PlanCategory.objects.filter(category_id=row.id).exists():
-            PlanCategory.objects.create(
-            category=row
-        )
-        if not TripCategory.objects.filter(category_id=row.id).exists():
-            TripCategory.objects.create(
-                category=row
-            )
+    category1=Category.objects.filter(id='159fd81e-a253-4c97-af45-655b1fad6fef').first()
+    TripCategory.objects.create(
+    category=category1
+    )
+    # results=Category.objects.all()
+    # for row in results:
+    #     if not PlanCategory.objects.filter(category_id=row.id).exists():
+    #         PlanCategory.objects.create(
+    #         category=row
+    #     )
+    #     if not TripCategory.objects.filter(category_id=row.id).exists():
+    #         TripCategory.objects.create(
+    #             category=row
+    #         )
     # Category.objects.create(
     # name='Attractions',
     # image_url='static/AttractionsIcon.svg',
