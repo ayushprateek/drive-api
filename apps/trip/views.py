@@ -150,41 +150,41 @@ def getAllRestaurantBrand(request):
 @api_view(['POST'])
 def addTrip(request):
     print('Called')
-    results=Category.objects.all()
-    for row in results:
-        # PlanCategory.objects.create(
-        #     category=row
-        # )
-        print(row.id)
-        if not TripCategory.objects.filter(category_id=row.id).exists():
-            TripCategory.objects.create(
-                category=row
-            )
-    # Category.objects.create(
-    # name='Attractions',
-    # image_url='static/AttractionsIcon.svg',
-    # icon_url='static/AttractionsIcon.svg'
-    # )
-    # Category.objects.create(
-    # name='Travel Info',
-    # image_url='static/TravelInfoIcon.svg',
-    # icon_url='static/TravelInfoIcon.svg'
-    # )
-    # Category.objects.create(
-    # name='Cheap Gas',
-    # image_url='static/CheapGasIcon.svg',
-    # icon_url='static/CheapGasIcon.svg'
-    # )
-    # Category.objects.create(
-    # name='Foodie',
-    # image_url='static/FoodieIcon.svg',
-    # icon_url='static/FoodieIcon.svg'
-    # )
-    # Category.objects.create(
-    # name='Camping',
-    # image_url='static/CampingIcon.svg',
-    # icon_url='static/CampingIcon.svg'
-    # )
+    # results=Category.objects.all()
+    # for row in results:
+    #     # PlanCategory.objects.create(
+    #     #     category=row
+    #     # )
+    #     print(row.id)
+    #     if not TripCategory.objects.filter(category_id=row.id).exists():
+    #         TripCategory.objects.create(
+    #             category=row
+    #         )
+    Category.objects.create(
+    name='Attractions',
+    image_url='static/AttractionsIcon.svg',
+    icon_url='static/AttractionsIcon.svg'
+    )
+    Category.objects.create(
+    name='Travel Info',
+    image_url='static/TravelInfoIcon.svg',
+    icon_url='static/TravelInfoIcon.svg'
+    )
+    Category.objects.create(
+    name='Cheap Gas',
+    image_url='static/CheapGasIcon.svg',
+    icon_url='static/CheapGasIcon.svg'
+    )
+    Category.objects.create(
+    name='Foodie',
+    image_url='static/FoodieIcon.svg',
+    icon_url='static/FoodieIcon.svg'
+    )
+    Category.objects.create(
+    name='Camping',
+    image_url='static/CampingIcon.svg',
+    icon_url='static/CampingIcon.svg'
+    )
     return JsonResponse({'message': 'Category Created'})
 
 def addCountry(request):
