@@ -2905,46 +2905,90 @@ class CategoryWiseListAPIView(generics.ListCreateAPIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-
 class CategoryListAPIView(generics.ListCreateAPIView):
     """Get All the Categories"""
 
     pagination_class = pagination.DefaultPagination
     permission_classes = (permissions.IsSuperAdmin | permissions.IsUser,)
     parser_classes = (parsers.JSONParser,)
-    category_models = trip_models.Category
     serializer_class = trip_serializer.CategorySerializer
 
     def get_queryset(self, **kwargs):
-        """_summary_
+        """
         Returns:
             array of object: returns array of objects from the respective
             models
         """
-        return self.category_models.filter_instance(kwargs).order_by("-created_at")
+        queryset = PlanCategory.objects.select_related('category').values(
+    'category__id', 'category__name', 'category__icon_url', 'category__image_url'
+).annotate(
+    id=F('category__id'),
+    name=F('category__name'),
+    icon_url=F('category__icon_url'),
+    image_url=F('category__image_url')
+)
+        
+        return queryset
 
     @swagger_auto_schema(responses={200: schema.category_list_response})
     def get(self, request, *args, **kwargs):
-        """returns dict of objs in Json Format
+        """
         Returns:
             Dict Of Objs:
             This gives list of category objects, This will be returned as paginated response
             where user can send number page response
         """
-
         # Filter Queryset to fetch data
-        filtered_queryset = self.filter_queryset(queryset=self.get_queryset())
+        filtered_queryset = self.filter_queryset(self.get_queryset(**kwargs))
 
         # Applying pagination on queryset level
-        list_of_items = self.serializer_class(
-            self.paginate_queryset(filtered_queryset), many=True, **kwargs
-        ).data
+        paginated_queryset = self.paginate_queryset(filtered_queryset)
+        list_of_items = self.serializer_class(paginated_queryset, many=True, **kwargs).data
 
         # Applying pagination on response level
         return Response(
             data=self.get_paginated_response(list_of_items).data,
             status=status.HTTP_200_OK,
         )
+# class CategoryListAPIView(generics.ListCreateAPIView):
+#     """Get All the Categories"""
+
+#     pagination_class = pagination.DefaultPagination
+#     permission_classes = (permissions.IsSuperAdmin | permissions.IsUser,)
+#     parser_classes = (parsers.JSONParser,)
+#     category_models = trip_models.Category
+#     serializer_class = trip_serializer.CategorySerializer
+
+#     def get_queryset(self, **kwargs):
+#         """_summary_
+#         Returns:
+#             array of object: returns array of objects from the respective
+#             models
+#         """
+#         return self.category_models.filter_instance(kwargs).order_by("-created_at")
+
+#     @swagger_auto_schema(responses={200: schema.category_list_response})
+#     def get(self, request, *args, **kwargs):
+#         """returns dict of objs in Json Format
+#         Returns:
+#             Dict Of Objs:
+#             This gives list of category objects, This will be returned as paginated response
+#             where user can send number page response
+#         """
+
+#         # Filter Queryset to fetch data
+#         filtered_queryset = self.filter_queryset(queryset=self.get_queryset())
+
+#         # Applying pagination on queryset level
+#         list_of_items = self.serializer_class(
+#             self.paginate_queryset(filtered_queryset), many=True, **kwargs
+#         ).data
+
+#         # Applying pagination on response level
+#         return Response(
+#             data=self.get_paginated_response(list_of_items).data,
+#             status=status.HTTP_200_OK,
+#         )
 
 
 class CityListAPIView(generics.ListCreateAPIView):
