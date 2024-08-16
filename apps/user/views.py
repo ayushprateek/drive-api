@@ -148,9 +148,13 @@ def getProfileOptions(request):
     print(len(countries))
     country_list = list(countries)
     us_country = next((country for country in country_list if country['iso'] == 'US'), None)
+    ca_country = next((country for country in country_list if country['iso'] == 'CA'), None)
     if us_country:
         country_list.remove(us_country)
         country_list.insert(0, us_country)
+    if ca_country:
+        country_list.remove(ca_country)
+        country_list.insert(1, ca_country)
     
     rental_cars = RentalCars.objects.all().values(
         'id',
