@@ -140,9 +140,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', 
         'NAME': 'drive_dev',
-        'USER': 'postgres',
-        'PASSWORD': 'Ayush@123',
-        # 'PASSWORD': 'Kishul#123',
+        # 'USER': 'postgres',
+        # 'PASSWORD': 'Ayush@123',
+        'USER': 'drive_user',
+        'PASSWORD': 'Kishul@123',
         'HOST': 'localhost',
         'PORT': '5432',
     }
