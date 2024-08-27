@@ -2541,7 +2541,7 @@ def getSitesNearMe(request):
     north_lat, east_lon = float(request.data['north_lat']), float(request.data['east_lon'])
     
     # radius = float(request.data['threshold_distance'])
-    radius = 50000
+    radius = 5
 
     bounding_box = box(west_lon, south_lat, east_lon, north_lat)
 
