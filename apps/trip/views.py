@@ -2433,6 +2433,9 @@ def decode_poly(encoded):
 @api_view(['POST'])
 def get_coordinates_along_polyline(request):
     category_list = request.data['categories']
+    only_hotels = request.data['only_hotels']
+    format = request.data['format']
+        
     lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
     lat2, lon2 = float(request.data['lat2']), float(request.data['lon2'])
     south_lat, west_lon = float(request.data['south_lat']), float(request.data['west_lon'])
@@ -2450,7 +2453,7 @@ def get_coordinates_along_polyline(request):
     if response.status_code == 200:
         data = response.json()
         decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
-        print("overview_polyline = ",decoded_points)
+        # print("overview_polyline = ",decoded_points)
 
     plans = []
     
@@ -2460,38 +2463,65 @@ def get_coordinates_along_polyline(request):
             point = Point(plan['longitude'], plan['latitude'])
             if is_distance_one(float(plan['latitude']), float(plan['longitude']), decoded_points, threshold_distance) and bounding_box.contains(point):
                 plans.append(plan)
+    
+    if only_hotels:
+        data=Hotel.objects.annotate(icon_url=F('category__icon_url'))
+        for plan in data:
+            point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
+            condition=is_distance_one(plan.geometry.location.lat,plan.geometry.location.lng,decoded_points,threshold_distance)
+        
+            
+            
+            if format == 'map':
+                condition=is_distance_one(plan.geometry.location.lat,plan.geometry.location.lng,decoded_points,threshold_distance) and bounding_box.contains(point)
+            else:
+                condition=is_distance_one(plan.geometry.location.lat,plan.geometry.location.lng,decoded_points,threshold_distance)
 
-    model_list = [WeirdAndWacky, Attraction, Park, Event, HistoricalSite, ExtremeSport]
-    
-    for category in category_list:
-        if Hotel.objects.filter(category_id=category).exists():
-            data=Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
-            for plan in data:
-                point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
-                #print('Hotel point')
-    
-                if is_distance_one(plan.geometry.location.lat,plan.geometry.location.lng, decoded_points,threshold_distance) and bounding_box.contains(point):
-                    plans.append({
-                                    "id": plan.id,
-                                    "name": plan.name,
-                                    "description":plan.description,
-                                    "icon_url":plan.icon_url,
-                                    "images": [plan.place_id],
-                                    "latitude": plan.geometry.location.lat,
-                                    "longitude": plan.geometry.location.lng,
-                                     "rating": plan.rating,
-                                     "user_ratings_total": plan.user_ratings_total,
-                                })
-        else:
-            for model in model_list:
-                queryset = model.objects.filter(category_id=category).annotate(
-                    icon_url=F('category__icon_url')
-                ).values(
-                    'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url'
-                )
-                process_data(queryset)
+            if condition:
+                plans.append({
+                                "id": plan.id,
+                                "name": plan.name,
+                                "description":plan.description,
+                                "icon_url":plan.icon_url,
+                                "images": [plan.place_id],
+                                "latitude": plan.geometry.location.lat,
+                                "longitude": plan.geometry.location.lng,
+                                 "rating": plan.rating,
+                                 "user_ratings_total": plan.user_ratings_total,
+                           })
+    else:
+        model_list = [WeirdAndWacky, Attraction, Park, Event, HistoricalSite, ExtremeSport]
+
+        for category in category_list:
+            if Hotel.objects.filter(category_id=category).exists():
+                data=Hotel.objects.filter(category_id=category).annotate(icon_url=F ('category__icon_url'))
+                for plan in data:
+                    point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
+                    #print('Hotel point')
+
+                    if is_distance_one(plan.geometry.location.lat,plan.geometry.location.lng,   decoded_points,threshold_distance) and bounding_box.contains(point):
+                        plans.append({
+                                        "id": plan.id,
+                                        "name": plan.name,
+                                        "description":plan.description,
+                                        "icon_url":plan.icon_url,
+                                        "images": [plan.place_id],
+                                        "latitude": plan.geometry.location.lat,
+                                        "longitude": plan.geometry.location.lng,
+                                         "rating": plan.rating,
+                                         "user_ratings_total": plan.user_ratings_total,
+                                    })
+            else:
+                for model in model_list:
+                    queryset = model.objects.filter(category_id=category).annotate(
+                        icon_url=F('category__icon_url')
+                    ).values(
+                        'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url'
+                    )
+                    process_data(queryset)
 
     plans_list = {"markers": list(plans)}
+    print('Marker list',plans_list)
 
     return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
 # @api_view(['POST'])
