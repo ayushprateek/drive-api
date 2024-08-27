@@ -2524,209 +2524,97 @@ def get_coordinates_along_polyline(request):
     print('Marker list',plans_list)
 
     return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
-# @api_view(['POST'])
-# def get_coordinates_along_polyline(request):
-#     # #print("Category list = ",request.data['categories'])
-#     categoryList=request.data['categories']
-#     # Get coordinates A and B from request
-#     lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
-#     lat2, lon2 = float(request.data['lat2']), float(request.data['lon2'])
-#     south_lat = float(request.data['south_lat'])
-#     west_lon = float(request.data['west_lon'])
-#     north_lat = float(request.data['north_lat'])
-#     east_lon = float(request.data['east_lon'])
-    
-#     # Create a bounding box using shapely
-#     bounding_box = box(west_lon, south_lat, east_lon, north_lat)
-
-#     #print(lat1,lon1)
-#     #print(lat2,lon2)
 
 
-#     decoded_points=[]
+@api_view(['POST'])
+def getSitesNearMe(request):
+    category_list = request.data['categories']
+    only_hotels = request.data['only_hotels']
+    print("only_hotels = ",only_hotels)
     
-#     # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
-#     url = f"https://maps.googleapis.com/maps/api/directions/json?origin={lat1},{lon1}&destination={lat2},{lon2}&key={settings.GOOGLE_API_KEY}"
-#     response = requests.get(url)
-#     if response.status_code == 200:
-#         data=response.json()
-#         #print("Data = ",data)
-#         decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
-    
-#     threshold_distance = float(request.data['threshold_distance'])
-    
-    
-#     plans=[]
-    
-#     for category in categoryList:
-#         if WeirdAndWacky.objects.filter(category_id=category).exists():
-#             data=WeirdAndWacky.objects.filter(category_id=category).all().values(
-#                 'id', 'name', 
-#                 'description', 'images','latitude','longitude')\
-#                     .annotate(icon_url=F('category__icon_url'))\
-#                         .values('id', 'name', 
-#                 'description', 'images','latitude','longitude','icon_url')
-#             for plan in data:
-#                 point = Point(plan['longitude'], plan['latitude'])
-#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-#                 #print("WeirdAndWacky Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-#                 if isOne and bounding_box.contains(point):
-#                     plans.append(plan)
-#         if Attraction.objects.filter(category_id=category).exists():
-#             data=Attraction.objects.filter(category_id=category).all().values(
-#                 'id', 'name', 
-#                 'description', 'images','latitude','longitude')\
-#                     .annotate(icon_url=F('category__icon_url'))\
-#                         .values('id', 'name', 
-#                 'description', 'images','latitude','longitude','icon_url')
-#             for plan in data:
-#                 point = Point(plan['longitude'], plan['latitude'])
-#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-#                 print("Attraction Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-#                 if isOne and bounding_box.contains(point):
-#                     plans.append(plan)
-#         if Park.objects.filter(category_id=category).exists():
-#             data=Park.objects.filter(category_id=category).all().values(
-#                 'id', 'name', 
-#                 'description', 'images','latitude','longitude')\
-#                     .annotate(icon_url=F('category__icon_url'))\
-#                         .values('id', 'name', 
-#                 'description', 'images','latitude','longitude','icon_url')
-#             print("Len = ",len(data))       
-#             for plan in data:
-#                 point = Point(plan['longitude'], plan['latitude'])
-#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-#                 #print("Park Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-#                 if isOne and bounding_box.contains(point):
-#                     plans.append(plan)
-#         if Event.objects.filter(category_id=category).exists():
-#             data=Event.objects.filter(category_id=category).all().values(
-#                 'id', 'name', 
-#                 'description', 'images','latitude','longitude')\
-#                     .annotate(icon_url=F('category__icon_url'))\
-#                         .values('id', 'name', 
-#                 'description', 'images','latitude','longitude','icon_url')
-#             for plan in data:
-#                 point = Point(plan['longitude'], plan['latitude'])
-#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-#                 #print("Event Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-#                 if isOne and bounding_box.contains(point):
-#                     plans.append(plan)
-#         if HistoricalSite.objects.filter(category_id=category).exists():
-#             data=HistoricalSite.objects.filter(category_id=category).all().values(
-#                 'id', 'name', 
-#                 'description', 'images','latitude','longitude')\
-#                     .annotate(icon_url=F('category__icon_url'))\
-#                         .values('id', 'name', 
-#                 'description', 'images','latitude','longitude','icon_url')
-                        
-#             for plan in data:
-#                 point = Point(plan['longitude'], plan['latitude'])
-#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-#                 #print("HistoricalSite Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-#                 if isOne and bounding_box.contains(point):
-#                     plans.append(plan)
-#         if ExtremeSport.objects.filter(category_id=category).exists():
-#             data=ExtremeSport.objects.filter(category_id=category).all().values(
-#                 'id', 'name', 
-#                 'description', 'images','latitude','longitude')\
-#                     .annotate(icon_url=F('category__icon_url'))\
-#                         .values('id', 'name', 
-#                 'description', 'images','latitude','longitude','icon_url')
-#             for plan in data:
-#                 point = Point(plan['longitude'], plan['latitude'])
-#                 isOne=is_distance_one(float(plan['latitude']),float(plan['longitude']), decoded_points,threshold_distance)
-#                 #print("ExtremeSport Point = ",plan['longitude'], plan['latitude'],isOne,bounding_box.contains(point))
-#                 if isOne and bounding_box.contains(point):
-#                     plans.append(plan)
-#         if Hotel.objects.filter(category_id=category).exists():
-#             data=Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
-#             for plan in data:
-#                 point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
-#                 #print('Hotel point')
-            
-#                 if is_distance_one(plan.geometry.location.lat,plan.geometry.location.lng, decoded_points,threshold_distance) and bounding_box.contains(point):
-#                     plans.append({
-#                                     "id": plan.id,
-#                                     "name": plan.name,
-#                                     "description":plan.description,
-#                                     "icon_url":plan.icon_url,
-#                                     "images": [plan.place_id],
-#                                     "latitude": plan.geometry.location.lat,
-#                                     "longitude": plan.geometry.location.lng,
-#                                      "rating": plan.rating,
-#                                      "user_ratings_total": plan.user_ratings_total,
-#                                 })
+    format = request.data['format']
+    print("format = ",format)
         
-#     #print(len(plans))
-#     plans_list = {
-#         "markers":list(plans)
-#     }
+    lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
     
-#     return JsonResponse(plans_list, safe=False,status=status.HTTP_200_OK)
+    south_lat, west_lon = float(request.data['south_lat']), float(request.data['west_lon'])
+    north_lat, east_lon = float(request.data['north_lat']), float(request.data['east_lon'])
     
-    
-    
-    
-#     hotels = Hotel.objects.all()
-#     results = []
+    # radius = float(request.data['threshold_distance'])
+    radius = 50000
 
-#     for hotel in hotels:
-#         result = {
-#             "business_status": hotel.business_status,
-#             "geometry": {
-#                 "location": {
-#                     "lat": hotel.geometry.location.lat,
-#                     "lng": hotel.geometry.location.lng
-#                 },
-#                 "viewport": {
-#                     "northeast": {
-#                         "lat": hotel.geometry.viewport.northeast_lat,
-#                         "lng": hotel.geometry.viewport.northeast_lng
-#                     },
-#                     "southwest": {
-#                         "lat": hotel.geometry.viewport.southwest_lat,
-#                         "lng": hotel.geometry.viewport.southwest_lng
-#                     }
-#                 }
-#             },
-#             "icon": hotel.icon,
-#             "icon_background_color": hotel.icon_background_color,
-#             "icon_mask_base_uri": hotel.icon_mask_base_uri,
-#             "name": hotel.name,
-#             "opening_hours": {
-#                 "open_now": hotel.open_now
-#             },
-#             "photos": [{
-#                 "height": photo.height,
-#                 "html_attributions": photo.html_attributions.split(','),
-#                 "photo_reference": photo.photo_reference,
-#                 "width": photo.width
-#             } for photo in hotel.photos.all()],
-#             "place_id": hotel.place_id,
-#             "plus_code": {
-#                 "compound_code": hotel.plus_code.compound_code,
-#                 "global_code": hotel.plus_code.global_code
-#             },
-#             "rating": hotel.rating,
-#             "reference": hotel.reference,
-#             "scope": hotel.scope,
-#             "types": hotel.types.split(','),
-#             "user_ratings_total": hotel.user_ratings_total,
-#             "vicinity": hotel.vicinity
-#         }
-#         results.append(result)
-#     result = []
-#     for hotel in results:
-#         point = Point(hotel['geometry']['location']['lng'], hotel['geometry']['location']['lat'])
-#         if is_distance_one(hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'], decoded_points,threshold_distance) and bounding_box.contains(point):
-#             #print('inserting')
-#             result.append(hotel)
-#     #print('Len', len(results))
-
+    bounding_box = box(west_lon, south_lat, east_lon, north_lat)
 
     
-#     return JsonResponse(result, safe=False)
+
+    plans = []
+    
+
+    def process_data(queryset):
+        for plan in queryset:
+            point = Point(plan['longitude'], plan['latitude'])
+            distance=haversine(lat1=lat1,lon1=lon1,lat2=plan['latitude'],lon2= plan['longitude'])
+            if distance<radius and bounding_box.contains(point):
+                plans.append(plan)
+    
+    if only_hotels:
+        data=Hotel.objects.annotate(icon_url=F('category__icon_url'))
+        for plan in data:
+            point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
+
+            condition=haversine(lat1=lat1,lon1=lon1,lat2=plan.geometry.location.lat,lon2= plan.geometry.location.lng)<radius
+            
+            if format == 'map':
+                condition=haversine(lat1=lat1,lon1=lon1,lat2=plan.geometry.location.lat,lon2= plan.geometry.location.lng)<radius and bounding_box.contains(point)
+            else:
+                condition=haversine(lat1=lat1,lon1=lon1,lat2=plan.geometry.location.lat,lon2= plan.geometry.location.lng)<radius
+
+            if condition:
+                plans.append({
+                                "id": plan.id,
+                                "name": plan.name,
+                                "description":plan.description,
+                                "icon_url":plan.icon_url,
+                                "images": [plan.place_id],
+                                "latitude": plan.geometry.location.lat,
+                                "longitude": plan.geometry.location.lng,
+                                 "rating": plan.rating,
+                                 "user_ratings_total": plan.user_ratings_total,
+                           })
+    else:
+        model_list = [WeirdAndWacky, Attraction, Park, Event, HistoricalSite, ExtremeSport]
+
+        for category in category_list:
+            if Hotel.objects.filter(category_id=category).exists():
+                data=Hotel.objects.filter(category_id=category).annotate(icon_url=F ('category__icon_url'))
+                for plan in data:
+                    point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
+
+                    if haversine(lat1=lat1,lon1=lon1,lat2=plan.geometry.location.lat,lon2= plan.geometry.location.lng)<radius and bounding_box.contains(point):
+                        plans.append({
+                                        "id": plan.id,
+                                        "name": plan.name,
+                                        "description":plan.description,
+                                        "icon_url":plan.icon_url,
+                                        "images": [plan.place_id],
+                                        "latitude": plan.geometry.location.lat,
+                                        "longitude": plan.geometry.location.lng,
+                                         "rating": plan.rating,
+                                         "user_ratings_total": plan.user_ratings_total,
+                                    })
+            else:
+                for model in model_list:
+                    queryset = model.objects.filter(category_id=category).annotate(
+                        icon_url=F('category__icon_url')
+                    ).values(
+                        'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url'
+                    )
+                    process_data(queryset)
+
+    plans_list = {"markers": list(plans)}
+    print('Marker list',plans_list)
+
+    return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
 
 
 

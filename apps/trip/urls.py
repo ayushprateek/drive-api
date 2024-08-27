@@ -56,6 +56,7 @@ urlpatterns = [
     path('get-trip-filter/', getTripFilter,name='add-user'),
     path('addtripplancategory/', addTrip,name='add trip plan'),
     path('get-trip-plan-category/', getTripPlanCategory,name='add trip plan'),
+    path('get-sites-near-me/', getSitesNearMe,name='add trip plan'),
 
     
 ]
