@@ -746,6 +746,69 @@ def weird(request):
     return JsonResponse({'message': 'HistoricalSite fetched and saved successfully'})
 
 @api_view(['POST'])
+def saveToItinerary(request):
+    data = json.loads(request.body)
+    userdata=User.objects.filter(id=data['user_id']).first()
+    planIds=data['plan_id']
+    if Itinerary.objects.filter(user_id=data['user_id']).exists():
+        itinerary = Itinerary.objects.filter(user_id=data['user_id']).first()
+    else :
+        itinerary = Itinerary.objects.create(user=userdata)
+    
+    for planId in planIds:
+        planModel=Plan.objects.filter(id=planId).first()
+        if HistoricalSite.objects.filter(id=data['place_id']).exists():
+            historicalsite = HistoricalSite.objects.get(id=data['place_id'])
+            ItineraryHistoricalSite.objects.create(
+                itinerary=itinerary,
+                historicalsite=historicalsite,
+                plan=planModel
+                )
+        if Hotel.objects.filter(id=data['place_id']).exists():
+            hotel = Hotel.objects.get(id=data['place_id'])
+            ItineraryHotel.objects.create(
+                itinerary=itinerary,
+                hotel=hotel,
+                plan=planModel
+                )
+        if ExtremeSport.objects.filter(id=data['place_id']).exists():
+            extremesport = ExtremeSport.objects.get(id=data['place_id'])
+            ItineraryExtremeSport.objects.create(
+                itinerary=itinerary,
+                extremesport=extremesport,
+                plan=planModel
+                )
+        if Event.objects.filter(id=data['place_id']).exists():
+            event = Event.objects.get(id=data['place_id'])
+            ItineraryEvent.objects.create(
+                itinerary=itinerary,
+                event=event,
+                plan=planModel
+                )
+        if WeirdAndWacky.objects.filter(id=data['place_id']).exists():
+            weirdandwacky = WeirdAndWacky.objects.get(id=data['place_id'])
+            ItineraryWeirdAndWacky.objects.create(
+                itinerary=itinerary,
+                weirdandwacky=weirdandwacky,
+                plan=planModel
+                )
+        if Park.objects.filter(id=data['place_id']).exists():
+            park = Park.objects.get(id=data['place_id'])
+            ItineraryPark.objects.create(
+                itinerary=itinerary,
+                park=park,
+                plan=planModel
+                )
+        if Attraction.objects.filter(id=data['place_id']).exists():
+            attraction = Attraction.objects.get(id=data['place_id'])
+            ItineraryAttraction.objects.create(
+                itinerary=itinerary,
+                attraction=attraction,
+                plan=planModel
+                )
+    return JsonResponse({'message': 'Added'})
+    
+@api_view(['POST'])
 def likePlace(request):
     #print('createPlan called')
     data = json.loads(request.body)
@@ -767,16 +830,6 @@ def likePlace(request):
             plan=planModel
             ) 
         return JsonResponse({'message': 'User Liked Historical Site'})
-    
-    # if HistoricalSite.objects.filter(id=data['like_id']).exists():
-    #     historicalsites=HistoricalSite.objects.get(id=data['like_id'])
-    #     user_likes.liked_historicalsites.add(historicalsites)
-    #     return JsonResponse({'message': 'User Liked Historical Site'})
-        
-    # if Hotel.objects.filter(id=data['like_id']).exists():
-    #     hotel = Hotel.objects.get(id=data['like_id'])
-    #     user_likes.liked_hotels.add(hotel)
-    #     return JsonResponse({'message': 'User Liked Hotel'})
     
     if Hotel.objects.filter(id=data['like_id']).exists():
         historicalsite = Hotel.objects.get(id=data['like_id'])

@@ -488,6 +488,7 @@ class UserLikes(models.Model):
     liked_parks_new = models.ManyToManyField(Park, through='UserLikesPark')
     liked_attractions_new = models.ManyToManyField(Attraction, through='UserLikesAttraction')
 
+    
 class UserLikesHotel(models.Model):
     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
@@ -522,6 +523,55 @@ class UserLikesAttraction(models.Model):
     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
     attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+ 
+    def __str__(self):
+        return self.user.first_name
+
+class Itinerary(models.Model):
+    user = models.OneToOneField(user, on_delete=models.CASCADE)
+    date = models.DateTimeField(null=True)
+    hotel_itinerary = models.ManyToManyField(Hotel, through='ItineraryHotel')
+    extremesports_itinerary = models.ManyToManyField(ExtremeSport, through='ItineraryExtremeSport')
+    historicalsites_itinerary = models.ManyToManyField(HistoricalSite, through='ItineraryHistoricalSite')
+    events_itinerary = models.ManyToManyField(Event, through='ItineraryEvent')
+    wierdandwacky_itinerary = models.ManyToManyField(WeirdAndWacky, through='ItineraryWeirdAndWacky')
+    parks_itinerary = models.ManyToManyField(Park, through='ItineraryPark')
+    attractions_itinerary = models.ManyToManyField(Attraction, through='ItineraryAttraction')
+    
+class ItineraryHotel(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
+
+class ItineraryExtremeSport(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+    extremesport = models.ForeignKey(ExtremeSport, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
+
+class ItineraryHistoricalSite(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+    historicalsite = models.ForeignKey(HistoricalSite, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
+
+class ItineraryEvent(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
+
+class ItineraryWeirdAndWacky(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+    weirdandwacky = models.ForeignKey(WeirdAndWacky, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
+
+class ItineraryPark(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+    park = models.ForeignKey(Park, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
+
+class ItineraryAttraction(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+    attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
  
     def __str__(self):
         return self.user.first_name
