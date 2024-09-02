@@ -807,6 +807,46 @@ def saveToItinerary(request):
                 plan=planModel
                 )
     return JsonResponse({'message': 'Added'})
+@api_view(['POST'])
+def isPlaceInItinerary(request):
+    data = json.loads(request.body)
+    
+    if Itinerary.objects.filter(user_id=data['user_id']).exists():
+        itinerary = Itinerary.objects.filter(user_id=data['user_id']).first()
+        if itinerary and itinerary.historicalsites_itinerary.filter(id=data['place_id']).exists():
+            
+            return JsonResponse({'message': 'User Liked Historical Site',
+                                 'liked':True})
+        
+        if itinerary and itinerary.hotel_itinerary.filter(id=data['place_id']).exists():
+            return JsonResponse({'message': 'User Liked Hotel',
+                                 'liked':True})
+
+        if itinerary and itinerary.extremesports_itinerary.filter(id=data['place_id']).exists():
+            return JsonResponse({'message': 'User Liked Extreme Sport',
+                                 'liked':True})
+
+        if itinerary and itinerary.events_itinerary.filter(id=data['place_id']).exists():
+            return JsonResponse({'message': 'User Liked Event',
+                                 'liked':True})
+
+        if itinerary and itinerary.wierdandwacky_itinerary.filter(id=data['place_id']).exists():
+            return JsonResponse({'message': 'User Liked Weird And Wacky',
+                                 'liked':True})
+
+        if itinerary and itinerary.parks_itinerary.filter(id=data['place_id']).exists():
+            return JsonResponse({'message': 'User Liked Park','liked':True})
+
+        if itinerary and itinerary.attractions_itinerary.filter(id=data['place_id']).exists():
+            return JsonResponse({'message': 'User Liked Attraction','liked':True})
+        
+        return JsonResponse({
+            'message': 'User Did not like',
+            'liked':False})
+    else :
+        return JsonResponse({
+            'message': 'User Did not like',
+            'liked':False})
     
 @api_view(['POST'])
 def likePlace(request):
