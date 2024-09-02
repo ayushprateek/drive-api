@@ -59,6 +59,5 @@ urlpatterns = [
     path('get-sites-near-me/', getSitesNearMe,name='add trip plan'),
     path('save-to-itinerary/', saveToItinerary,name='add trip plan'),
     path('is-place-in-itinerary/', isPlaceInItinerary,name='add trip plan'),
-
-    
+    path('get-itinerary-via-plan/', getItineraryViaPlan,name='add trip plan'),
 ]

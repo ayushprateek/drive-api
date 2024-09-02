@@ -12,7 +12,7 @@ from rest_framework.exceptions import ValidationError
 from datetime import date
 from django.db import models
 from django.db import models
-from django.db.models import F
+from django.db.models import F,Q
 from django.db.models.functions import Coalesce
 
 from apps.trip.helper import (
@@ -750,15 +750,34 @@ def saveToItinerary(request):
     data = json.loads(request.body)
     userdata=User.objects.filter(id=data['user_id']).first()
     planIds=data['plan_id']
+    
+        
     if Itinerary.objects.filter(user_id=data['user_id']).exists():
         itinerary = Itinerary.objects.filter(user_id=data['user_id']).first()
+        
+        if ItineraryHistoricalSite.objects.filter(historicalsite_id=data['place_id'],itinerary=itinerary).exists():
+               ItineraryHistoricalSite.objects.filter(historicalsite_id=data['place_id'],itinerary=itinerary).delete()
+        if ItineraryHotel.objects.filter(hotel_id=data['place_id'],itinerary=itinerary).exists():
+               ItineraryHotel.objects.filter(hotel_id=data['place_id'],itinerary=itinerary).delete()
+        if ItineraryExtremeSport.objects.filter(extremesport_id=data['place_id'],itinerary=itinerary).exists():
+               ItineraryExtremeSport.objects.filter(extremesport_id=data['place_id'],itinerary=itinerary).delete()
+        if ItineraryEvent.objects.filter(event_id=data['place_id'],itinerary=itinerary).exists():
+               ItineraryEvent.objects.filter(event_id=data['place_id'],itinerary=itinerary).delete()
+        if ItineraryWeirdAndWacky.objects.filter(weirdandwacky_id=data['place_id'],itinerary=itinerary).exists():
+               ItineraryWeirdAndWacky.objects.filter(weirdandwacky_id=data['place_id'],itinerary=itinerary).delete()
+        if ItineraryPark.objects.filter(park_id=data['place_id'],itinerary=itinerary).exists():
+               ItineraryPark.objects.filter(park_id=data['place_id'],itinerary=itinerary).delete()
+        if ItineraryAttraction.objects.filter(attraction_id=data['place_id'],itinerary=itinerary).exists():
+               ItineraryAttraction.objects.filter(attraction_id=data['place_id'],itinerary=itinerary).delete()   
     else :
         itinerary = Itinerary.objects.create(user=userdata)
     
     for planId in planIds:
         planModel=Plan.objects.filter(id=planId).first()
         if HistoricalSite.objects.filter(id=data['place_id']).exists():
+            
             historicalsite = HistoricalSite.objects.get(id=data['place_id'])
+            
             ItineraryHistoricalSite.objects.create(
                 itinerary=itinerary,
                 historicalsite=historicalsite,
@@ -810,35 +829,76 @@ def saveToItinerary(request):
 @api_view(['POST'])
 def isPlaceInItinerary(request):
     data = json.loads(request.body)
-    
+    planId=data.get('plan_id')
     if Itinerary.objects.filter(user_id=data['user_id']).exists():
         itinerary = Itinerary.objects.filter(user_id=data['user_id']).first()
-        if itinerary and itinerary.historicalsites_itinerary.filter(id=data['place_id']).exists():
+        if planId:
+            if itinerary.historicalsites_itinerary.through.objects.filter(
+                    itinerary=itinerary, historicalsite_id=data['place_id'], 
+                    plan_id=planId).exists():
+                return JsonResponse({'message': 'User Liked Historical Site', 'liked': True})
             
-            return JsonResponse({'message': 'User Liked Historical Site',
+            if itinerary.hotel_itinerary.through.objects.filter(
+                    itinerary=itinerary, hotel_id=data['place_id'], 
+                    plan_id=planId).exists():
+                return JsonResponse({'message': 'User Liked Hotel',
+                                     'liked':True})
+                
+            if itinerary.extremesports_itinerary.through.objects.filter(
+                    itinerary=itinerary, extremesport_id=data['place_id'], 
+                    plan_id=planId).exists():
+                return JsonResponse({'message': 'User Liked Extreme Sport',
+                                     'liked':True})
+                
+            if itinerary.events_itinerary.through.objects.filter(
+                    itinerary=itinerary, event_id=data['place_id'], 
+                    plan_id=planId).exists():
+                return JsonResponse({'message': 'User Liked Event',
+                                     'liked':True})
+                
+            if itinerary.wierdandwacky_itinerary.through.objects.filter(
+                    itinerary=itinerary, weirdandwacky_id=data['place_id'], 
+                    plan_id=planId).exists():
+                return JsonResponse({'message': 'User Liked Weird And Wacky',
+                                     'liked':True})
+                
+            if itinerary.parks_itinerary.through.objects.filter(
+                    itinerary=itinerary, park_id=data['place_id'], 
+                    plan_id=planId).exists():
+                return JsonResponse({'message': 'User Liked Park','liked':True})
+            
+            if itinerary.attractions_itinerary.through.objects.filter(
+                    itinerary=itinerary, attraction_id=data['place_id'], 
+                    plan_id=planId).exists():
+                return JsonResponse({'message': 'User Liked Attraction','liked':True})
+            
+        else:
+            if itinerary.historicalsites_itinerary.filter(id=data['place_id']).exists():
+                return JsonResponse({'message': 'User Liked Historical Site',
                                  'liked':True})
         
-        if itinerary and itinerary.hotel_itinerary.filter(id=data['place_id']).exists():
-            return JsonResponse({'message': 'User Liked Hotel',
-                                 'liked':True})
-
-        if itinerary and itinerary.extremesports_itinerary.filter(id=data['place_id']).exists():
-            return JsonResponse({'message': 'User Liked Extreme Sport',
-                                 'liked':True})
-
-        if itinerary and itinerary.events_itinerary.filter(id=data['place_id']).exists():
-            return JsonResponse({'message': 'User Liked Event',
-                                 'liked':True})
-
-        if itinerary and itinerary.wierdandwacky_itinerary.filter(id=data['place_id']).exists():
-            return JsonResponse({'message': 'User Liked Weird And Wacky',
-                                 'liked':True})
-
-        if itinerary and itinerary.parks_itinerary.filter(id=data['place_id']).exists():
-            return JsonResponse({'message': 'User Liked Park','liked':True})
-
-        if itinerary and itinerary.attractions_itinerary.filter(id=data['place_id']).exists():
-            return JsonResponse({'message': 'User Liked Attraction','liked':True})
+            if itinerary.hotel_itinerary.filter(id=data['place_id']).exists():
+                return JsonResponse({'message': 'User Liked Hotel',
+                                     'liked':True})
+    
+            if itinerary.extremesports_itinerary.filter(id=data['place_id']).exists():
+                return JsonResponse({'message': 'User Liked Extreme Sport',
+                                     'liked':True})
+    
+            if itinerary.events_itinerary.filter(id=data['place_id']).exists():
+                return JsonResponse({'message': 'User Liked Event',
+                                     'liked':True})
+    
+            if itinerary and itinerary.wierdandwacky_itinerary.filter(id=data['place_id']).exists():
+                return JsonResponse({'message': 'User Liked Weird And Wacky',
+                                     'liked':True})
+    
+            if itinerary.parks_itinerary.filter(id=data['place_id']).exists():
+                return JsonResponse({'message': 'User Liked Park','liked':True})
+    
+            if itinerary.attractions_itinerary.filter(id=data['place_id']).exists():
+                return JsonResponse({'message': 'User Liked Attraction','liked':True})
+        
         
         return JsonResponse({
             'message': 'User Did not like',
@@ -847,6 +907,334 @@ def isPlaceInItinerary(request):
         return JsonResponse({
             'message': 'User Did not like',
             'liked':False})
+@api_view(['POST'])
+def getItineraryViaPlan(request):
+    data = json.loads(request.body)
+    plan_id=data['plan_id']
+    selectedCity=data['selected_cities']
+    selectedCategory=data['selected_categories']
+    
+    plans_list=[]
+    historicalSiteList=[]
+    eventList=[]
+    parkList=[]
+    hotelList=[]
+    extremeSportList=[]
+    weirdAndWackyList=[]
+    attractionList=[]
+    
+    itineraryHistoricalSite=ItineraryHistoricalSite.objects.filter(plan_id=plan_id).all().values('historicalsite_id','id')
+    itineraryEvent=ItineraryEvent.objects.filter(plan_id=plan_id).all().values('event_id','id')
+    itineraryPark=ItineraryPark.objects.filter(plan_id=plan_id).all().values('park_id','id')
+    itineraryHotel=ItineraryHotel.objects.filter(plan_id=plan_id).all().values('hotel_id','id')
+    itineraryExtremeSport=ItineraryExtremeSport.objects.filter(plan_id=plan_id).all().values('extremesport_id','id')
+    itineraryWeirdAndWacky=ItineraryWeirdAndWacky.objects.filter(plan_id=plan_id).all().values('weirdandwacky_id','id')
+    itineraryAttraction=ItineraryAttraction.objects.filter(plan_id=plan_id).all().values('attraction_id','id')
+    
+    
+    if itineraryHistoricalSite:
+        itineraryHistoricalSiteData = itineraryHistoricalSite[0]
+        if HistoricalSite.objects.filter(id=itineraryHistoricalSiteData['historicalsite_id']).exists():
+            if selectedCity:
+                fetch=HistoricalSite.objects.filter(id=itineraryHistoricalSiteData['historicalsite_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=HistoricalSite.objects.filter(id=itineraryHistoricalSiteData['historicalsite_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
+            plans = fetch.all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            imageList=[]
+            userList =ItineraryHistoricalSite.objects.filter(plan_id=plan_id).all()\
+                .values('historicalsite_id','id','itinerary_id')\
+                    .annotate(user_id=F('itinerary__user_id'))\
+                        .values('historicalsite_id','id','itinerary_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+            
+            for plan in plans:
+                plan['user_count']=len(itineraryHistoricalSite)
+                plan['users']=list(imageList)
+                historicalSiteList.append(plan)
+            
+    if itineraryEvent:
+        itineraryEventData = itineraryEvent[0]
+        if Event.objects.filter(id=itineraryEventData['event_id']).exists():
+            if selectedCity:
+                fetch=Event.objects.filter(id=itineraryEventData['event_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=Event.objects.filter(id=itineraryEventData['event_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
+            plans = fetch.all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            
+            imageList=[]
+            userList =ItineraryEvent.objects.filter(plan_id=plan_id).all()\
+                .values('event_id','id','itinerary_id')\
+                    .annotate(user_id=F('itinerary__user_id'))\
+                        .values('event_id','id','itinerary_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+            
+            for plan in plans:
+                plan['user_count']=len(itineraryEvent)
+                plan['users']=list(imageList)
+                eventList.append(plan)
+    
+    if itineraryPark:
+        itineraryParkData = itineraryPark[0]
+        if Park.objects.filter(id=itineraryParkData['park_id']).exists():
+            if selectedCity:
+                fetch=Park.objects.filter(id=itineraryParkData['park_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=Park.objects.filter(id=itineraryParkData['park_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
+            plans = fetch.all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            
+            imageList=[]
+            userList =ItineraryPark.objects.filter(plan_id=plan_id).all()\
+                .values('park_id','id','itinerary_id')\
+                    .annotate(user_id=F('itinerary__user_id'))\
+                        .values('park_id','id','itinerary_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+                    
+            for plan in plans:
+                plan['user_count']=len(itineraryPark)
+                plan['users']=list(imageList)
+                parkList.append(plan)
+    
+    if itineraryHotel:
+        itineraryHotelData = itineraryHotel[0]
+        if Hotel.objects.filter(id=itineraryHotelData['hotel_id']).exists():
+            if selectedCity:
+                fetch= Hotel.objects.filter(id=itineraryHotelData['hotel_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch= Hotel.objects.filter(id=itineraryHotelData['hotel_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
+            plans =fetch.all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            
+            imageList=[]
+            userList =ItineraryHotel.objects.filter(plan_id=plan_id).all()\
+                .values('hotel_id','id','itinerary_id')\
+                    .annotate(user_id=F('itinerary__user_id'))\
+                        .values('hotel_id','id','itinerary_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+                    
+            for plan in plans:
+                plan['user_count']=len(itineraryHotel)
+                plan['users']=list(imageList)
+                hotelList.append(plan)
+    
+    if itineraryWeirdAndWacky:
+        itineraryWeirdAndWackyData = itineraryWeirdAndWacky[0]
+        if WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id']).exists():
+            if selectedCity:
+                fetch=WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
+                
+            plans = fetch.all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            
+            imageList=[]
+            userList =ItineraryWeirdAndWacky.objects.filter(plan_id=plan_id).all()\
+                .values('weirdandwacky_id','id','itinerary_id')\
+                    .annotate(user_id=F('itinerary__user_id'))\
+                        .values('weirdandwacky_id','id','itinerary_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+            for plan in plans:
+                plan['user_count']=len(itineraryWeirdAndWacky)
+                plan['users']=list(imageList)
+                weirdAndWackyList.append(plan)
+            
+    if itineraryExtremeSport:
+        
+        itineraryExtremeSportData = itineraryExtremeSport[0]
+        if ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id']).exists():
+            if selectedCity:
+                fetch=ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
+            
+            plans = fetch.all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            imageList=[]
+            userList =ItineraryExtremeSport.objects.filter(plan_id=plan_id).all()\
+                .values('extremesport_id','id','itinerary_id')\
+                    .annotate(user_id=F('itinerary__user_id'))\
+                        .values('extremesport_id','id','itinerary_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+            
+            for plan in plans:
+                plan['user_count']=len(itineraryExtremeSport)
+                plan['users']=list(imageList)
+                extremeSportList.append(plan)
+    
+    if itineraryAttraction:
+        
+        itineraryAttractionData = itineraryAttraction[0]
+        if Attraction.objects.filter(id=itineraryAttractionData['attraction_id']).exists():
+            if selectedCity:
+                fetch=Attraction.objects.filter(id=itineraryAttractionData['attraction_id']).filter(city_id__in=selectedCity)
+            else:
+                fetch=Attraction.objects.filter(id=itineraryAttractionData['attraction_id'])
+            if selectedCategory:
+                fetch=fetch.filter(category_id__in=selectedCategory)
+            plans = fetch.all().values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id'
+            ).annotate(city_name=F('city__name')).values(
+            'id', 'name', 
+            'description', 'images',
+            'city_id',
+            'city_name'
+            )
+            
+            
+            imageList=[]
+            userList =ItineraryAttraction.objects.filter(plan_id=plan_id).all()\
+                .values('attraction_id','id','itinerary_id')\
+                    .annotate(user_id=F('itinerary__user_id'))\
+                        .values('attraction_id','id','itinerary_id','user_id')
+                        
+            for users in userList:
+                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                for pic in profile_pic:
+                    imageList.append({
+                    "profile_pic_id":pic['profile_pic_id'],
+                    "profile_picture":pic['profile_picture'],
+                })
+            
+            
+            
+            for plan in plans:
+                plan['user_count']=len(itineraryAttraction)
+                plan['users']=list(imageList)
+                attractionList.append(plan)
+    
+    plans_list.append({"HistoricalSite":list(historicalSiteList)})
+    plans_list.append({"Event":list(eventList)})
+    plans_list.append({"Park":list(parkList)})
+    plans_list.append({"Hotel":list(hotelList)})
+    plans_list.append({"WeirdAndWacky":list(weirdAndWackyList)})
+    plans_list.append({"ExtremeSport":list(extremeSportList)})
+    plans_list.append({"Attraction":list(attractionList)})
+    return JsonResponse(json.dumps(
+        {
+        "HistoricalSite":list(historicalSiteList),
+         "Event":list(eventList),
+         "Park":list(parkList),
+         "Hotel":list(hotelList),
+         "WeirdAndWacky":list(weirdAndWackyList),
+         "ExtremeSports":list(extremeSportList),
+         "Attraction":list(attractionList)
+         },
+        default=str
+        ) ,safe=False,status=status.HTTP_200_OK)
     
 @api_view(['POST'])
 def likePlace(request):
