@@ -750,6 +750,7 @@ def saveToItinerary(request):
     data = json.loads(request.body)
     userdata=User.objects.filter(id=data['user_id']).first()
     planIds=data['plan_id']
+    date=data['date']
     
         
     if Itinerary.objects.filter(user_id=data['user_id']).exists():
@@ -781,49 +782,56 @@ def saveToItinerary(request):
             ItineraryHistoricalSite.objects.create(
                 itinerary=itinerary,
                 historicalsite=historicalsite,
-                plan=planModel
+                plan=planModel,
+                date=date
                 )
         if Hotel.objects.filter(id=data['place_id']).exists():
             hotel = Hotel.objects.get(id=data['place_id'])
             ItineraryHotel.objects.create(
                 itinerary=itinerary,
                 hotel=hotel,
-                plan=planModel
+                plan=planModel,
+                date=date
                 )
         if ExtremeSport.objects.filter(id=data['place_id']).exists():
             extremesport = ExtremeSport.objects.get(id=data['place_id'])
             ItineraryExtremeSport.objects.create(
                 itinerary=itinerary,
                 extremesport=extremesport,
-                plan=planModel
+                plan=planModel,
+                date=date
                 )
         if Event.objects.filter(id=data['place_id']).exists():
             event = Event.objects.get(id=data['place_id'])
             ItineraryEvent.objects.create(
                 itinerary=itinerary,
                 event=event,
-                plan=planModel
+                plan=planModel,
+                date=date
                 )
         if WeirdAndWacky.objects.filter(id=data['place_id']).exists():
             weirdandwacky = WeirdAndWacky.objects.get(id=data['place_id'])
             ItineraryWeirdAndWacky.objects.create(
                 itinerary=itinerary,
                 weirdandwacky=weirdandwacky,
-                plan=planModel
+                plan=planModel,
+                date=date
                 )
         if Park.objects.filter(id=data['place_id']).exists():
             park = Park.objects.get(id=data['place_id'])
             ItineraryPark.objects.create(
                 itinerary=itinerary,
                 park=park,
-                plan=planModel
+                plan=planModel,
+                date=date
                 )
         if Attraction.objects.filter(id=data['place_id']).exists():
             attraction = Attraction.objects.get(id=data['place_id'])
             ItineraryAttraction.objects.create(
                 itinerary=itinerary,
                 attraction=attraction,
-                plan=planModel
+                plan=planModel,
+                date=date
                 )
     return JsonResponse({'message': 'Added'})
 @api_view(['POST'])
@@ -913,6 +921,7 @@ def getItineraryViaPlan(request):
     plan_id=data['plan_id']
     selectedCity=data['selected_cities']
     selectedCategory=data['selected_categories']
+    dates=set()
     
     plans_list=[]
     historicalSiteList=[]
@@ -923,298 +932,366 @@ def getItineraryViaPlan(request):
     weirdAndWackyList=[]
     attractionList=[]
     
-    itineraryHistoricalSite=ItineraryHistoricalSite.objects.filter(plan_id=plan_id).all().values('historicalsite_id','id')
-    itineraryEvent=ItineraryEvent.objects.filter(plan_id=plan_id).all().values('event_id','id')
-    itineraryPark=ItineraryPark.objects.filter(plan_id=plan_id).all().values('park_id','id')
-    itineraryHotel=ItineraryHotel.objects.filter(plan_id=plan_id).all().values('hotel_id','id')
-    itineraryExtremeSport=ItineraryExtremeSport.objects.filter(plan_id=plan_id).all().values('extremesport_id','id')
-    itineraryWeirdAndWacky=ItineraryWeirdAndWacky.objects.filter(plan_id=plan_id).all().values('weirdandwacky_id','id')
-    itineraryAttraction=ItineraryAttraction.objects.filter(plan_id=plan_id).all().values('attraction_id','id')
+    itineraryHistoricalSite=ItineraryHistoricalSite.objects.filter(plan_id=plan_id).all().values('historicalsite_id','id','date')
+    itineraryEvent=ItineraryEvent.objects.filter(plan_id=plan_id).all().values('event_id','id','date')
+    itineraryPark=ItineraryPark.objects.filter(plan_id=plan_id).all().values('park_id','id','date')
+    itineraryHotel=ItineraryHotel.objects.filter(plan_id=plan_id).all().values('hotel_id','id','date')
+    itineraryExtremeSport=ItineraryExtremeSport.objects.filter(plan_id=plan_id).all().values('extremesport_id','id','date')
+    itineraryWeirdAndWacky=ItineraryWeirdAndWacky.objects.filter(plan_id=plan_id).all().values('weirdandwacky_id','id','date')
+    itineraryAttraction=ItineraryAttraction.objects.filter(plan_id=plan_id).all().values('attraction_id','id','date')
     
     
     if itineraryHistoricalSite:
-        itineraryHistoricalSiteData = itineraryHistoricalSite[0]
-        if HistoricalSite.objects.filter(id=itineraryHistoricalSiteData['historicalsite_id']).exists():
-            if selectedCity:
-                fetch=HistoricalSite.objects.filter(id=itineraryHistoricalSiteData['historicalsite_id']).filter(city_id__in=selectedCity)
-            else:
-                fetch=HistoricalSite.objects.filter(id=itineraryHistoricalSiteData['historicalsite_id'])
-            if selectedCategory:
-                fetch=fetch.filter(category_id__in=selectedCategory)
-            plans = fetch.all().values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id',
-            'city_name'
-            )
-            imageList=[]
-            userList =ItineraryHistoricalSite.objects.filter(plan_id=plan_id).all()\
-                .values('historicalsite_id','id','itinerary_id')\
-                    .annotate(user_id=F('itinerary__user_id'))\
-                        .values('historicalsite_id','id','itinerary_id','user_id')
-                        
-            for users in userList:
-                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
-                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
-                for pic in profile_pic:
-                    imageList.append({
-                    "profile_pic_id":pic['profile_pic_id'],
-                    "profile_picture":pic['profile_picture'],
-                })
-            
-            for plan in plans:
-                plan['user_count']=len(itineraryHistoricalSite)
-                plan['users']=list(imageList)
-                historicalSiteList.append(plan)
+        for itineraryHistoricalSiteData in itineraryHistoricalSite:
+            if HistoricalSite.objects.filter(id=itineraryHistoricalSiteData['historicalsite_id']).exists():
+                if selectedCity:
+                    fetch=HistoricalSite.objects.filter(id=itineraryHistoricalSiteData['historicalsite_id']).   filter(city_id__in=selectedCity)
+                else:
+                    fetch=HistoricalSite.objects.filter(id=itineraryHistoricalSiteData['historicalsite_id'])
+                if selectedCategory:
+                    fetch=fetch.filter(category_id__in=selectedCategory)
+                plans = fetch.all().values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id'
+                ).annotate(city_name=F('city__name')).values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id',
+                'city_name'
+                )
+                imageList=[]
+                userList =ItineraryHistoricalSite.objects.filter(plan_id=plan_id).all()\
+                    .values('historicalsite_id','id','itinerary_id')\
+                        .annotate(user_id=F('itinerary__user_id'))\
+                            .values('historicalsite_id','id','itinerary_id','user_id')
+
+                for users in userList:
+                    profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                        values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                    for pic in profile_pic:
+                        imageList.append({
+                        "profile_pic_id":pic['profile_pic_id'],
+                        "profile_picture":pic['profile_picture'],
+                    })
+
+                for plan in plans:
+                    plan['user_count']=len(itineraryHistoricalSite)
+                    plan['users']=list(imageList)
+                    plan['date']=itineraryHistoricalSiteData['date']
+                    dates.add(plan['date'])
+                    historicalSiteList.append(plan)
             
     if itineraryEvent:
-        itineraryEventData = itineraryEvent[0]
-        if Event.objects.filter(id=itineraryEventData['event_id']).exists():
-            if selectedCity:
-                fetch=Event.objects.filter(id=itineraryEventData['event_id']).filter(city_id__in=selectedCity)
-            else:
-                fetch=Event.objects.filter(id=itineraryEventData['event_id'])
-            if selectedCategory:
-                fetch=fetch.filter(category_id__in=selectedCategory)
-            plans = fetch.all().values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id',
-            'city_name'
-            )
-            
-            imageList=[]
-            userList =ItineraryEvent.objects.filter(plan_id=plan_id).all()\
-                .values('event_id','id','itinerary_id')\
-                    .annotate(user_id=F('itinerary__user_id'))\
-                        .values('event_id','id','itinerary_id','user_id')
-                        
-            for users in userList:
-                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
-                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
-                for pic in profile_pic:
-                    imageList.append({
-                    "profile_pic_id":pic['profile_pic_id'],
-                    "profile_picture":pic['profile_picture'],
-                })
-            
-            for plan in plans:
-                plan['user_count']=len(itineraryEvent)
-                plan['users']=list(imageList)
-                eventList.append(plan)
+        for itineraryEventData in itineraryEvent:
+            if Event.objects.filter(id=itineraryEventData['event_id']).exists():
+                if selectedCity:
+                    fetch=Event.objects.filter(id=itineraryEventData['event_id']).filter    (city_id__in=selectedCity)
+                else:
+                    fetch=Event.objects.filter(id=itineraryEventData['event_id'])
+                if selectedCategory:
+                    fetch=fetch.filter(category_id__in=selectedCategory)
+                plans = fetch.all().values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id'
+                ).annotate(city_name=F('city__name')).values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id',
+                'city_name'
+                )
+
+                imageList=[]
+                userList =ItineraryEvent.objects.filter(plan_id=plan_id).all()\
+                    .values('event_id','id','itinerary_id')\
+                        .annotate(user_id=F('itinerary__user_id'))\
+                            .values('event_id','id','itinerary_id','user_id')
+
+                for users in userList:
+                    profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                        values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                    for pic in profile_pic:
+                        imageList.append({
+                        "profile_pic_id":pic['profile_pic_id'],
+                        "profile_picture":pic['profile_picture'],
+                    })
+
+                for plan in plans:
+                    plan['user_count']=len(itineraryEvent)
+                    plan['users']=list(imageList)
+                    plan['date']=itineraryEventData['date']
+                    dates.add(plan['date'])
+                    eventList.append(plan)
     
     if itineraryPark:
-        itineraryParkData = itineraryPark[0]
-        if Park.objects.filter(id=itineraryParkData['park_id']).exists():
-            if selectedCity:
-                fetch=Park.objects.filter(id=itineraryParkData['park_id']).filter(city_id__in=selectedCity)
-            else:
-                fetch=Park.objects.filter(id=itineraryParkData['park_id'])
-            if selectedCategory:
-                fetch=fetch.filter(category_id__in=selectedCategory)
-            plans = fetch.all().values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id',
-            'city_name'
-            )
-            
-            imageList=[]
-            userList =ItineraryPark.objects.filter(plan_id=plan_id).all()\
-                .values('park_id','id','itinerary_id')\
-                    .annotate(user_id=F('itinerary__user_id'))\
-                        .values('park_id','id','itinerary_id','user_id')
-                        
-            for users in userList:
-                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
-                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
-                for pic in profile_pic:
-                    imageList.append({
-                    "profile_pic_id":pic['profile_pic_id'],
-                    "profile_picture":pic['profile_picture'],
-                })
-                    
-            for plan in plans:
-                plan['user_count']=len(itineraryPark)
-                plan['users']=list(imageList)
-                parkList.append(plan)
+        for itineraryParkData in itineraryPark:
+            if Park.objects.filter(id=itineraryParkData['park_id']).exists():
+                if selectedCity:
+                    fetch=Park.objects.filter(id=itineraryParkData['park_id']).filter   (city_id__in=selectedCity)
+                else:
+                    fetch=Park.objects.filter(id=itineraryParkData['park_id'])
+                if selectedCategory:
+                    fetch=fetch.filter(category_id__in=selectedCategory)
+                plans = fetch.all().values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id'
+                ).annotate(city_name=F('city__name')).values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id',
+                'city_name'
+                )
+
+                imageList=[]
+                userList =ItineraryPark.objects.filter(plan_id=plan_id).all()\
+                    .values('park_id','id','itinerary_id')\
+                        .annotate(user_id=F('itinerary__user_id'))\
+                            .values('park_id','id','itinerary_id','user_id')
+
+                for users in userList:
+                    profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                        values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                    for pic in profile_pic:
+                        imageList.append({
+                        "profile_pic_id":pic['profile_pic_id'],
+                        "profile_picture":pic['profile_picture'],
+                    })
+
+                for plan in plans:
+                    plan['user_count']=len(itineraryPark)
+                    plan['users']=list(imageList)
+                    plan['date']=itineraryParkData['date']
+                    dates.add(plan['date'])
+                    parkList.append(plan)
     
     if itineraryHotel:
-        itineraryHotelData = itineraryHotel[0]
-        if Hotel.objects.filter(id=itineraryHotelData['hotel_id']).exists():
-            if selectedCity:
-                fetch= Hotel.objects.filter(id=itineraryHotelData['hotel_id']).filter(city_id__in=selectedCity)
-            else:
-                fetch= Hotel.objects.filter(id=itineraryHotelData['hotel_id'])
-            if selectedCategory:
-                fetch=fetch.filter(category_id__in=selectedCategory)
-            plans =fetch.all().values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id',
-            'city_name'
-            )
+        for itineraryHotelData in itineraryHotel:
+            if Hotel.objects.filter(id=itineraryHotelData['hotel_id']).exists():
+                if selectedCity:
+                    fetch= Hotel.objects.filter(id=itineraryHotelData['hotel_id']).filter(city_id__in=selectedCity)
+                else:
+                    fetch= Hotel.objects.filter(id=itineraryHotelData['hotel_id'])
+                if selectedCategory:
+                    fetch=fetch.filter(category_id__in=selectedCategory)
+                # plans=fetch.annotate(icon_url=F('category__icon_url')).annotate(city_name=F('city__name'))
+                
             
-            imageList=[]
-            userList =ItineraryHotel.objects.filter(plan_id=plan_id).all()\
-                .values('hotel_id','id','itinerary_id')\
-                    .annotate(user_id=F('itinerary__user_id'))\
-                        .values('hotel_id','id','itinerary_id','user_id')
-                        
-            for users in userList:
-                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
-                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
-                for pic in profile_pic:
-                    imageList.append({
-                    "profile_pic_id":pic['profile_pic_id'],
-                    "profile_picture":pic['profile_picture'],
-                })
                     
-            for plan in plans:
-                plan['user_count']=len(itineraryHotel)
-                plan['users']=list(imageList)
-                hotelList.append(plan)
+                
+                
+                plans =fetch.all().values(
+                'id', 'name', 
+                'place_id',
+                'description', 'images',
+                'city_id'
+                ).annotate(city_name=F('city__name')).values(
+                'id', 'name', 
+                'place_id',
+                'description', 'images',
+                'city_id',
+                'city_name'
+                )
+                
+                imageList=[]
+                userList =ItineraryHotel.objects.filter(plan_id=plan_id).all()\
+                    .values('hotel_id','id','itinerary_id')\
+                        .annotate(user_id=F('itinerary__user_id'))\
+                            .values('hotel_id','id','itinerary_id','user_id')
+
+                for users in userList:
+                    profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                        values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                    for pic in profile_pic:
+                        imageList.append({
+                        "profile_pic_id":pic['profile_pic_id'],
+                        "profile_picture":pic['profile_picture'],
+                    })
+                for plan in plans:
+                    plan['images']=[plan['place_id']]
+                    plan['user_count']=len(itineraryHotel)
+                    plan['users']=list(imageList)
+                    plan['date']=itineraryHotelData['date']
+                    dates.add(plan['date'])
+                    hotelList.append(plan)
+
+                # for plan in plans:
+                #     res={}
+                #     res['id']=plan.id
+                #     res['name']=plan.name
+                #     res['description']=plan.description
+                #     res['city_name']=plan.city_name
+                #     res['images']=[plan.place_id]
+                #     # url = "https://maps.googleapis.com/maps/api/place/details/json"
+                #     # params = {
+                #     #     'placeid': 'ChIJ5ZoUSlnb3ogRkzUrB9wrK3I',
+                #     #     'key': 'AIzaSyAgqQFWfvoWJgCQMdETHj_kq63t6PRg0ks'
+                #     # }
+                #     # response = requests.get(url, params=params)
+                #     # if response.status_code == 200:
+                #     #     rrr = response.json()
+                #     #     # print("response = ",rrr)
+                #     #     zzz = rrr.get('result', {})
+                #     #     photos = zzz.get('photos', []) 
+                #     #     # print("photos = ",photos)
+                #     #     # print("data = ",photos)
+                #     #     if len(photos)>1:
+                #     #         print(photos[0]['photo_reference'])
+                #     #         ref=photos[0]['photo_reference']
+                #     #         url = "https://maps.googleapis.com/maps/api/place/photo"
+                #     #         # Parameters for the API call
+                #     #         params = {
+                #     #             'maxwidth': 400, 
+                #     #             'photo_reference': ref,
+                #     #             'key': 'AIzaSyAgqQFWfvoWJgCQMdETHj_kq63t6PRg0ks'
+                #     #         }
+                #     # res['city_id']=[plan.place_id]
+                #     # plans.append({
+                #     #             "id": plan.id,
+                #     #             "name": plan.name,
+                #     #             "description":plan.description,
+                #     #             "icon_url":plan.icon_url,
+                #     #             "images": [plan.place_id],
+                #     #             "latitude": plan.geometry.location.lat,
+                #     #             "longitude": plan.geometry.location.lng,
+                #     #              "rating": plan.rating,
+                #     #              "user_ratings_total": plan.user_ratings_total,
+                #     #        })
+                #     print('plan id =' ,res['id'])
+                #     res['user_count']=len(itineraryHotel)
+                #     res['users']=list(imageList)
+                #     res['date']=itineraryHotelData['date']
+                #     dates.add(res['date'])
+                #     hotelList.append(res)
     
     if itineraryWeirdAndWacky:
-        itineraryWeirdAndWackyData = itineraryWeirdAndWacky[0]
-        if WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id']).exists():
-            if selectedCity:
-                fetch=WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id']).filter(city_id__in=selectedCity)
-            else:
-                fetch=WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id'])
-            if selectedCategory:
-                fetch=fetch.filter(category_id__in=selectedCategory)
-                
-            plans = fetch.all().values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id',
-            'city_name'
-            )
-            
-            imageList=[]
-            userList =ItineraryWeirdAndWacky.objects.filter(plan_id=plan_id).all()\
-                .values('weirdandwacky_id','id','itinerary_id')\
-                    .annotate(user_id=F('itinerary__user_id'))\
-                        .values('weirdandwacky_id','id','itinerary_id','user_id')
-                        
-            for users in userList:
-                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
-                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
-                for pic in profile_pic:
-                    imageList.append({
-                    "profile_pic_id":pic['profile_pic_id'],
-                    "profile_picture":pic['profile_picture'],
-                })
-            for plan in plans:
-                plan['user_count']=len(itineraryWeirdAndWacky)
-                plan['users']=list(imageList)
-                weirdAndWackyList.append(plan)
+        for itineraryWeirdAndWackyData in itineraryWeirdAndWacky:
+            if WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id']).exists():
+                if selectedCity:
+                    fetch=WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id']).  filter(city_id__in=selectedCity)
+                else:
+                    fetch=WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id'])
+                if selectedCategory:
+                    fetch=fetch.filter(category_id__in=selectedCategory)
+
+                plans = fetch.all().values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id'
+                ).annotate(city_name=F('city__name')).values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id',
+                'city_name'
+                )
+
+                imageList=[]
+                userList =ItineraryWeirdAndWacky.objects.filter(plan_id=plan_id).all()\
+                    .values('weirdandwacky_id','id','itinerary_id')\
+                        .annotate(user_id=F('itinerary__user_id'))\
+                            .values('weirdandwacky_id','id','itinerary_id','user_id')
+
+                for users in userList:
+                    profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                        values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                    for pic in profile_pic:
+                        imageList.append({
+                        "profile_pic_id":pic['profile_pic_id'],
+                        "profile_picture":pic['profile_picture'],
+                    })
+                print("Data = ",itineraryWeirdAndWackyData['date'])
+                for plan in plans:
+                    plan['user_count']=len(itineraryWeirdAndWacky)
+                    plan['users']=list(imageList)
+                    plan['date']=itineraryWeirdAndWackyData['date']
+                    dates.add(plan['date'])
+                    weirdAndWackyList.append(plan)
             
     if itineraryExtremeSport:
-        
-        itineraryExtremeSportData = itineraryExtremeSport[0]
-        if ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id']).exists():
-            if selectedCity:
-                fetch=ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id']).filter(city_id__in=selectedCity)
-            else:
-                fetch=ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id'])
-            if selectedCategory:
-                fetch=fetch.filter(category_id__in=selectedCategory)
-            
-            plans = fetch.all().values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id',
-            'city_name'
-            )
-            imageList=[]
-            userList =ItineraryExtremeSport.objects.filter(plan_id=plan_id).all()\
-                .values('extremesport_id','id','itinerary_id')\
-                    .annotate(user_id=F('itinerary__user_id'))\
-                        .values('extremesport_id','id','itinerary_id','user_id')
-                        
-            for users in userList:
-                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
-                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
-                for pic in profile_pic:
-                    imageList.append({
-                    "profile_pic_id":pic['profile_pic_id'],
-                    "profile_picture":pic['profile_picture'],
-                })
-            
-            for plan in plans:
-                plan['user_count']=len(itineraryExtremeSport)
-                plan['users']=list(imageList)
-                extremeSportList.append(plan)
+        for itineraryExtremeSportData in itineraryExtremeSport:
+            if ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id']).exists():
+                if selectedCity:
+                    fetch=ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id']).filter   (city_id__in=selectedCity)
+                else:
+                    fetch=ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id'])
+                if selectedCategory:
+                    fetch=fetch.filter(category_id__in=selectedCategory)
+
+                plans = fetch.all().values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id'
+                ).annotate(city_name=F('city__name')).values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id',
+                'city_name'
+                )
+                imageList=[]
+                userList =ItineraryExtremeSport.objects.filter(plan_id=plan_id).all()\
+                    .values('extremesport_id','id','itinerary_id')\
+                        .annotate(user_id=F('itinerary__user_id'))\
+                            .values('extremesport_id','id','itinerary_id','user_id')
+
+                for users in userList:
+                    profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                        values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                    for pic in profile_pic:
+                        imageList.append({
+                        "profile_pic_id":pic['profile_pic_id'],
+                        "profile_picture":pic['profile_picture'],
+                    })
+
+                for plan in plans:
+                    plan['user_count']=len(itineraryExtremeSport)
+                    plan['users']=list(imageList)
+                    plan['date']=itineraryExtremeSportData['date']
+                    dates.add(plan['date'])
+                    extremeSportList.append(plan)
     
     if itineraryAttraction:
-        
-        itineraryAttractionData = itineraryAttraction[0]
-        if Attraction.objects.filter(id=itineraryAttractionData['attraction_id']).exists():
-            if selectedCity:
-                fetch=Attraction.objects.filter(id=itineraryAttractionData['attraction_id']).filter(city_id__in=selectedCity)
-            else:
-                fetch=Attraction.objects.filter(id=itineraryAttractionData['attraction_id'])
-            if selectedCategory:
-                fetch=fetch.filter(category_id__in=selectedCategory)
-            plans = fetch.all().values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id'
-            ).annotate(city_name=F('city__name')).values(
-            'id', 'name', 
-            'description', 'images',
-            'city_id',
-            'city_name'
-            )
-            
-            
-            imageList=[]
-            userList =ItineraryAttraction.objects.filter(plan_id=plan_id).all()\
-                .values('attraction_id','id','itinerary_id')\
-                    .annotate(user_id=F('itinerary__user_id'))\
-                        .values('attraction_id','id','itinerary_id','user_id')
-                        
-            for users in userList:
-                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
-                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
-                for pic in profile_pic:
-                    imageList.append({
-                    "profile_pic_id":pic['profile_pic_id'],
-                    "profile_picture":pic['profile_picture'],
-                })
-            
-            
-            
-            for plan in plans:
-                plan['user_count']=len(itineraryAttraction)
-                plan['users']=list(imageList)
-                attractionList.append(plan)
+        for itineraryAttractionData in itineraryAttraction:
+            if Attraction.objects.filter(id=itineraryAttractionData['attraction_id']).exists():
+                if selectedCity:
+                    fetch=Attraction.objects.filter(id=itineraryAttractionData['attraction_id']).filter (city_id__in=selectedCity)
+                else:
+                    fetch=Attraction.objects.filter(id=itineraryAttractionData['attraction_id'])
+                if selectedCategory:
+                    fetch=fetch.filter(category_id__in=selectedCategory)
+                plans = fetch.all().values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id'
+                ).annotate(city_name=F('city__name')).values(
+                'id', 'name', 
+                'description', 'images',
+                'city_id',
+                'city_name'
+                )
+
+
+                imageList=[]
+                userList =ItineraryAttraction.objects.filter(plan_id=plan_id).all()\
+                    .values('attraction_id','id','itinerary_id')\
+                        .annotate(user_id=F('itinerary__user_id'))\
+                            .values('attraction_id','id','itinerary_id','user_id')
+
+                for users in userList:
+                    profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                        values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                    for pic in profile_pic:
+                        imageList.append({
+                        "profile_pic_id":pic['profile_pic_id'],
+                        "profile_picture":pic['profile_picture'],
+                    })
+
+                for plan in plans:
+                    plan['user_count']=len(itineraryAttraction)
+                    plan['users']=list(imageList)
+                    plan['date']=itineraryAttractionData['date']
+                    dates.add(plan['date'])
+                    attractionList.append(plan)
     
     plans_list.append({"HistoricalSite":list(historicalSiteList)})
     plans_list.append({"Event":list(eventList)})
@@ -1223,6 +1300,48 @@ def getItineraryViaPlan(request):
     plans_list.append({"WeirdAndWacky":list(weirdAndWackyList)})
     plans_list.append({"ExtremeSport":list(extremeSportList)})
     plans_list.append({"Attraction":list(attractionList)})
+    result=[]
+    
+    # eventList=[]
+    # parkList=[]
+    # hotelList=[]
+    # extremeSportList=[]
+    # weirdAndWackyList=[]
+    # attractionList=[]
+    
+    
+    for date in dates:
+        print('Unique dates = ',date)
+        res=[]
+        for historicalSite in historicalSiteList:
+            if historicalSite['date']==date:
+                res.append(historicalSite)
+        for event in eventList:
+            if event['date']==date:
+                res.append(event)
+        for hotel in hotelList:
+            if hotel['date']==date:
+                res.append(hotel)
+        for extremeSport in extremeSportList:
+            if extremeSport['date']==date:
+                res.append(extremeSport)
+        for weirdAndWacky in weirdAndWackyList:
+            if weirdAndWacky['date']==date:
+                res.append(weirdAndWacky)
+        for attraction in attractionList:
+            if attraction['date']==date:
+                res.append(attraction)
+        
+        result.append({
+                "date":date,
+                "value":list(res)
+                })
+                
+        
+        
+    
+    return JsonResponse(result,safe=False,status=status.HTTP_200_OK)
+    
     return JsonResponse(json.dumps(
         {
         "HistoricalSite":list(historicalSiteList),
