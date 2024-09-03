@@ -60,4 +60,5 @@ urlpatterns = [
     path('save-to-itinerary/', saveToItinerary,name='add trip plan'),
     path('is-place-in-itinerary/', isPlaceInItinerary,name='add trip plan'),
     path('get-itinerary-via-plan/', getItineraryViaPlan,name='add trip plan'),
+    path('get-itinerary-filter/', getItineraryFilter,name='add-user'),
 ]
