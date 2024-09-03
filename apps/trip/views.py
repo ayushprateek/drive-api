@@ -2411,11 +2411,11 @@ def getLikedSitesViaPlan(request):
                 fetch=fetch.filter(category_id__in=selectedCategory)
             plans = fetch.all().values(
             'id', 'name', 
-            'description', 'images',
+            'description','images',
             'city_id'
             ).annotate(city_name=F('city__name')).values(
             'id', 'name', 
-            'description', 'images',
+            'description' ,'images',
             'city_id',
             'city_name'
             )
@@ -2436,7 +2436,6 @@ def getLikedSitesViaPlan(request):
                 # #print('profile_pic = ',profile_pic)
             
             for plan in plans:
-                #print('plan = ',plan)
                 plan['user_count']=len(userLikesHistoricalSite)
                 plan['users']=list(imageList)
                 historicalSiteList.append(plan)
@@ -2540,11 +2539,11 @@ def getLikedSitesViaPlan(request):
                 fetch=fetch.filter(category_id__in=selectedCategory)
             plans =fetch.all().values(
             'id', 'name', 
-            'description', 'images',
+            'description','place_id' ,'images',
             'city_id'
             ).annotate(city_name=F('city__name')).values(
             'id', 'name', 
-            'description', 'images',
+            'description','place_id' ,'images',
             'city_id',
             'city_name'
             )
@@ -2569,6 +2568,7 @@ def getLikedSitesViaPlan(request):
             
             
             for plan in plans:
+                plan['images']=[plan['place_id']]
                 plan['user_count']=len(userLikesHotel)
                 plan['users']=list(imageList)
                 hotelList.append(plan)
