@@ -3321,6 +3321,7 @@ def get_coordinates_along_polyline(request):
                                 "longitude": plan.geometry.location.lng,
                                  "rating": plan.rating,
                                  "user_ratings_total": plan.user_ratings_total,
+                                 "is_hotel":True
                            })
     else:
         model_list = [WeirdAndWacky, Attraction, Park, Event, HistoricalSite, ExtremeSport]
@@ -3343,6 +3344,7 @@ def get_coordinates_along_polyline(request):
                                         "longitude": plan.geometry.location.lng,
                                          "rating": plan.rating,
                                          "user_ratings_total": plan.user_ratings_total,
+                                         "is_hotel":True
                                     })
             else:
                 for model in model_list:
