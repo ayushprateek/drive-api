@@ -18,7 +18,7 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
-from common.views import HomePageView, DashBoardAnalytics, getDeepLink
+from common.views import HomePageView, DashBoardAnalytics, getDeepLink,getDeepLinkiOS
 from drive_ai import settings
 from django.conf.urls.static import static
 
@@ -27,7 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', HomePageView.as_view(), name='home-page'),
     path('.well-known/assetlinks.json', getDeepLink, name='home-page'),
-    path('apple-app-site-association/', getDeepLink, name='home-page'),
+    path('apple-app-site-association/', getDeepLinkiOS, name='home-page'),
     path('v1/analytics', DashBoardAnalytics.as_view(), name='Analytics'),
     path('user/', include('apps.user.urls')),
     path('search/', include('apps.search.urls')),
