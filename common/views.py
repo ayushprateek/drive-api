@@ -6,9 +6,10 @@ from rest_framework.response import Response
 
 from common.constants import ApplicationMessages
 
+
 def getDeepLink(request):
     print('getDeepLink called')
-    
+
     response_data = [{
         "relation": ["delegate_permission/common.handle_all_urls"],
         "target": {
@@ -19,8 +20,28 @@ def getDeepLink(request):
             ]
         }
     }]
-    
+
     return JsonResponse(response_data, safe=False)
+
+
+def getDeepLinkiOS(request):
+    print('ios deep link called')
+    response_data = {
+        "applinks": {
+            "apps": [],
+            "details": [
+                {
+                    "appID": "B76FB65Q7F.us.driveenterprises.app",
+                    "paths": [
+                        "/deeplink/*"
+                    ]
+                }
+            ]
+        }
+    }
+    return JsonResponse(response_data, safe=False)
+
+
 class HomePageView(generics.GenericAPIView):
     """Home Page View"""
     renderer_classes = [TemplateHTMLRenderer]
