@@ -16,7 +16,7 @@ def getDeepLink(request):
             "namespace": "android_app",
             "package_name": "us.driveenterprises.app2",
             "sha256_cert_fingerprints": [
-                "3C:9F:1D:2B:3E:BB:39:40:5B:D2:EB:D4:76:13:49:59:A2:95:47:31:9C:CC:13:9F:E9:E6:D2:7C:83:E9:FB:FD"
+                "C8:4D:B3:50:CF:5D:96:31:0D:38:99:63:FF:15:4A:C4:3D:CD:52:06:B2:49:CA:BD:38:EA:D7:82:2F:24:E2:1F"
             ]
         }
     }]
