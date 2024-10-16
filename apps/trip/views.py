@@ -122,6 +122,7 @@ def getAllHotelBrand(request):
         'id',
         'name'
     )
+    # select  id ,name from hotels_brands
     #print(len(hotelBrands))
     hotel_brand_list = list(hotelBrands)
     return JsonResponse(hotel_brand_list, safe=False,status=status.HTTP_200_OK)
