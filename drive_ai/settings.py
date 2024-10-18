@@ -138,7 +138,7 @@ CORS_ALLOW_METHODS = (
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', 
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'drive_dev',
         'USER': 'postgres',
         'PASSWORD': 'Ayush@123',
@@ -278,7 +278,6 @@ GOOGLE_API_KEY = env('GOOGLE_GEOCODING_API_KEY')
 # CHAT GPT KEY
 GPT_SECRET_KEY = env('GPT_SECRET_KEY')
 
-# DATA_UPLOAD_MAX_MEMORY_SIZE = None 
+# DATA_UPLOAD_MAX_MEMORY_SIZE = None
 # FILE_UPLOAD_MAX_MEMORY_SIZE = None
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
- 
