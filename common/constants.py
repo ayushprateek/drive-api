@@ -3,15 +3,15 @@ class Constant:
     VERIFICATION_CODE_EXPIRE_TIME = 10  # Minutes
 
     # CATEGORIES
-    ATTRACTION = "Attractions"
-    FOOD = "Food"
-    WEIRDANDWACKY = "Weird and Wacky"
-    NATIONAL_PARK = "National Park"
-    FAMILY_FUN = "Family Fun"
-    HISTORICAL_SITES = "Historical Sites"
-    EXTREME_SPORTS = "Extreme Sports"
-    EVENT_CALENDAR = "Events Calendar"
-    CAMPING = "RV & Camping"
+    # ATTRACTION = "Attractions"
+    # FOOD = "Food"
+    # WEIRDANDWACKY = "Weird and Wacky"
+    # NATIONAL_PARK = "National Park"
+    # FAMILY_FUN = "Family Fun"
+    SITES = "Sites"
+    # EXTREME_SPORTS = "Extreme Sports"
+    # EVENT_CALENDAR = "Events Calendar"
+    # CAMPING = "RV & Camping"
     HOTEL = "Hotels"
 
     # DOMAINS
@@ -37,7 +37,7 @@ class Constant:
     DUNNELON_MOTELS = "www.dunnellonmotels.com"
     EVENT_BRITE = "www.eventbrite.com"
     WAKESURFTAMPABAY = "wakesurftampabay.com"
-    THELIFTADVENTUREPARK_SITE= "theliftadventurepark.com"
+    THELIFTADVENTUREPARK_SITE = "theliftadventurepark.com"
     VISITLAUDERDALE = "www.visitlauderdale.com"
     STRANAHANHOUSE_SITE = "stranahanhouse.org"
     GROUPON_SITE = "www.groupon.com"

@@ -354,28 +354,36 @@ class UserProfileAPIView(generics.GenericAPIView):
 
 class UserEmailLoginAPIView(generics.GenericAPIView):
     """Customer Login API with Email"""
+    print("Calles")
 
     serializer_class = user_serializer.LoginSerializer
 
     @swagger_auto_schema(responses={200: schema.email_login_resp})
     def post(self, request):
         """User Login as well as create a session"""
+        print("Request Data:", request.data)  
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         email, password = serializer.data['email'], serializer.data['password']
+        print(f"Email: {email}, Password: {password}")
         user = user_models.User.get_instance_or_none({"email": email})
-        if not user:
-            raise ValidationError(ApplicationMessages.USER_N_EMAIL_EXISTS)
-        if password and user.check_password(password):
-            response = {
-                "message": "User Logged In Successfully!",
-                "access_token": user.tokens()['access'],
-                "refresh_token": user.tokens()['refresh'],
-                "user_id": user.id
-            }
-            return Response(response, status=status.HTTP_200_OK)
-        else:
-            raise ValidationError(ApplicationMessages.INVALID_PASSWORD)
+        print(f"Email: {email}, Password: {password}")
+        try:
+            if not user:
+                raise ValidationError(ApplicationMessages.USER_N_EMAIL_EXISTS)
+            if password and user.check_password(password):
+                response = {
+                    "message": "User Logged In Successfully!",
+                    "access_token": user.tokens()['access'],
+                    "refresh_token": user.tokens()['refresh'],
+                    "user_id": user.id
+                }
+                return Response(response, status=status.HTTP_200_OK)
+            else:
+                raise ValidationError(ApplicationMessages.INVALID_PASSWORD)
+        except Exception as ex:
+            # ex = "You're logged out."
+            return Response(f'{ex}', status.HTTP_200_OK)
 
 
 class UserLogoutAPIView(views.APIView):

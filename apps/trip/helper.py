@@ -49,15 +49,15 @@ class ModelMap:
     """
 
     category_to_model = {
-        Constant.ATTRACTION: trip_models.Attraction,
-        Constant.FOOD: trip_models.Food,
-        Constant.WEIRDANDWACKY: trip_models.WeirdAndWacky,
-        Constant.CAMPING: trip_models.Camp,
-        Constant.NATIONAL_PARK: trip_models.Park,
-        Constant.FAMILY_FUN: trip_models.FamilyFun,
-        Constant.HISTORICAL_SITES: trip_models.HistoricalSite,
-        Constant.EXTREME_SPORTS: trip_models.ExtremeSport,
-        Constant.EVENT_CALENDAR: trip_models.Event,
+        # Constant.ATTRACTION: trip_models.Attraction,
+        # Constant.FOOD: trip_models.Food,
+        # Constant.WEIRDANDWACKY: trip_models.WeirdAndWacky,
+        # Constant.CAMPING: trip_models.Camp,
+        # Constant.NATIONAL_PARK: trip_models.Park,
+        # Constant.FAMILY_FUN: trip_models.FamilyFun,
+        Constant.SITES: trip_models.Site,
+        # Constant.EXTREME_SPORTS: trip_models.ExtremeSport,
+        # Constant.EVENT_CALENDAR: trip_models.Event,
         Constant.HOTEL: trip_models.Hotel,
     }
 
@@ -79,15 +79,15 @@ CATEGORY_MAPPING = {
 }
 
 MODEL_MAPPING = {
-    Constant.ATTRACTION: trip_models.Attraction,
-    Constant.FOOD: trip_models.Food,
-    Constant.WEIRDANDWACKY: trip_models.WeirdAndWacky,
-    Constant.CAMPING: trip_models.Camp,
-    Constant.NATIONAL_PARK: trip_models.Park,
-    Constant.FAMILY_FUN: trip_models.FamilyFun,
-    Constant.HISTORICAL_SITES: trip_models.HistoricalSite,
-    Constant.EXTREME_SPORTS: trip_models.ExtremeSport,
-    Constant.EVENT_CALENDAR: trip_models.Event,
+    # Constant.ATTRACTION: trip_models.Attraction,
+    # Constant.FOOD: trip_models.Food,
+    # Constant.WEIRDANDWACKY: trip_models.WeirdAndWacky,
+    # Constant.CAMPING: trip_models.Camp,
+    # Constant.NATIONAL_PARK: trip_models.Park,
+    # Constant.FAMILY_FUN: trip_models.FamilyFun,
+    Constant.SITES: trip_models.Site,
+    # Constant.EXTREME_SPORTS: trip_models.ExtremeSport,
+    # Constant.EVENT_CALENDAR: trip_models.Event,
     Constant.HOTEL: trip_models.Hotel,
 }
 
@@ -179,10 +179,10 @@ def get_pois_along_route(route, api_key, type_of_place="restaurant", radius=800)
 
         if type_of_place == "park":
             params.update({'keyword': 'national park'})
-        
+
         if type_of_place == "historical site":
             params.update({'type': 'tourist_attraction',
-                           'keyword':'historical'})
+                           'keyword': 'historical'})
 
         if type_of_place == "lodging":
             params.update({'keyword': 'star hotel'})
@@ -433,7 +433,7 @@ def fetch_pois_for_category(args):
                         "description": description,
                         "images": get_images(images),
                         "discount_url": discount_url,
-                        "is_favorite":is_favorite
+                        "is_favorite": is_favorite
                     }
                     results.append(unified_place)
                     seen_places.add(lat_long_key)

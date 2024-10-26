@@ -22,7 +22,6 @@ class Category(BaseModel):
     icon_url = models.URLField(max_length=255, blank=True, null=True)
     image_url = models.URLField(max_length=255, blank=True, null=True)
 
-
     class Meta:
         verbose_name = "Category"
         verbose_name_plural = "Categories"
@@ -31,9 +30,9 @@ class Category(BaseModel):
     def __str__(self):
         return self.name
 
-class PlanCategory(BaseModel):
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,)
 
+class PlanCategory(BaseModel):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE,)
 
     class Meta:
         verbose_name = "Plan Category"
@@ -42,10 +41,10 @@ class PlanCategory(BaseModel):
 
     def __str__(self):
         return self.name
-    
-class TripCategory(BaseModel):
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,)
 
+
+class TripCategory(BaseModel):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE,)
 
     class Meta:
         verbose_name = "Plan Category"
@@ -81,147 +80,142 @@ class City(BaseModel):
     #     super().save(*args, **kwargs)
 
 
-class Food(BaseModel):  # have to replace name with Hotels
-    """
-    "Food" model in Django typically represents objects, individuals, or items with
-    specific attributes and relationships.
-    """
-    name = models.CharField(max_length=500, blank=True, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='food_city')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    description = models.TextField(null=True, blank=True)
-    images = ArrayField(models.TextField(null=True), default=list)
-    meta_data = models.JSONField(default=dict)
+# class Food(BaseModel):  # have to replace name with Hotels
+#     """
+#     "Food" model in Django typically represents objects, individuals, or items with
+#     specific attributes and relationships.
+#     """
+#     name = models.CharField(max_length=500, blank=True, null=True)
+#     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='food_city')
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     description = models.TextField(null=True, blank=True)
+#     images = ArrayField(models.TextField(null=True), default=list)
+#     meta_data = models.JSONField(default=dict)
+
+#     class Meta:
+#         verbose_name = "Food"
+#         verbose_name_plural = "Foods"
+#         ordering = ["-created_at"]
+
+#     def __str__(self):
+#         return self.name
 
 
-    class Meta:
-        verbose_name = "Food"
-        verbose_name_plural = "Foods"
-        ordering = ["-created_at"]
+# class FamilyFun(BaseModel):
+#     """
+#     "FamilyFun" model in Django typically represents objects, individuals, or items with
+#     specific attributes and relationships.
+#     """
+#     name = models.CharField(max_length=500, blank=True, null=True)
+#     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='familyfun_city')
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     description = models.TextField(null=True, blank=True)
+#     images = ArrayField(models.TextField(null=True), default=list)
+#     meta_data = models.JSONField(default=dict)
 
-    def __str__(self):
-        return self.name
+#     class Meta:
+#         verbose_name = "Family Fun"
+#         verbose_name_plural = "Family Fun"
+#         ordering = ["-created_at"]
 
-
-class FamilyFun(BaseModel):
-    """
-    "FamilyFun" model in Django typically represents objects, individuals, or items with
-    specific attributes and relationships.
-    """
-    name = models.CharField(max_length=500, blank=True, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='familyfun_city')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    description = models.TextField(null=True, blank=True)
-    images = ArrayField(models.TextField(null=True), default=list)
-    meta_data = models.JSONField(default=dict)
-
-
-    class Meta:
-        verbose_name = "Family Fun"
-        verbose_name_plural = "Family Fun"
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
-class Attraction(BaseModel):
-    """
-    "Attractions" model in Django typically represents objects, individuals, or items with
-    specific attributes and relationships.
-    """
-    name = models.CharField(max_length=500, blank=True, null=True)
-    attraction = models.CharField(max_length=200,
-                                  choices=ChoicesFields.ATTRACTIONS_CHOICE,
-                                  blank=True, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='attraction_city')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    description = models.TextField(null=True, blank=True)
-    images = ArrayField(models.TextField(null=True), default=list)
-    meta_data = models.JSONField(default=dict)
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
+# class Attraction(BaseModel):
+#     """
+#     "Attractions" model in Django typically represents objects, individuals, or items with
+#     specific attributes and relationships.
+#     """
+#     name = models.CharField(max_length=500, blank=True, null=True)
+#     attraction = models.CharField(max_length=200,
+#                                   choices=ChoicesFields.ATTRACTIONS_CHOICE,
+#                                   blank=True, null=True)
+#     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='attraction_city')
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     description = models.TextField(null=True, blank=True)
+#     images = ArrayField(models.TextField(null=True), default=list)
+#     meta_data = models.JSONField(default=dict)
+#     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+
+#     class Meta:
+#         verbose_name = "Attraction"
+#         verbose_name_plural = "Attractions"
+#         ordering = ["-created_at"]
+
+#     def __str__(self):
+#         return self.name
 
 
-    class Meta:
-        verbose_name = "Attraction"
-        verbose_name_plural = "Attractions"
-        ordering = ["-created_at"]
+# class WeirdAndWacky(BaseModel):
+#     """
+#     "WeirdAndWacky" model in Django typically represents objects, individuals, or items with
+#     specific attributes and relationships.
+#     """
+#     name = models.CharField(max_length=500, blank=True, null=True)
+#     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='weirdandwacky_city')
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     description = models.TextField(null=True, blank=True)
+#     images = ArrayField(models.TextField(null=True), default=list)
+#     meta_data = models.JSONField(default=dict)
+#     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
-    def __str__(self):
-        return self.name
+#     class Meta:
+#         verbose_name = "Weird And Wacky"
+#         verbose_name_plural = "Weird And Wacky"
+#         ordering = ["-created_at"]
 
-
-class WeirdAndWacky(BaseModel):
-    """
-    "WeirdAndWacky" model in Django typically represents objects, individuals, or items with
-    specific attributes and relationships.
-    """
-    name = models.CharField(max_length=500, blank=True, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='weirdandwacky_city')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    description = models.TextField(null=True, blank=True)
-    images = ArrayField(models.TextField(null=True), default=list)
-    meta_data = models.JSONField(default=dict)
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
-
-    class Meta:
-        verbose_name = "Weird And Wacky"
-        verbose_name_plural = "Weird And Wacky"
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
-class Camp(BaseModel):
-    """
-    "Camp" model in Django typically represents objects, individuals, or items with
-    specific attributes and relationships.
-    """
-    name = models.CharField(max_length=500, blank=True, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='camp_city')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    description = models.TextField(null=True, blank=True)
-    images = ArrayField(models.TextField(null=True), default=list)
-    meta_data = models.JSONField(default=dict)
+# class Camp(BaseModel):
+#     """
+#     "Camp" model in Django typically represents objects, individuals, or items with
+#     specific attributes and relationships.
+#     """
+#     name = models.CharField(max_length=500, blank=True, null=True)
+#     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='camp_city')
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     description = models.TextField(null=True, blank=True)
+#     images = ArrayField(models.TextField(null=True), default=list)
+#     meta_data = models.JSONField(default=dict)
+
+#     class Meta:
+#         verbose_name = "Camp"
+#         verbose_name_plural = "Camps"
+#         ordering = ["-created_at"]
+
+#     def __str__(self):
+#         return self.name
 
 
-    class Meta:
-        verbose_name = "Camp"
-        verbose_name_plural = "Camps"
-        ordering = ["-created_at"]
+# class Park(BaseModel):
+#     """
+#     "Park" model in Django typically represents objects, individuals, or items with
+#     specific attributes and relationships.
+#     """
+#     name = models.CharField(max_length=500, blank=True, null=True)
+#     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='park_city')
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     description = models.TextField(null=True, blank=True)
+#     images = ArrayField(models.TextField(null=True), default=list)
+#     meta_data = models.JSONField(default=dict)
+#     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
-    def __str__(self):
-        return self.name
+#     class Meta:
+#         verbose_name = "Park"
+#         verbose_name_plural = "Parks"
+#         ordering = ["-created_at"]
 
-
-class Park(BaseModel):
-    """
-    "Park" model in Django typically represents objects, individuals, or items with
-    specific attributes and relationships.
-    """
-    name = models.CharField(max_length=500, blank=True, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='park_city')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    description = models.TextField(null=True, blank=True)
-    images = ArrayField(models.TextField(null=True), default=list)
-    meta_data = models.JSONField(default=dict)
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
-
-
-    class Meta:
-        verbose_name = "Park"
-        verbose_name_plural = "Parks"
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 class DriveWebsite(BaseModel):
@@ -242,35 +236,35 @@ class DriveWebsite(BaseModel):
         return self.url_link
 
 
-class Event(BaseModel):
+# class Event(BaseModel):
+#     """
+#     "Events" model in Django typically represents objects, individuals, or items with
+#     specific attributes and relationships.
+#     """
+#     name = models.CharField(max_length=500, blank=True, null=True)
+#     type = models.CharField(max_length=200,
+#                             choices=ChoicesFields.EVENT_CHOICE,
+#                             blank=True, null=True)
+#     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='event_city')
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+#     description = models.TextField(null=True, blank=True)
+#     images = ArrayField(models.TextField(null=True), default=list)
+#     meta_data = models.JSONField(default=dict)
+#     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+
+#     class Meta:
+#         verbose_name = "Event"
+#         verbose_name_plural = "Events"
+#         ordering = ["-created_at"]
+
+#     def __str__(self):
+#         return self.name
+
+
+class Site(BaseModel):
     """
-    "Events" model in Django typically represents objects, individuals, or items with
-    specific attributes and relationships.
-    """
-    name = models.CharField(max_length=500, blank=True, null=True)
-    type = models.CharField(max_length=200,
-                            choices=ChoicesFields.EVENT_CHOICE,
-                            blank=True, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='event_city')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    description = models.TextField(null=True, blank=True)
-    images = ArrayField(models.TextField(null=True), default=list)
-    meta_data = models.JSONField(default=dict)
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
-
-    class Meta:
-        verbose_name = "Event"
-        verbose_name_plural = "Events"
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.name
-
-
-class HistoricalSite(BaseModel):
-    """
-    "HistoricalSite" model in Django typically represents objects, individuals, or items with
+    "Site" model in Django typically represents objects, individuals, or items with
     specific attributes and relationships.
     """
     name = models.CharField(max_length=500, null=True)
@@ -280,8 +274,7 @@ class HistoricalSite(BaseModel):
     description = models.TextField(null=True)
     images = ArrayField(models.TextField(null=True), default=list)
     meta_data = models.JSONField(default=dict)
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
-
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = "Historical Site"
@@ -292,27 +285,27 @@ class HistoricalSite(BaseModel):
         return self.name
 
 
-class ExtremeSport(BaseModel):
-    """
-    "ExtremeSport" model in Django typically represents objects, individuals, or items with
-    specific attributes and relationships.
-    """
-    name = models.CharField(max_length=500, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='extremesport_city')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    description = models.TextField(null=True)
-    images = ArrayField(models.TextField(null=True), default=list)
-    meta_data = models.JSONField(default=dict)
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
+# class ExtremeSport(BaseModel):
+#     """
+#     "ExtremeSport" model in Django typically represents objects, individuals, or items with
+#     specific attributes and relationships.
+#     """
+#     name = models.CharField(max_length=500, null=True)
+#     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='extremesport_city')
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+#     description = models.TextField(null=True)
+#     images = ArrayField(models.TextField(null=True), default=list)
+#     meta_data = models.JSONField(default=dict)
+#     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
-    class Meta:
-        verbose_name = "Extreme Sport"
-        verbose_name_plural = "Extreme Sports"
-        ordering = ["-created_at"]
+#     class Meta:
+#         verbose_name = "Extreme Sport"
+#         verbose_name_plural = "Extreme Sports"
+#         ordering = ["-created_at"]
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 # @receiver(post_save, sender=City)
@@ -340,9 +333,11 @@ class LatLng:
         self.lat = lat
         self.lng = lng
 
+
 class Location(models.Model):
     lat = models.FloatField(null=True)
     lng = models.FloatField(null=True)
+
 
 class Viewport(models.Model):
     northeast_lat = models.FloatField(null=True)
@@ -350,9 +345,11 @@ class Viewport(models.Model):
     southwest_lat = models.FloatField(null=True)
     southwest_lng = models.FloatField(null=True)
 
+
 class Geometry(models.Model):
     location = models.OneToOneField(Location, on_delete=models.CASCADE)
     viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE)
+
 
 class Photo(models.Model):
     height = models.IntegerField()
@@ -360,34 +357,37 @@ class Photo(models.Model):
     html_attributions = models.TextField()
     photo_reference = models.CharField(max_length=255)
 
+
 class PlusCode(models.Model):
     compound_code = models.CharField(max_length=250)
     global_code = models.CharField(max_length=250)
-
-
 
 
 class Status(models.Model):
     class Meta:
         db_table = '"status"'
     title = models.CharField(max_length=50)
-    
+
+
 class Media(models.Model):
     class Meta:
         db_table = '"media"'
     media = models.CharField(max_length=200)
 
+
 class Plan(models.Model):
     class Meta:
-        db_table='"plan"'
+        db_table = '"plan"'
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
-    city = models.ForeignKey(City,on_delete=models.CASCADE,null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)
     # user = models.ForeignKey(user,on_delete=models.CASCADE,null=True)
     created_at = models.DateTimeField(null=False)
     updated_at = models.DateTimeField(null=True)
+
+
 class PlanUser(models.Model):
     class Meta:
         db_table = 'plan_user'
@@ -397,6 +397,7 @@ class PlanUser(models.Model):
     user = models.ForeignKey(user, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
 class Hotel(BaseModel):
     """
@@ -419,8 +420,8 @@ class Hotel(BaseModel):
     - cover_image (TextField): Primary image representing the hotel.
     - images (ArrayField): A list of URLs or texts representing various images of the hotel.
     """
-    place_id = models.CharField(max_length=500, unique=True,default='')
-    category=models.ForeignKey(Category,on_delete=models.CASCADE,null=True)
+    place_id = models.CharField(max_length=500, unique=True, default='')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     name = models.TextField()
     city = models.ForeignKey(City, on_delete=models.SET_NULL, related_name="hotels_city", null=True)
     description = models.TextField(null=True)
@@ -437,26 +438,26 @@ class Hotel(BaseModel):
     cover_image = models.TextField(null=True)
     images = ArrayField(models.TextField(null=True), default=list)
     address = models.CharField(max_length=255, blank=True, null=True)
-    rating = models.FloatField(default=0,null=True)
-    user_ratings_total = models.IntegerField(default=0,null=True)
+    rating = models.FloatField(default=0, null=True)
+    user_ratings_total = models.IntegerField(default=0, null=True)
     start_price = models.FloatField(null=True)
     end_price = models.FloatField(null=True)
     icon = models.CharField(max_length=500, blank=True, null=True)
-    media = models.ForeignKey(Media, on_delete=models.CASCADE,null=True)
-    discount_url=models.CharField(max_length=400,null=True)
-    business_status = models.CharField(max_length=50,null=True)
-    geometry = models.OneToOneField(Geometry, on_delete=models.CASCADE,null=True)
-    icon_background_color = models.CharField(max_length=10,null=True)
+    media = models.ForeignKey(Media, on_delete=models.CASCADE, null=True)
+    discount_url = models.CharField(max_length=400, null=True)
+    business_status = models.CharField(max_length=50, null=True)
+    geometry = models.OneToOneField(Geometry, on_delete=models.CASCADE, null=True)
+    icon_background_color = models.CharField(max_length=10, null=True)
     icon_mask_base_uri = models.URLField(null=True)
-    
+
     open_now = models.BooleanField(default=False)
-    plus_code = models.OneToOneField(PlusCode, on_delete=models.CASCADE,null=True)
-    
-    reference = models.CharField(max_length=50,null=True)
-    scope = models.CharField(max_length=50,null=True)
+    plus_code = models.OneToOneField(PlusCode, on_delete=models.CASCADE, null=True)
+
+    reference = models.CharField(max_length=50, null=True)
+    scope = models.CharField(max_length=50, null=True)
     types = models.TextField(null=True)  # Will be stored as a comma-separated string
-    
-    vicinity = models.CharField(max_length=255,null=True)
+
+    vicinity = models.CharField(max_length=255, null=True)
     photos = models.ManyToManyField(Photo)
 
     class Meta:
@@ -476,114 +477,130 @@ class Hotel(BaseModel):
 #     liked_wierdandwacky = models.ManyToManyField(WeirdAndWacky)
 #     liked_parks = models.ManyToManyField(Park)
 #     liked_attractions = models.ManyToManyField(Attraction)
- 
+
+
 class UserLikes(models.Model):
     user = models.OneToOneField(user, on_delete=models.CASCADE)
 
     liked_hotels_new = models.ManyToManyField(Hotel, through='UserLikesHotel')
-    liked_extremesports_new = models.ManyToManyField(ExtremeSport, through='UserLikesExtremeSport')
-    liked_historicalsites_new = models.ManyToManyField(HistoricalSite, through='UserLikesHistoricalSite')
-    liked_events_new = models.ManyToManyField(Event, through='UserLikesEvent')
-    liked_wierdandwacky_new = models.ManyToManyField(WeirdAndWacky, through='UserLikesWeirdAndWacky')
-    liked_parks_new = models.ManyToManyField(Park, through='UserLikesPark')
-    liked_attractions_new = models.ManyToManyField(Attraction, through='UserLikesAttraction')
+    # liked_extremesports_new = models.ManyToManyField(ExtremeSport, through='UserLikesExtremeSport')
+    liked_sites_new = models.ManyToManyField(Site, through='UserLikesSite')
+    # liked_events_new = models.ManyToManyField(Event, through='UserLikesEvent')
+    # liked_wierdandwacky_new = models.ManyToManyField(WeirdAndWacky, through='UserLikesWeirdAndWacky')
+    # liked_parks_new = models.ManyToManyField(Park, through='UserLikesPark')
+    # liked_attractions_new = models.ManyToManyField(Attraction, through='UserLikesAttraction')
 
-    
+
 class UserLikesHotel(models.Model):
     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
 
-class UserLikesExtremeSport(models.Model):
+
+# class UserLikesExtremeSport(models.Model):
+#     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+#     extremesport = models.ForeignKey(ExtremeSport, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+
+
+class UserLikesSite(models.Model):
     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
-    extremesport = models.ForeignKey(ExtremeSport, on_delete=models.CASCADE)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE,null=True)
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
 
-class UserLikesHistoricalSite(models.Model):
-    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
-    historicalsite = models.ForeignKey(HistoricalSite, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
 
-class UserLikesEvent(models.Model):
-    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+# class UserLikesEvent(models.Model):
+#     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+#     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
 
-class UserLikesWeirdAndWacky(models.Model):
-    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
-    weirdandwacky = models.ForeignKey(WeirdAndWacky, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
 
-class UserLikesPark(models.Model):
-    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
-    park = models.ForeignKey(Park, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+# class UserLikesWeirdAndWacky(models.Model):
+#     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+#     weirdandwacky = models.ForeignKey(WeirdAndWacky, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
 
-class UserLikesAttraction(models.Model):
-    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
-    attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
- 
-    def __str__(self):
-        return self.user.first_name
+
+# class UserLikesPark(models.Model):
+#     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+#     park = models.ForeignKey(Park, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+
+
+# class UserLikesAttraction(models.Model):
+#     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+#     attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+
+#     def __str__(self):
+#         return self.user.first_name
+
 
 class Itinerary(models.Model):
     user = models.OneToOneField(user, on_delete=models.CASCADE)
     hotel_itinerary = models.ManyToManyField(Hotel, through='ItineraryHotel')
-    extremesports_itinerary = models.ManyToManyField(ExtremeSport, through='ItineraryExtremeSport')
-    historicalsites_itinerary = models.ManyToManyField(HistoricalSite, through='ItineraryHistoricalSite')
-    events_itinerary = models.ManyToManyField(Event, through='ItineraryEvent')
-    wierdandwacky_itinerary = models.ManyToManyField(WeirdAndWacky, through='ItineraryWeirdAndWacky')
-    parks_itinerary = models.ManyToManyField(Park, through='ItineraryPark')
-    attractions_itinerary = models.ManyToManyField(Attraction, through='ItineraryAttraction')
-    
+    # extremesports_itinerary = models.ManyToManyField(ExtremeSport, through='ItineraryExtremeSport')
+    sites_itinerary = models.ManyToManyField(Site, through='ItinerarySite')
+    # events_itinerary = models.ManyToManyField(Event, through='ItineraryEvent')
+    # wierdandwacky_itinerary = models.ManyToManyField(WeirdAndWacky, through='ItineraryWeirdAndWacky')
+    # parks_itinerary = models.ManyToManyField(Park, through='ItineraryPark')
+    # attractions_itinerary = models.ManyToManyField(Attraction, through='ItineraryAttraction')
+
+
 class ItineraryHotel(models.Model):
     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
     date = models.DateTimeField(null=True)
 
-class ItineraryExtremeSport(models.Model):
+
+# class ItineraryExtremeSport(models.Model):
+#     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+#     extremesport = models.ForeignKey(ExtremeSport, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
+#     date = models.DateTimeField(null=True)
+
+
+class ItinerarySite(models.Model):
     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
-    extremesport = models.ForeignKey(ExtremeSport, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE,null=True)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
     date = models.DateTimeField(null=True)
 
-class ItineraryHistoricalSite(models.Model):
-    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
-    historicalsite = models.ForeignKey(HistoricalSite, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
-    date = models.DateTimeField(null=True)
 
-class ItineraryEvent(models.Model):
-    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
-    date = models.DateTimeField(null=True)
+# class ItineraryEvent(models.Model):
+#     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+#     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
+#     date = models.DateTimeField(null=True)
 
-class ItineraryWeirdAndWacky(models.Model):
-    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
-    weirdandwacky = models.ForeignKey(WeirdAndWacky, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
-    date = models.DateTimeField(null=True)
 
-class ItineraryPark(models.Model):
-    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
-    park = models.ForeignKey(Park, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
-    date = models.DateTimeField(null=True)
+# class ItineraryWeirdAndWacky(models.Model):
+#     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+#     weirdandwacky = models.ForeignKey(WeirdAndWacky, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
+#     date = models.DateTimeField(null=True)
 
-class ItineraryAttraction(models.Model):
-    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
-    attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE,null=True)
-    date = models.DateTimeField(null=True)
- 
-    def __str__(self):
-        return self.user.first_name
-    
- 
- #-------- add values to the follwoing -------------   
+
+# class ItineraryPark(models.Model):
+#     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+#     park = models.ForeignKey(Park, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
+#     date = models.DateTimeField(null=True)
+
+
+# class ItineraryAttraction(models.Model):
+#     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+#     attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
+#     date = models.DateTimeField(null=True)
+
+#     def __str__(self):
+#         return self.user.first_name
+
+ # -------- add values to the follwoing -------------
+
+
 class Country(models.Model):
     class Meta:
         db_table = '"country"'
@@ -592,38 +609,46 @@ class Country(models.Model):
     nicename = models.CharField(max_length=80)
     iso3 = models.CharField(max_length=3)
     numeric_code = models.IntegerField(null=True)
-    phone_code = models.CharField(max_length=10,null=True)
-    
+    phone_code = models.CharField(max_length=10, null=True)
+
+
 class Priority(models.Model):
     class Meta:
         db_table = '"priority"'
     name = models.CharField(max_length=80)
-    
+
 
 class TravelGoal(models.Model):
     class Meta:
         db_table = '"travel_goal"'
     name = models.CharField(max_length=80)
-    
+
+
 class Motivation(models.Model):
     class Meta:
         db_table = '"motivation"'
     name = models.CharField(max_length=80)
     emoji = models.CharField(max_length=80)
-    
+
+
 class AirlineBrand(models.Model):
     class Meta:
         db_table = '"airline_brand"'
     name = models.CharField(max_length=80)
 
+
 class RentalCars(models.Model):
     class Meta:
         db_table = '"rental_cars"'
     name = models.CharField(max_length=80)
+
+
 class HotelBrand(models.Model):
     class Meta:
         db_table = '"hotel_brand"'
     name = models.CharField(max_length=80)
+
+
 class RestaurantBrand(models.Model):
     class Meta:
         db_table = '"restaurant_brand"'

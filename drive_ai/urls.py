@@ -18,7 +18,7 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
-from common.views import HomePageView, DashBoardAnalytics, getDeepLink,getDeepLinkiOS
+from common.views import HomePageView, DashBoardAnalytics, getDeepLink, getDeepLinkiOS
 from drive_ai import settings
 from django.conf.urls.static import static
 

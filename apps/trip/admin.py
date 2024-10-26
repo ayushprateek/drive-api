@@ -38,86 +38,86 @@ class CityAdmin(admin.ModelAdmin):
 #     list_display = ['id', 'url_link', 'category']
 
 
-@admin.register(trip_models.Food)
-class FoodAdmin(admin.ModelAdmin):
-    """
-    The FoodAdmin class specifies how the Entity model should be displayed and filtered
-    in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
-    and category fields, enables searching for these fields, and specifies the columns
-    to display in the list view as id, name, city, latitude, longitude, and category.    
-    """
-    list_filter = ['city']
-    search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
-    list_display = ['id', 'name', 'city', 'latitude', 'longitude']
+# @admin.register(trip_models.Food)
+# class FoodAdmin(admin.ModelAdmin):
+#     """
+#     The FoodAdmin class specifies how the Entity model should be displayed and filtered
+#     in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
+#     and category fields, enables searching for these fields, and specifies the columns
+#     to display in the list view as id, name, city, latitude, longitude, and category.    
+#     """
+#     list_filter = ['city']
+#     search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
+#     list_display = ['id', 'name', 'city', 'latitude', 'longitude']
 
 
-@admin.register(trip_models.FamilyFun)
-class FamilyFunAdmin(admin.ModelAdmin):
-    """
-    The FamilyFunAdmin class specifies how the Entity model should be displayed and filtered
-    in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
-    and category fields, enables searching for these fields, and specifies the columns
-    to display in the list view as id, name, city, latitude, longitude, and category.    
-    """
-    list_filter = ['city']
-    search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
-    list_display = ['id', 'name', 'city', 'latitude', 'longitude']
+# @admin.register(trip_models.FamilyFun)
+# class FamilyFunAdmin(admin.ModelAdmin):
+#     """
+#     The FamilyFunAdmin class specifies how the Entity model should be displayed and filtered
+#     in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
+#     and category fields, enables searching for these fields, and specifies the columns
+#     to display in the list view as id, name, city, latitude, longitude, and category.    
+#     """
+#     list_filter = ['city']
+#     search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
+#     list_display = ['id', 'name', 'city', 'latitude', 'longitude']
 
 
-@admin.register(trip_models.Attraction)
-class AttractionAdmin(admin.ModelAdmin):
-    """
-    The AttractionAdmin class specifies how the Entity model should be displayed and filtered
-    in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
-    and category fields, enables searching for these fields, and specifies the columns
-    to display in the list view as id, name, city, latitude, longitude, and category.    
-    """
-    list_filter = ['city']
-    search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
-    list_display = ['id', 'name', 'city', 'latitude', 'longitude']
+# @admin.register(trip_models.Attraction)
+# class AttractionAdmin(admin.ModelAdmin):
+#     """
+#     The AttractionAdmin class specifies how the Entity model should be displayed and filtered
+#     in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
+#     and category fields, enables searching for these fields, and specifies the columns
+#     to display in the list view as id, name, city, latitude, longitude, and category.    
+#     """
+#     list_filter = ['city']
+#     search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
+#     list_display = ['id', 'name', 'city', 'latitude', 'longitude']
 
 
-@admin.register(trip_models.WeirdAndWacky)
-class WeirdAndWackyAdmin(admin.ModelAdmin):
-    """
-    The WeirdAndWackyAdmin class specifies how the Entity model should be displayed and filtered
-    in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
-    and category fields, enables searching for these fields, and specifies the columns
-    to display in the list view as id, name, city, latitude, longitude, and category.    
-    """
-    list_filter = ['city']
-    search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
-    list_display = ['id', 'name', 'city', 'latitude', 'longitude']
+# @admin.register(trip_models.WeirdAndWacky)
+# class WeirdAndWackyAdmin(admin.ModelAdmin):
+#     """
+#     The WeirdAndWackyAdmin class specifies how the Entity model should be displayed and filtered
+#     in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
+#     and category fields, enables searching for these fields, and specifies the columns
+#     to display in the list view as id, name, city, latitude, longitude, and category.    
+#     """
+#     list_filter = ['city']
+#     search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
+#     list_display = ['id', 'name', 'city', 'latitude', 'longitude']
 
 
-@admin.register(trip_models.Camp)
-class CampAdmin(admin.ModelAdmin):
-    """
-    The CampAdmin class specifies how the Entity model should be displayed and filtered
-    in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
-    and category fields, enables searching for these fields, and specifies the columns
-    to display in the list view as id, name, city, latitude, longitude, and category.    
-    """
-    list_filter = ['city']
-    search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
-    list_display = ['id', 'name', 'city', 'latitude', 'longitude']
+# @admin.register(trip_models.Camp)
+# class CampAdmin(admin.ModelAdmin):
+#     """
+#     The CampAdmin class specifies how the Entity model should be displayed and filtered
+#     in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
+#     and category fields, enables searching for these fields, and specifies the columns
+#     to display in the list view as id, name, city, latitude, longitude, and category.    
+#     """
+#     list_filter = ['city']
+#     search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
+#     list_display = ['id', 'name', 'city', 'latitude', 'longitude']
 
 
-@admin.register(trip_models.Park)
-class ParkAdmin(admin.ModelAdmin):
-    """
-    The ParkAdmin class specifies how the Entity model should be displayed and filtered
-    in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
-    and category fields, enables searching for these fields, and specifies the columns
-    to display in the list view as id, name, city, latitude, longitude, and category.    
-    """
-    list_filter = ['city']
-    search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
-    list_display = ['id', 'name', 'city', 'latitude', 'longitude']
+# @admin.register(trip_models.Park)
+# class ParkAdmin(admin.ModelAdmin):
+#     """
+#     The ParkAdmin class specifies how the Entity model should be displayed and filtered
+#     in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
+#     and category fields, enables searching for these fields, and specifies the columns
+#     to display in the list view as id, name, city, latitude, longitude, and category.    
+#     """
+#     list_filter = ['city']
+#     search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
+#     list_display = ['id', 'name', 'city', 'latitude', 'longitude']
 
 
-@admin.register(trip_models.HistoricalSite)
-class HistoricalSiteAdmin(admin.ModelAdmin):
+@admin.register(trip_models.Site)
+class SiteAdmin(admin.ModelAdmin):
     """
     The HistoricalSite class specifies how the Entity model should be displayed and filtered
     in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
@@ -129,30 +129,30 @@ class HistoricalSiteAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'city', 'latitude', 'longitude']
 
 
-@admin.register(trip_models.Event)
-class EventAdmin(admin.ModelAdmin):
-    """
-    The Event class specifies how the Entity model should be displayed and filtered
-    in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
-    and category fields, enables searching for these fields, and specifies the columns
-    to display in the list view as id, name, city, latitude, longitude, and category.
-    """
-    list_filter = ['city']
-    search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
-    list_display = ['id', 'name', 'city', 'latitude', 'longitude']
+# @admin.register(trip_models.Event)
+# class EventAdmin(admin.ModelAdmin):
+#     """
+#     The Event class specifies how the Entity model should be displayed and filtered
+#     in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
+#     and category fields, enables searching for these fields, and specifies the columns
+#     to display in the list view as id, name, city, latitude, longitude, and category.
+#     """
+#     list_filter = ['city']
+#     search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
+#     list_display = ['id', 'name', 'city', 'latitude', 'longitude']
 
 
-@admin.register(trip_models.ExtremeSport)
-class ExtremeSportAdmin(admin.ModelAdmin):
-    """
-    The ExtremeSport class specifies how the Entity model should be displayed and filtered
-    in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
-    and category fields, enables searching for these fields, and specifies the columns
-    to display in the list view as id, name, city, latitude, longitude, and category.
-    """
-    list_filter = ['city']
-    search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
-    list_display = ['id', 'name', 'city', 'latitude', 'longitude']
+# @admin.register(trip_models.ExtremeSport)
+# class ExtremeSportAdmin(admin.ModelAdmin):
+#     """
+#     The ExtremeSport class specifies how the Entity model should be displayed and filtered
+#     in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
+#     and category fields, enables searching for these fields, and specifies the columns
+#     to display in the list view as id, name, city, latitude, longitude, and category.
+#     """
+#     list_filter = ['city']
+#     search_fields = ['id', 'name', 'city', 'latitude', 'longitude']
+#     list_display = ['id', 'name', 'city', 'latitude', 'longitude']
 
 
 @admin.register(trip_models.Hotel)
