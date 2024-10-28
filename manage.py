@@ -16,8 +16,8 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
-        
-    default_port = os.getenv('DJANGO_RUNSERVER_PORT', '8080')
+
+    default_port = os.getenv('DJANGO_RUNSERVER_PORT', '8081')
     runserver.default_port = default_port
     execute_from_command_line(sys.argv)
 
