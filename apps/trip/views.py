@@ -762,12 +762,13 @@ def saveToItinerary(request):
     userdata = User.objects.filter(id=data['user_id']).first()
     planIds = data['plan_id']
     date = data['date']
+    print("Exists = ", Itinerary.objects.filter(user_id=data['user_id']).exists())
 
     if Itinerary.objects.filter(user_id=data['user_id']).exists():
         itinerary = Itinerary.objects.filter(user_id=data['user_id']).first()
 
-        if Site.objects.filter(site_id=data['place_id'], itinerary=itinerary).exists():
-            Site.objects.filter(site_id=data['place_id'], itinerary=itinerary).delete()
+        if ItinerarySite.objects.filter(site_id=data['place_id'], itinerary=itinerary).exists():
+            ItinerarySite.objects.filter(site_id=data['place_id'], itinerary=itinerary).delete()
         if ItineraryHotel.objects.filter(hotel_id=data['place_id'], itinerary=itinerary).exists():
             ItineraryHotel.objects.filter(hotel_id=data['place_id'], itinerary=itinerary).delete()
         # if ItineraryExtremeSport.objects.filter(extremesport_id=data['place_id'], itinerary=itinerary).exists():
@@ -1998,8 +1999,8 @@ def getTripViaId(request, id=None):
 def getSites(request):
     data = json.loads(request.body)
     print("Calles")
-    print("category_id = ",data['category_id'])
-    plans = Site.objects.filter(city_id=data['city_id'],category_id=data['category_id']).all().values(
+    print("category_id = ", data['category_id'])
+    plans = Site.objects.filter(city_id=data['city_id'], category_id=data['category_id']).all().values(
         'id', 'name',
         'description', 'images',
     )
@@ -3265,7 +3266,7 @@ def get_coordinates_along_polyline(request):
     if response.status_code == 200:
         data = response.json()
         decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
-        print("overview_polyline = ",decoded_points)
+        print("overview_polyline = ", decoded_points)
 
     plans = []
 
@@ -3301,10 +3302,9 @@ def get_coordinates_along_polyline(request):
                     "is_hotel": True
                 })
     else:
-        
 
         for category in category_list:
-            print("category = ",category)
+            print("category = ", category)
             if Hotel.objects.filter(category_id=category).exists():
                 data = Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
                 for plan in data:
@@ -3330,7 +3330,7 @@ def get_coordinates_along_polyline(request):
                 ).values(
                     'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url'
                 )
-                print("queryset = ",queryset)
+                print("queryset = ", queryset)
                 process_data(queryset)
 
     plans_list = {"markers": list(plans)}
@@ -3671,14 +3671,14 @@ class SearchCityListAPIView(generics.ListAPIView):
         print("Calles search")
         queryset = City.objects.all()
         query = self.request.query_params.get('q', None)
-        print("Query = ",query)
+        print("Query = ", query)
         try:
             if query:
                 queryset = queryset.filter(name__icontains=query)
-            print("queryset = ",queryset)
+            print("queryset = ", queryset)
             return queryset
         except Exception as e:
-            print("Exception = ",e)
+            print("Exception = ", e)
 
 
 class AddSiteAPIView(APIView):
