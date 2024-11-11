@@ -33,48 +33,49 @@ from django.conf import settings
 import os
 from rest_framework.decorators import api_view
 
+
 def addLoyaltyProgram(request):
     RentalCars.objects.create(
         name='Hertz',
-        
+
     )
     RentalCars.objects.create(
         name='Alamo Rent A Car',
-        
+
     )
     RentalCars.objects.create(
         name='Avis',
-        
+
     )
     RentalCars.objects.create(
         name='Budget',
-        
+
     )
     RentalCars.objects.create(
         name='Enterprise',
-        
+
     )
     RentalCars.objects.create(
         name='Rent-A-Car',
-        
+
     )
     RentalCars.objects.create(
         name='National Car Rental',
-        
+
     )
     RentalCars.objects.create(
         name='Sixt Rent a Car',
-        
+
     )
     RentalCars.objects.create(
         name='Thrifty',
-        
+
     )
     RentalCars.objects.create(
         name='Dollar',
-        
+
     )
-    
+
     # user_models.LoyaltyProgram.objects.create(
     #     name='American Airlines',
     #     type='A'
@@ -99,32 +100,33 @@ def addLoyaltyProgram(request):
     #     name='Drury',
     #     type='H'
     # )
-    
-    
+
     return JsonResponse({'message': 'Loyalty Program added'})
+
 
 @api_view(['GET'])
 def getAllLoyaltyProgram(request, type=None):
     loyaltyPrograms = user_models.LoyaltyProgram.objects.filter(type=type).all().values(
         'id',
-        'name', 
+        'name',
         'type'
     )
     print(len(loyaltyPrograms))
     loyalty_program_list = list(loyaltyPrograms)
-    return JsonResponse(loyalty_program_list, safe=False,status=status.HTTP_200_OK)
+    return JsonResponse(loyalty_program_list, safe=False, status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
 def getProfileOptions(request):
-    
+
     loyaltyAirlines = user_models.LoyaltyProgram.objects.filter(type='A').all().values(
         'id',
-        'name', 
+        'name',
         'type'
     )
     loyaltyHotels = user_models.LoyaltyProgram.objects.filter(type='H').all().values(
         'id',
-        'name', 
+        'name',
         'type'
     )
     travelGoal = TravelGoal.objects.all().values(
@@ -138,11 +140,11 @@ def getProfileOptions(request):
     )
     countries = Country.objects.all().values(
         'id',
-        'iso', 
-        'name', 
-        'nicename', 
-        'iso3', 
-        'numeric_code', 
+        'iso',
+        'name',
+        'nicename',
+        'iso3',
+        'numeric_code',
         'phone_code'
     ).order_by('name')
     print(len(countries))
@@ -155,7 +157,7 @@ def getProfileOptions(request):
     if ca_country:
         country_list.remove(ca_country)
         country_list.insert(1, ca_country)
-    
+
     rental_cars = RentalCars.objects.all().values(
         'id',
         'name'
@@ -172,36 +174,38 @@ def getProfileOptions(request):
         'id',
         'name'
     )
-    
-    
+
     return JsonResponse({
-        "loyalty_airlines":list(loyaltyAirlines),
-        "loyalty_hotels":list(loyaltyHotels),
-        "travel_goals":list(travelGoal),
-        "motivations":list(motivation),
-        "countries":list(country_list),
-        "rental_cars":list(rental_cars),
-        "hotel_brands":list(hotelBrands),
-        "restaurant_brands":list(restaurant_brands),
-        "priorities":list(priorities),
-        }, safe=False,status=status.HTTP_200_OK)
+        "loyalty_airlines": list(loyaltyAirlines),
+        "loyalty_hotels": list(loyaltyHotels),
+        "travel_goals": list(travelGoal),
+        "motivations": list(motivation),
+        "countries": list(country_list),
+        "rental_cars": list(rental_cars),
+        "hotel_brands": list(hotelBrands),
+        "restaurant_brands": list(restaurant_brands),
+        "priorities": list(priorities),
+    }, safe=False, status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 def uploadImage(request):
     mediaId = None
     if request.method == 'POST' and bool(request.FILES['file']) == True:
         uploaded_file = request.FILES['file']
-        with open(os.path.join(settings.BASE_DIR,'static', uploaded_file.name), 'wb+') as destination:
+        with open(os.path.join(settings.BASE_DIR, 'static', uploaded_file.name), 'wb+') as destination:
             for chunk in uploaded_file.chunks():
                 destination.write(chunk)
         mediaObj = user_models.Media(
             media_key='',
             media_url=os.path.join('static', uploaded_file.name)
-            )
+        )
         mediaObj.save()
         mediaId = mediaObj.id
 
     return JsonResponse({'message': 'File uploaded successfully.'})
+
+
 class MediaAPIView(generics.GenericAPIView):
     """Media api view"""
 
@@ -236,14 +240,15 @@ class MediaAPIView(generics.GenericAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class SendEmailOTP(generics.GenericAPIView):
     serializer_class = user_serializer.SendEmailOTPSerializer
     model = user_models.UserVerification
-    
+
     @swagger_auto_schema(responses={201: 'Email sent successfully'})
     def post(self, request, *args, **kwargs):
         print('SendEmailOTP')
-        data=request.data
+        data = request.data
         if user_models.User.objects.filter(email=data.get("email")).exists():
             raise ValidationError(ApplicationMessages.USER_ALREADY_EXIST)
         else:
@@ -251,12 +256,12 @@ class SendEmailOTP(generics.GenericAPIView):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response({'detail': 'Email sent successfully'}, status=201)
-        
-        # serializer_class.create(validated_data=request.data)
-        
-        return Response({'OTP Sent':'Hi'}, status.HTTP_200_OK)
 
-            
+        # serializer_class.create(validated_data=request.data)
+
+        return Response({'OTP Sent': 'Hi'}, status.HTTP_200_OK)
+
+
 class UserSignUpAPIView(generics.GenericAPIView):
     """
     SignUp customer and Create Customer Profile (POST Request)
@@ -272,12 +277,12 @@ class UserSignUpAPIView(generics.GenericAPIView):
         create a new User
         payload For Email Signup: {"email": "example@ex.com", "password": "Admin@123"}
         """
-        data=request.data
+        data = request.data
         try:
-            print('OTPVerificationTemp = ',data.get("verification_code"))
-            verification_instance=self.model.get_instance( {
-                    "verification_code": data.get("verification_code"),
-                    "is_used": False,})  
+            print('OTPVerificationTemp = ', data.get("verification_code"))
+            verification_instance = self.model.get_instance({
+                "verification_code": data.get("verification_code"),
+                "is_used": False, })
             print("CCCCC")
             # Check for code expiry
             if timezone.now() > verification_instance.expiry_time:
@@ -292,18 +297,18 @@ class UserSignUpAPIView(generics.GenericAPIView):
             serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
                 response = serializer.save()
-                print("User added",response)
+                print("User added", response)
                 return Response(response, status=status.HTTP_201_CREATED)
             else:
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
-            print("EX = ",ex)
+            print("EX = ", ex)
             raise ValidationError(ApplicationMessages.SOMETHING_WENT_WRONG, status.HTTP_400_BAD_REQUEST)
 
 
 class UserProfileAPIView(generics.GenericAPIView):
-    
+
     serializer_class = user_serializer.UserProfileUpdateSerializer
     permission_classes = [permissions.IsUser]
 
@@ -311,25 +316,25 @@ class UserProfileAPIView(generics.GenericAPIView):
         """Update User Profile"""
         try:
             user = request.user
-            tempData=request.data
+            tempData = request.data
             mediaId = None
             # print('with_file = ',tempData['with_file'])
             # print('with_file = ',tempData['with_file']==1 is True)
             with_file = int(tempData.get('with_file', 0))
-            print('with_file = ', with_file == 1) 
-            if with_file==1 and 'file' in request.FILES and bool(request.FILES['file']) == True:
+            print('with_file = ', with_file == 1)
+            if with_file == 1 and 'file' in request.FILES and bool(request.FILES['file']) == True:
                 uploaded_file = request.FILES['file']
-                with open(os.path.join(settings.BASE_DIR,'static', uploaded_file.name), 'wb+') as destination:
+                with open(os.path.join(settings.BASE_DIR, 'static', uploaded_file.name), 'wb+') as destination:
                     for chunk in uploaded_file.chunks():
                         destination.write(chunk)
                 mediaObj = user_models.Media(
                     media_key='',
                     media_url=os.path.join('static', uploaded_file.name)
-                    )
+                )
                 mediaObj.save()
                 mediaId = mediaObj.id
-                tempData['profile_pic']=mediaId
-            print("tempData = ",tempData)
+                tempData['profile_pic'] = mediaId
+            print("tempData = ", tempData)
             serializer = self.serializer_class(user, data=tempData, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -338,8 +343,8 @@ class UserProfileAPIView(generics.GenericAPIView):
                 print('Validation errors:')
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
-            print('An error occurred:',ex)
-            
+            print('An error occurred:', ex)
+
             raise ValidationError(ApplicationMessages.SOMETHING_WENT_WRONG)
 
     def get(self, request, *args, **kwargs):
@@ -361,7 +366,7 @@ class UserEmailLoginAPIView(generics.GenericAPIView):
     @swagger_auto_schema(responses={200: schema.email_login_resp})
     def post(self, request):
         """User Login as well as create a session"""
-        print("Request Data:", request.data)  
+        print("Request Data:", request.data)
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         email, password = serializer.data['email'], serializer.data['password']
@@ -370,7 +375,10 @@ class UserEmailLoginAPIView(generics.GenericAPIView):
         print(f"Email: {email}, Password: {password}")
         try:
             if not user:
-                raise ValidationError(ApplicationMessages.USER_N_EMAIL_EXISTS)
+                return Response(
+                    {"detail": str(ApplicationMessages.USER_N_EMAIL_EXISTS)},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             if password and user.check_password(password):
                 response = {
                     "message": "User Logged In Successfully!",
@@ -378,9 +386,13 @@ class UserEmailLoginAPIView(generics.GenericAPIView):
                     "refresh_token": user.tokens()['refresh'],
                     "user_id": user.id
                 }
-                return Response(response, status=status.HTTP_200_OK)
+                return Response(response, status=status.HTTP_401_UNAUTHORIZED)
             else:
-                raise ValidationError(ApplicationMessages.INVALID_PASSWORD)
+                # raise ValidationError(ApplicationMessages.INVALID_PASSWORD)
+                return Response(
+                    {"detail": str(ApplicationMessages.INVALID_PASSWORD)},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
         except Exception as ex:
             # ex = "You're logged out."
             return Response(f'{ex}', status.HTTP_200_OK)
