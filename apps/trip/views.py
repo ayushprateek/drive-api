@@ -1,4 +1,4 @@
-from .models import Location, Viewport, Geometry, Photo, PlusCode, Hotel
+from .models import Location, Viewport, Geometry, Photo, PlusCode, Site
 from shapely.geometry import Point, LineString
 import datetime
 from collections import defaultdict
@@ -588,94 +588,111 @@ def cityScrape(request):
     # print('cityScrape')
 
     City.objects.create(
-        name='Orlando',
+        name='West Palm Beach',
         country='US',
-        latitude=28.538336,
-        longitude=-81.379234,
-        images=['static/Orlando.jpeg'],
-        description='Orlando is a city in central Florida, known for its theme parks, including Walt Disney World and Universal Studios.'
+        latitude=26.780233,
+        longitude=-80.170243,
+        images=['{static/WestPalmBeach.jpg}'],
+        description='West Palm Beach is best known for its palm-lined trees, nightlife, entertainment, cultural attractions, shopping areas, and fantastic fishing spots.'
+    )
+    City.objects.create(
+        name='Gainesville',
+        country='US',
+        latitude=29.680578,
+        longitude=-82.342753,
+        images=['{static/Gainesville.jpeg}'],
+        description='Known for its preservation of historic buildings and the beauty of its natural surroundings, Gainesville numerous parks, museums and lakes provide entertainment to thousands of visitors.'
     )
 
-    City.objects.create(
-        name='Tampa',
-        country='US',
-        latitude=27.950575,
-        longitude=-82.457178,
-        images=['static/Tampa.jpeg'],
-        description='Tampa is a city on Tampa Bay, along Florida’s Gulf Coast. It is known for its museums and other cultural offerings.'
-    )
+    # City.objects.create(
+    #     name='Orlando',
+    #     country='US',
+    #     latitude=28.538336,
+    #     longitude=-81.379234,
+    #     images=['static/Orlando.jpeg'],
+    #     description='Orlando is a city in central Florida, known for its theme parks, including Walt Disney World and Universal Studios.'
+    # )
 
-    City.objects.create(
-        name='Tallahassee',
-        country='US',
-        latitude=30.438255,
-        longitude=-84.280733,
-        images=['static/Tallahassee.jpeg'],
-        description='Tallahassee is the capital of the U.S. state of Florida. It is known for its large number of law firms, lobbying organizations, and trade associations.'
-    )
+    # City.objects.create(
+    #     name='Tampa',
+    #     country='US',
+    #     latitude=27.950575,
+    #     longitude=-82.457178,
+    #     images=['static/Tampa.jpeg'],
+    #     description='Tampa is a city on Tampa Bay, along Florida’s Gulf Coast. It is known for its museums and other cultural offerings.'
+    # )
 
-    City.objects.create(
-        name='St. Petersburg',
-        country='US',
-        latitude=27.767600,
-        longitude=-82.640290,
-        images=['static/St_Petersburg.jpeg'],
-        description='St. Petersburg is a city on Florida’s Gulf Coast, part of the Tampa Bay area. It is known for its pleasant weather and cultural attractions.'
-    )
+    # City.objects.create(
+    #     name='Tallahassee',
+    #     country='US',
+    #     latitude=30.438255,
+    #     longitude=-84.280733,
+    #     images=['static/Tallahassee.jpeg'],
+    #     description='Tallahassee is the capital of the U.S. state of Florida. It is known for its large number of law firms, lobbying organizations, and trade associations.'
+    # )
 
-    City.objects.create(
-        name='Fort Lauderdale',
-        country='US',
-        latitude=26.122439,
-        longitude=-80.137317,
-        images=['static/Fort_Lauderdale.jpeg'],
-        description='Fort Lauderdale is a city on Florida’s southeastern coast, known for its boating canals and stunning beaches.'
-    )
+    # City.objects.create(
+    #     name='St. Petersburg',
+    #     country='US',
+    #     latitude=27.767600,
+    #     longitude=-82.640290,
+    #     images=['static/St_Petersburg.jpeg'],
+    #     description='St. Petersburg is a city on Florida’s Gulf Coast, part of the Tampa Bay area. It is known for its pleasant weather and cultural attractions.'
+    # )
 
-    City.objects.create(
-        name='Hialeah',
-        country='US',
-        latitude=25.857596,
-        longitude=-80.278105,
-        images=['static/Hialeah.jpeg'],
-        description='Hialeah is a city in Miami-Dade County, Florida, and a principal city of the Miami metropolitan area.'
-    )
+    # City.objects.create(
+    #     name='Fort Lauderdale',
+    #     country='US',
+    #     latitude=26.122439,
+    #     longitude=-80.137317,
+    #     images=['static/Fort_Lauderdale.jpeg'],
+    #     description='Fort Lauderdale is a city on Florida’s southeastern coast, known for its boating canals and stunning beaches.'
+    # )
 
-    City.objects.create(
-        name='Port St. Lucie',
-        country='US',
-        latitude=27.273049,
-        longitude=-80.358226,
-        images=['static/Port_St_Lucie.jpeg'],
-        description='Port St. Lucie is a city in Florida, known for its beautiful parks, riverfront, and botanical gardens.'
-    )
+    # City.objects.create(
+    #     name='Hialeah',
+    #     country='US',
+    #     latitude=25.857596,
+    #     longitude=-80.278105,
+    #     images=['static/Hialeah.jpeg'],
+    #     description='Hialeah is a city in Miami-Dade County, Florida, and a principal city of the Miami metropolitan area.'
+    # )
 
-    City.objects.create(
-        name='Pembroke Pines',
-        country='US',
-        latitude=26.007765,
-        longitude=-80.296256,
-        images=['static/Pembroke_Pines.jpeg'],
-        description='Pembroke Pines is a city in southern Broward County, Florida, and a suburb of Miami.'
-    )
+    # City.objects.create(
+    #     name='Port St. Lucie',
+    #     country='US',
+    #     latitude=27.273049,
+    #     longitude=-80.358226,
+    #     images=['static/Port_St_Lucie.jpeg'],
+    #     description='Port St. Lucie is a city in Florida, known for its beautiful parks, riverfront, and botanical gardens.'
+    # )
 
-    City.objects.create(
-        name='Miami',
-        country='US',
-        latitude=25.761670,
-        longitude=-80.22534,
-        images=['static/Miami.jpeg'],
-        description='Miami, officially the City of Miami, is a coastal city in the U.S. state of Florida and the seat of Miami-Dade County in South Florida'
-    )
+    # City.objects.create(
+    #     name='Pembroke Pines',
+    #     country='US',
+    #     latitude=26.007765,
+    #     longitude=-80.296256,
+    #     images=['static/Pembroke_Pines.jpeg'],
+    #     description='Pembroke Pines is a city in southern Broward County, Florida, and a suburb of Miami.'
+    # )
 
-    City.objects.create(
-        name='Jacksonville',
-        country='US',
-        latitude=30.387233,
-        longitude=-81.670820,
-        images=['static/Jacksonville.jpeg', 'static/Jacksonville2.jpeg'],
-        description='Jacksonville is the most populous city proper in the U.S. state of Florida, located on the Atlantic coast of northeastern Florida. It is the seat of Duval County, with which the City of Jacksonville consolidated in 1968. It was the largest city by area in the contiguous United States as of 2020'
-    )
+    # City.objects.create(
+    #     name='Miami',
+    #     country='US',
+    #     latitude=25.761670,
+    #     longitude=-80.22534,
+    #     images=['static/Miami.jpeg'],
+    #     description='Miami, officially the City of Miami, is a coastal city in the U.S. state of Florida and the seat of Miami-Dade County in South Florida'
+    # )
+
+    # City.objects.create(
+    #     name='Jacksonville',
+    #     country='US',
+    #     latitude=30.387233,
+    #     longitude=-81.670820,
+    #     images=['static/Jacksonville.jpeg', 'static/Jacksonville2.jpeg'],
+    #     description='Jacksonville is the most populous city proper in the U.S. state of Florida, located on the Atlantic coast of northeastern Florida. It is the seat of Duval County, with which the City of Jacksonville consolidated in 1968. It was the largest city by area in the contiguous United States as of 2020'
+    # )
     return JsonResponse({'message': 'City fetched and saved successfully'})
 
 
@@ -769,8 +786,8 @@ def saveToItinerary(request):
 
         if ItinerarySite.objects.filter(site_id=data['place_id'], itinerary=itinerary).exists():
             ItinerarySite.objects.filter(site_id=data['place_id'], itinerary=itinerary).delete()
-        if ItineraryHotel.objects.filter(hotel_id=data['place_id'], itinerary=itinerary).exists():
-            ItineraryHotel.objects.filter(hotel_id=data['place_id'], itinerary=itinerary).delete()
+        # if ItineraryHotel.objects.filter(hotel_id=data['place_id'], itinerary=itinerary).exists():
+        #     ItineraryHotel.objects.filter(hotel_id=data['place_id'], itinerary=itinerary).delete()
         # if ItineraryExtremeSport.objects.filter(extremesport_id=data['place_id'], itinerary=itinerary).exists():
         #     ItineraryExtremeSport.objects.filter(extremesport_id=data['place_id'], itinerary=itinerary).delete()
         # if ItineraryEvent.objects.filter(event_id=data['place_id'], itinerary=itinerary).exists():
@@ -796,14 +813,14 @@ def saveToItinerary(request):
                 plan=planModel,
                 date=date
             )
-        if Hotel.objects.filter(id=data['place_id']).exists():
-            hotel = Hotel.objects.get(id=data['place_id'])
-            ItineraryHotel.objects.create(
-                itinerary=itinerary,
-                hotel=hotel,
-                plan=planModel,
-                date=date
-            )
+        # if Hotel.objects.filter(id=data['place_id']).exists():
+        #     hotel = Hotel.objects.get(id=data['place_id'])
+        #     ItineraryHotel.objects.create(
+        #         itinerary=itinerary,
+        #         hotel=hotel,
+        #         plan=planModel,
+        #         date=date
+        #     )
         # if ExtremeSport.objects.filter(id=data['place_id']).exists():
         #     extremesport = ExtremeSport.objects.get(id=data['place_id'])
         #     ItineraryExtremeSport.objects.create(
@@ -1346,18 +1363,18 @@ def getItineraryViaPlan(request):
 
     return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
-    return JsonResponse(json.dumps(
-        {
-            "Site": list(siteList),
-            "Event": list(eventList),
-            "Park": list(parkList),
-            "Hotel": list(hotelList),
-            "WeirdAndWacky": list(weirdAndWackyList),
-            "ExtremeSports": list(extremeSportList),
-            "Attraction": list(attractionList)
-        },
-        default=str
-    ), safe=False, status=status.HTTP_200_OK)
+    # return JsonResponse(json.dumps(
+    #     {
+    #         "Site": list(siteList),
+    #         "Event": list(eventList),
+    #         "Park": list(parkList),
+    #         "Hotel": list(hotelList),
+    #         "WeirdAndWacky": list(weirdAndWackyList),
+    #         "ExtremeSports": list(extremeSportList),
+    #         "Attraction": list(attractionList)
+    #     },
+    #     default=str
+    # ), safe=False, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -1371,7 +1388,7 @@ def getItineraryFilter(request):
     siteList = []
     # eventList = []
     # parkList = []
-    hotelList = []
+    # hotelList = []
     # extremeSportList = []
     # weirdAndWackyList = []
     # attractionList = []
@@ -1382,7 +1399,7 @@ def getItineraryFilter(request):
     itinerarySite = ItinerarySite.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('site_id', 'id')
     # itineraryEvent = ItineraryEvent.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('event_id', 'id')
     # itineraryPark = ItineraryPark.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('park_id', 'id')
-    itineraryHotel = ItineraryHotel.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('hotel_id', 'id')
+    # itineraryHotel = ItineraryHotel.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('hotel_id', 'id')
     # itineraryExtremeSport = ItineraryExtremeSport.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('extremesport_id', 'id')
     # itineraryWeirdAndWacky = ItineraryWeirdAndWacky.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('weirdandwacky_id', 'id')
     # itineraryAttraction = ItineraryAttraction.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('attraction_id', 'id')
@@ -1471,33 +1488,33 @@ def getItineraryFilter(request):
     #                 })
     #         parkList.append(list(plans))
 
-    if itineraryHotel:
-        itineraryHotelData = itineraryHotel[0]
-        if Hotel.objects.filter(id=itineraryHotelData['hotel_id']).exists():
-            plans = Hotel.objects.filter(id=itineraryHotelData['hotel_id']).all().values(
+    # if itineraryHotel:
+    #     itineraryHotelData = itineraryHotel[0]
+    #     if Hotel.objects.filter(id=itineraryHotelData['hotel_id']).exists():
+    #         plans = Hotel.objects.filter(id=itineraryHotelData['hotel_id']).all().values(
 
-                'city_id',
-                'category_id'
-            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-                'category_id',
-                'category_name',
-                'city_id',
-                'city_name'
-            )
-            for plan in plans:
-                if plan['city_id'] and plan['city_id'] not in uniqueCities:
-                    uniqueCities.add(plan['city_id'])
-                    cityList.append({
-                        "city_id": plan['city_id'],
-                        "city_name": plan['city_name'],
-                    })
-                if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-                    uniqueCategories.add(plan['category_id'])
-                    categoryList.append({
-                        "category_id": plan['category_id'],
-                        "category_name": plan['category_name'],
-                    })
-            hotelList.append(list(plans))
+    #             'city_id',
+    #             'category_id'
+    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
+    #             'category_id',
+    #             'category_name',
+    #             'city_id',
+    #             'city_name'
+    #         )
+    #         for plan in plans:
+    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
+    #                 uniqueCities.add(plan['city_id'])
+    #                 cityList.append({
+    #                     "city_id": plan['city_id'],
+    #                     "city_name": plan['city_name'],
+    #                 })
+    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
+    #                 uniqueCategories.add(plan['category_id'])
+    #                 categoryList.append({
+    #                     "category_id": plan['category_id'],
+    #                     "category_name": plan['category_name'],
+    #                 })
+    #         hotelList.append(list(plans))
 
     # if itineraryWeirdAndWacky:
     #     itineraryWeirdAndWackyData = itineraryWeirdAndWacky[0]
@@ -1614,14 +1631,14 @@ def likePlace(request):
         )
         return JsonResponse({'message': 'User Liked Site'})
 
-    if Hotel.objects.filter(id=data['like_id']).exists():
-        site = Hotel.objects.get(id=data['like_id'])
-        UserLikesHotel.objects.create(
-            userlikes=user_likes,
-            hotel=site,
-            plan=planModel
-        )
-        return JsonResponse({'message': 'User Liked Hotel'})
+    # if Hotel.objects.filter(id=data['like_id']).exists():
+    #     site = Hotel.objects.get(id=data['like_id'])
+    #     UserLikesHotel.objects.create(
+    #         userlikes=user_likes,
+    #         hotel=site,
+    #         plan=planModel
+    #     )
+    #     return JsonResponse({'message': 'User Liked Hotel'})
 
     # if ExtremeSport.objects.filter(id=data['like_id']).exists():
     #     extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
@@ -1704,11 +1721,11 @@ def isPlaceLiked(request):
             return JsonResponse({'message': 'User Liked Site',
                                  'liked': True})
 
-        if user_likes and user_likes.liked_hotels_new.filter(id=data['like_id']).exists():
-            # hotel = Hotel.objects.get(id=data['like_id'])
-            # user_likes.liked_hotels.add(hotel)
-            return JsonResponse({'message': 'User Liked Hotel',
-                                 'liked': True})
+        # if user_likes and user_likes.liked_hotels_new.filter(id=data['like_id']).exists():
+        #     # hotel = Hotel.objects.get(id=data['like_id'])
+        #     # user_likes.liked_hotels.add(hotel)
+        #     return JsonResponse({'message': 'User Liked Hotel',
+        #                          'liked': True})
 
         # if user_likes and user_likes.liked_extremesports_new.filter(id=data['like_id']).exists():
         #     # extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
@@ -1756,11 +1773,11 @@ def isPlaceLikedInPlan(request):
             return JsonResponse({'message': 'User Liked Site',
                                  'liked': True})
 
-        if user_likes and UserLikesHotel.objects.filter(hotel_id=data['like_id'], plan_id=data['plan_id'], userlikes_id=user_likes.id).exists():
-            # hotel = Hotel.objects.get(id=data['like_id'])
-            # user_likes.liked_hotels.add(hotel)
-            return JsonResponse({'message': 'User Liked Hotel',
-                                 'liked': True})
+        # if user_likes and UserLikesHotel.objects.filter(hotel_id=data['like_id'], plan_id=data['plan_id'], userlikes_id=user_likes.id).exists():
+        #     # hotel = Hotel.objects.get(id=data['like_id'])
+        #     # user_likes.liked_hotels.add(hotel)
+        #     return JsonResponse({'message': 'User Liked Hotel',
+        #                          'liked': True})
 
         # if user_likes and UserLikesExtremeSport.objects.filter(extremesport_id=data['like_id'], plan_id=data['plan_id'], userlikes_id=user_likes.id).exists():
         #     # extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
@@ -1809,11 +1826,11 @@ def unlikePlace(request):
             return JsonResponse({'message': 'User Unliked Site',
                                  'liked': False})
 
-        if user_likes and UserLikesHotel.objects.filter(hotel_id=data['like_id'], plan_id=data['plan_id'], userlikes_id=user_likes.id).exists():
-            UserLikesHotel.objects.filter(hotel_id=data['like_id'], plan_id=data['plan_id'], userlikes_id=user_likes.id).delete()
+        # if user_likes and UserLikesHotel.objects.filter(hotel_id=data['like_id'], plan_id=data['plan_id'], userlikes_id=user_likes.id).exists():
+        #     UserLikesHotel.objects.filter(hotel_id=data['like_id'], plan_id=data['plan_id'], userlikes_id=user_likes.id).delete()
 
-            return JsonResponse({'message': 'User Unliked Hotel',
-                                 'liked': False})
+        #     return JsonResponse({'message': 'User Unliked Hotel',
+        #                          'liked': False})
 
         # if user_likes and user_likes.liked_hotels_new.filter(id=data['like_id']).exists():
         #     # hotel = Hotel.objects.get(id=data['like_id'])
@@ -2028,7 +2045,7 @@ def getSites(request):
 @api_view(['POST'])
 def getHotelSites(request):
     data = json.loads(request.body)
-    plans = Hotel.objects.filter(city_id=data['city_id']).all().values(
+    plans = Site.objects.filter(city_id=data['city_id']).all().values(
         'id', 'name',
         'description', 'images',
     )
@@ -2138,7 +2155,7 @@ def getTripFilter(request):
     userLikesSite = UserLikesSite.objects.filter(plan_id=plan_id).all().values('site_id', 'id')
     # userLikesEvent = UserLikesEvent.objects.filter(plan_id=plan_id).all().values('event_id', 'id')
     # userLikesPark = UserLikesPark.objects.filter(plan_id=plan_id).all().values('park_id', 'id')
-    userLikesHotel = UserLikesHotel.objects.filter(plan_id=plan_id).all().values('hotel_id', 'id')
+    # userLikesHotel = UserLikesHotel.objects.filter(plan_id=plan_id).all().values('hotel_id', 'id')
     # userLikesExtremeSport = UserLikesExtremeSport.objects.filter(plan_id=plan_id).all().values('extremesport_id', 'id')
     # userLikesWeirdAndWacky = UserLikesWeirdAndWacky.objects.filter(plan_id=plan_id).all().values('weirdandwacky_id', 'id')
     # userLikesAttraction = UserLikesAttraction.objects.filter(plan_id=plan_id).all().values('attraction_id', 'id')
@@ -2227,33 +2244,33 @@ def getTripFilter(request):
     #                 })
     #         parkList.append(list(plans))
 
-    if userLikesHotel:
-        userLikesHotelData = userLikesHotel[0]
-        if Hotel.objects.filter(id=userLikesHotelData['hotel_id']).exists():
-            plans = Hotel.objects.filter(id=userLikesHotelData['hotel_id']).all().values(
+    # if userLikesHotel:
+    #     userLikesHotelData = userLikesHotel[0]
+    #     if Hotel.objects.filter(id=userLikesHotelData['hotel_id']).exists():
+    #         plans = Hotel.objects.filter(id=userLikesHotelData['hotel_id']).all().values(
 
-                'city_id',
-                'category_id'
-            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-                'category_id',
-                'category_name',
-                'city_id',
-                'city_name'
-            )
-            for plan in plans:
-                if plan['city_id'] and plan['city_id'] not in uniqueCities:
-                    uniqueCities.add(plan['city_id'])
-                    cityList.append({
-                        "city_id": plan['city_id'],
-                        "city_name": plan['city_name'],
-                    })
-                if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-                    uniqueCategories.add(plan['category_id'])
-                    categoryList.append({
-                        "category_id": plan['category_id'],
-                        "category_name": plan['category_name'],
-                    })
-            hotelList.append(list(plans))
+    #             'city_id',
+    #             'category_id'
+    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
+    #             'category_id',
+    #             'category_name',
+    #             'city_id',
+    #             'city_name'
+    #         )
+    #         for plan in plans:
+    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
+    #                 uniqueCities.add(plan['city_id'])
+    #                 cityList.append({
+    #                     "city_id": plan['city_id'],
+    #                     "city_name": plan['city_name'],
+    #                 })
+    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
+    #                 uniqueCategories.add(plan['category_id'])
+    #                 categoryList.append({
+    #                     "category_id": plan['category_id'],
+    #                     "category_name": plan['category_name'],
+    #                 })
+    #         hotelList.append(list(plans))
 
     # if userLikesWeirdAndWacky:
     #     userLikesWeirdAndWackyData = userLikesWeirdAndWacky[0]
@@ -2392,7 +2409,7 @@ def getLikedSitesViaPlan(request):
     userLikesSite = UserLikesSite.objects.filter(plan_id=plan_id).all().values('site_id', 'id')
     # userLikesEvent = UserLikesEvent.objects.filter(plan_id=plan_id).all().values('event_id', 'id')
     # userLikesPark = UserLikesPark.objects.filter(plan_id=plan_id).all().values('park_id', 'id')
-    userLikesHotel = UserLikesHotel.objects.filter(plan_id=plan_id).all().values('hotel_id', 'id')
+    # userLikesHotel = UserLikesHotel.objects.filter(plan_id=plan_id).all().values('hotel_id', 'id')
     # userLikesExtremeSport = UserLikesExtremeSport.objects.filter(plan_id=plan_id).all().values('extremesport_id', 'id')
     # userLikesWeirdAndWacky = UserLikesWeirdAndWacky.objects.filter(plan_id=plan_id).all().values('weirdandwacky_id', 'id')
     # userLikesAttraction = UserLikesAttraction.objects.filter(plan_id=plan_id).all().values('attraction_id', 'id')
@@ -2520,47 +2537,47 @@ def getLikedSitesViaPlan(request):
     #             plan['users'] = list(imageList)
     #             parkList.append(plan)
 
-    if userLikesHotel:
-        userLikesHotelData = userLikesHotel[0]
-        if Hotel.objects.filter(id=userLikesHotelData['hotel_id']).exists():
-            if selectedCity:
-                fetch = Hotel.objects.filter(id=userLikesHotelData['hotel_id']).filter(city_id__in=selectedCity)
-            else:
-                fetch = Hotel.objects.filter(id=userLikesHotelData['hotel_id'])
-            if selectedCategory:
-                fetch = fetch.filter(category_id__in=selectedCategory)
-            plans = fetch.all().values(
-                'id', 'name',
-                'description', 'place_id', 'images',
-                'city_id'
-            ).annotate(city_name=F('city__name')).values(
-                'id', 'name',
-                'description', 'place_id', 'images',
-                'city_id',
-                'city_name'
-            )
+    # if userLikesHotel:
+    #     userLikesHotelData = userLikesHotel[0]
+    #     if Hotel.objects.filter(id=userLikesHotelData['hotel_id']).exists():
+    #         if selectedCity:
+    #             fetch = Hotel.objects.filter(id=userLikesHotelData['hotel_id']).filter(city_id__in=selectedCity)
+    #         else:
+    #             fetch = Hotel.objects.filter(id=userLikesHotelData['hotel_id'])
+    #         if selectedCategory:
+    #             fetch = fetch.filter(category_id__in=selectedCategory)
+    #         plans = fetch.all().values(
+    #             'id', 'name',
+    #             'description', 'place_id', 'images',
+    #             'city_id'
+    #         ).annotate(city_name=F('city__name')).values(
+    #             'id', 'name',
+    #             'description', 'place_id', 'images',
+    #             'city_id',
+    #             'city_name'
+    #         )
 
-            imageList = []
-            userList = UserLikesHotel.objects.filter(plan_id=plan_id).all()\
-                .values('hotel_id', 'id', 'userlikes_id')\
-                .annotate(user_id=F('userlikes__user_id'))\
-                .values('hotel_id', 'id', 'userlikes_id', 'user_id')
+    #         imageList = []
+    #         userList = UserLikesHotel.objects.filter(plan_id=plan_id).all()\
+    #             .values('hotel_id', 'id', 'userlikes_id')\
+    #             .annotate(user_id=F('userlikes__user_id'))\
+    #             .values('hotel_id', 'id', 'userlikes_id', 'user_id')
 
-            for users in userList:
-                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
-                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
-                for pic in profile_pic:
-                    imageList.append({
-                        "profile_pic_id": pic['profile_pic_id'],
-                        "profile_picture": pic['profile_picture'],
-                    })
-                # print('profile_pic = ',profile_pic)
+    #         for users in userList:
+    #             profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+    #                 values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+    #             for pic in profile_pic:
+    #                 imageList.append({
+    #                     "profile_pic_id": pic['profile_pic_id'],
+    #                     "profile_picture": pic['profile_picture'],
+    #                 })
+    #             # print('profile_pic = ',profile_pic)
 
-            for plan in plans:
-                plan['images'] = [plan['place_id']]
-                plan['user_count'] = len(userLikesHotel)
-                plan['users'] = list(imageList)
-                hotelList.append(plan)
+    #         for plan in plans:
+    #             plan['images'] = [plan['place_id']]
+    #             plan['user_count'] = len(userLikesHotel)
+    #             plan['users'] = list(imageList)
+    #             hotelList.append(plan)
 
     # if userLikesWeirdAndWacky:
     #     userLikesWeirdAndWackyData = userLikesWeirdAndWacky[0]
@@ -2892,7 +2909,7 @@ class ScrapeHotelsView(View):
 
     def save_hotels_to_db(self, hotels):
         for hotel in hotels:
-            Hotel.objects.get_or_create(
+            Site.objects.get_or_create(
                 place_id=hotel['place_id'],
                 defaults={
                     'name': hotel['name'],
@@ -2905,7 +2922,7 @@ class ScrapeHotelsView(View):
 
 
 def getAllHotels(request):
-    results = Hotel.objects.all().values('id', 'place_id', 'name', 'address', 'rating', 'latitude', 'longitude', 'icon')
+    results = Site.objects.all().values('id', 'place_id', 'name', 'address', 'rating', 'latitude', 'longitude', 'icon')
     customers = []
     # print('Result')
     # print(len(results))
@@ -2925,24 +2942,37 @@ def truncate_all_tables(request):
         return JsonResponse([], safe=False)
 
 
-def saveToDb(api_response):
+def saveToDb(api_response, city):
     data = api_response
 
     for result in data['results']:
-        if not Hotel.objects.filter(place_id=result['place_id']).exists():
-            location_data = result['geometry']['location']
-            location = Location.objects.create(
-                lat=location_data['lat'],
-                lng=location_data['lng']
-            )
 
+        if not Site.objects.filter(place_id=result['place_id']).exists():
+            location_data = result['geometry']['location']
+            print("location_data = ", location_data['lat'])
+            print("location_data = ", location_data['lng'])
+            try:
+                location = Location.objects.create(
+                    lat=location_data['lat'],
+                    lng=location_data['lng']
+                )
+            except Exception as e:
+                print("exception = ", e)
+            print("Creating Viewport")
             viewport_data = result['geometry']['viewport']
-            viewport = Viewport.objects.create(
-                northeast_lat=viewport_data['northeast']['lat'],
-                northeast_lng=viewport_data['northeast']['lng'],
-                southwest_lat=viewport_data['southwest']['lat'],
-                southwest_lng=viewport_data['southwest']['lng']
-            )
+            print("viewport_data = ", viewport_data)
+            print("Creating Viewport")
+            try:
+                viewport = Viewport.objects.create(
+                    northeast_lat=viewport_data['northeast']['lat'],
+                    northeast_lng=viewport_data['northeast']['lng'],
+                    southwest_lat=viewport_data['southwest']['lat'],
+                    southwest_lng=viewport_data['southwest']['lng']
+                )
+            except Exception as e:
+                print("Exception = ", e)
+
+            print("Creating Geometry")
 
             geometry = Geometry.objects.create(
                 location=location,
@@ -2958,7 +2988,8 @@ def saveToDb(api_response):
                 user_ratings_total = result.get('user_ratings_total', {})
             else:
                 user_ratings_total = 0
-            hotel = Hotel.objects.create(
+            print("creatig site")
+            hotel = Site.objects.create(
                 business_status=result.get('business_status'),
                 geometry=geometry,
                 icon=result.get('icon'),
@@ -2972,6 +3003,7 @@ def saveToDb(api_response):
                 reference=result['reference'],
                 scope=result['scope'],
                 types=','.join(result['types']),
+                city=city,
                 user_ratings_total=user_ratings_total,
                 vicinity=result.get('vicinity', {}) if result.get('vicinity', {}) is not None else 0
             )
@@ -2990,147 +3022,188 @@ def saveToDb(api_response):
 
 
 def saveHotel(request):
-    typeList = [
-        'hotel',
-        'motel',
-        'lodging'
-    ]
+    # typeList=[]
+    # latlang = [
+    #     # {"latitude": 30.528997, "longitude": -85.884900},
+    #     # {"latitude": 30.467823, "longitude": -85.481728},
+    #     # {"latitude": 30.177115, "longitude": -85.285272},
+    #     # {"latitude": 30.395227, "longitude": -84.892362},
+    #     # {"latitude": 30.346799, "longitude": -84.331061},
+    #     # {"latitude": 30.274113, "longitude": -83.853955},
+    #     # {"latitude": 30.152850, "longitude": -83.404915},
+    #     # {"latitude": 30.201373, "longitude": -83.012004},
+    #     # {"latitude": 29.934201, "longitude": -83.124264},
+    #     # {"latitude": 29.934201, "longitude": -83.124264},
+    #     # {"latitude": 29.644144, "longitude": -82.891468},
+    #     # {"latitude": 29.564339, "longitude": -82.570213},
+    #     # {"latitude": 29.577644, "longitude": -82.172468},
+    #     # {"latitude": 30.438702, "longitude": -82.631404},
+    #     # {"latitude": 30.148104, "longitude": -82.524319},
+    #     # {"latitude": 30.121644, "longitude": -82.264255},
+    #     # {"latitude": 30.174558, "longitude": -81.988894},
+    #     # {"latitude": 30.028976, "longitude": -82.203064},
+    #     # {"latitude": 29.909704, "longitude": -81.820617},
+    #     # {"latitude": 29.577644, "longitude": -81.912404},
+    #     # {"latitude": 29.670732, "longitude": -81.637043},
+    #     # {"latitude": 29.617549, "longitude": -81.453468},
+    #     # {"latitude": 29.497786, "longitude": -81.820617},
+    #     # {"latitude": 29.271181, "longitude": -82.019489},
+    #     # {"latitude": 29.003942, "longitude": -82.065383},
+    #     # {"latitude": 29.271181, "longitude": -81.835915},
+    #     # {"latitude": 29.137648, "longitude": -81.499362},
+    #     # {"latitude": 29.097555, "longitude": -81.835915},
+    #     # {"latitude": 28.896852, "longitude": -81.973596},
+    #     # {"latitude": 28.548048, "longitude": -81.988894},
+    #     # {"latitude": 28.292419, "longitude": -81.790021},
+    #     # {"latitude": 28.157630, "longitude": -81.606447},
+    #     # {"latitude": 28.066303, "longitude": -81.422551},
+    #     # {"latitude": 28.012578, "longitude": -81.257333},
+    #     # {"latitude": 27.951145, "longitude": -81.083420},
+    #     # {"latitude": 27.935782, "longitude": -81.379073},
+    #     # {"latitude": 27.920416, "longitude": -81.744290},
+    #     # {"latitude": 27.527851, "longitude": -81.639942},
+    #     # {"latitude": 27.481574, "longitude": -81.909508},
+    #     # {"latitude": 27.334902, "longitude": -81.944290},
+    #     # {"latitude": 27.303999, "longitude": -82.248638},
+    #     # {"latitude": 27.242167, "longitude": -82.074725},
+    #     # {"latitude": 27.175862, "longitude": -81.461201},
+    #     # {"latitude": 27.189757, "longitude": -81.195667},
+    #     # {"latitude": 27.264911, "longitude": -81.067270},
+    #     # {"latitude": 27.037494, "longitude": -81.176805},
+    #     # {"latitude": 26.796580, "longitude": -81.220619},
+    #     # {"latitude": 26.646564, "longitude": -81.206014},
+    #     # {"latitude": 26.522489, "longitude": -81.279037},
+    #     # {"latitude": 26.378655, "longitude": -81.454292},
+    #     # {"latitude": 26.195335, "longitude": -81.498106},
+    #     # {"latitude": 26.037974, "longitude": -81.468897},
+    #     # {"latitude": 26.051095, "longitude": -81.198712},
+    #     # {"latitude": 26.064215, "longitude": -80.957736},
+    #     # {"latitude": 26.319763, "longitude": -80.826294},
+    #     # {"latitude": 26.260840, "longitude": -80.629132},
+    #     # {"latitude": 26.110124, "longitude": -80.497691},
+    #     # {"latitude": 25.978909, "longitude": -80.541504},
+    #     # {"latitude": 25.840975, "longitude": -80.687551},
+    #     # {"latitude": 25.702879, "longitude": -80.745969},
+    #     # {"latitude": 25.919814, "longitude": -80.541504},
+    #     # {"latitude": 25.722617, "longitude": -80.556109},
+    #     # {"latitude": 25.630480, "longitude": -80.753271},
+    #     # {"latitude": 25.538271, "longitude": -80.833597},
+    #     # {"latitude": 25.426209, "longitude": -80.592621},
+    #     # {"latitude": 25.314042, "longitude": -80.541504},
+    #     # {"latitude": 25.818571, "longitude": -80.344273},
+    #     # {"latitude": 25.920899, "longitude": -80.361579},
+    #     # {"latitude": 26.038690, "longitude": -80.378885},
+    #     # {"latitude": 26.063122, "longitude": -80.304716},
+    #     # {"latitude": 26.158581, "longitude": -80.228075},
+    #     # {"latitude": 26.194080, "longitude": -80.186046},
+    #     # {"latitude": 26.327422, "longitude": -80.199521},
+    #     # {"latitude": 26.452348, "longitude": -80.185849},
+    #     # {"latitude": 26.415619, "longitude": -80.150300},
+    #     # {"latitude": 26.545343, "longitude": -80.177645},
+    #     # {"latitude": 26.689580, "longitude": -80.163973},
+    #     # {"latitude": 26.779940, "longitude": -80.188583},
+    #     # {"latitude": 26.914127, "longitude": -80.174911},
+    #     # {"latitude": 27.067636, "longitude": -80.267884},
+    #     # {"latitude": 27.194184, "longitude": -80.338981},
+    #     # {"latitude": 27.325447, "longitude": -80.478440},
+    #     # {"latitude": 27.451702, "longitude": -80.503051},
+    #     # {"latitude": 27.546299, "longitude": -80.538599},
+    #     # {"latitude": 27.589932, "longitude": -80.590555},
+    #     # {"latitude": 27.730407, "longitude": -80.672590},
+    #     # {"latitude": 27.880370, "longitude": -80.686262},
+    #     # {"latitude": 27.984256, "longitude": -80.724545},
+    #     # {"latitude": 28.044608, "longitude": -80.814784},
+    #     # {"latitude": 28.170033, "longitude": -80.754625},
+    #     # {"latitude": 28.467230, "longitude": -80.949765},
+    #     # {"latitude": 28.657637, "longitude": -81.044611},
+    #     # {"latitude": 28.930741, "longitude": -81.078484},
+    #     # {"latitude": 29.078866, "longitude": -81.410445},
+    #     # {"latitude": 29.356766, "longitude": -81.329149},
+    #     # {"latitude": 29.527859, "longitude": -81.417220},
+    #     # {"latitude": 29.610352, "longitude": -81.667884},
+    #     # {"latitude": 29.728083, "longitude": -81.457868},
+    #     # {"latitude": 29.869178, "longitude": -81.437544},
+    #     # {"latitude": 30.021805, "longitude": -81.816928},
+    #     # {"latitude": 30.215187, "longitude": -81.471418},
+    #     # {"latitude": 30.644946, "longitude": -81.820757}
+    # ]
 
+    # Jacksonville
     latlang = [
-        {"latitude": 30.528997, "longitude": -85.884900},
-        {"latitude": 30.467823, "longitude": -85.481728},
-        {"latitude": 30.177115, "longitude": -85.285272},
-        {"latitude": 30.395227, "longitude": -84.892362},
-        {"latitude": 30.346799, "longitude": -84.331061},
-        {"latitude": 30.274113, "longitude": -83.853955},
-        {"latitude": 30.152850, "longitude": -83.404915},
-        {"latitude": 30.201373, "longitude": -83.012004},
-        {"latitude": 29.934201, "longitude": -83.124264},
-        {"latitude": 29.934201, "longitude": -83.124264},
-        {"latitude": 29.644144, "longitude": -82.891468},
-        {"latitude": 29.564339, "longitude": -82.570213},
-        {"latitude": 29.577644, "longitude": -82.172468},
-        {"latitude": 30.438702, "longitude": -82.631404},
-        {"latitude": 30.148104, "longitude": -82.524319},
-        {"latitude": 30.121644, "longitude": -82.264255},
-        {"latitude": 30.174558, "longitude": -81.988894},
-        {"latitude": 30.028976, "longitude": -82.203064},
-        {"latitude": 29.909704, "longitude": -81.820617},
-        {"latitude": 29.577644, "longitude": -81.912404},
-        {"latitude": 29.670732, "longitude": -81.637043},
-        {"latitude": 29.617549, "longitude": -81.453468},
-        {"latitude": 29.497786, "longitude": -81.820617},
-        {"latitude": 29.271181, "longitude": -82.019489},
-        {"latitude": 29.003942, "longitude": -82.065383},
-        {"latitude": 29.271181, "longitude": -81.835915},
-        {"latitude": 29.137648, "longitude": -81.499362},
-        {"latitude": 29.097555, "longitude": -81.835915},
-        {"latitude": 28.896852, "longitude": -81.973596},
-        {"latitude": 28.548048, "longitude": -81.988894},
-        {"latitude": 28.292419, "longitude": -81.790021},
-        {"latitude": 28.157630, "longitude": -81.606447},
-        {"latitude": 28.066303, "longitude": -81.422551},
-        {"latitude": 28.012578, "longitude": -81.257333},
-        {"latitude": 27.951145, "longitude": -81.083420},
-        {"latitude": 27.935782, "longitude": -81.379073},
-        {"latitude": 27.920416, "longitude": -81.744290},
-        {"latitude": 27.527851, "longitude": -81.639942},
-        {"latitude": 27.481574, "longitude": -81.909508},
-        {"latitude": 27.334902, "longitude": -81.944290},
-        {"latitude": 27.303999, "longitude": -82.248638},
-        {"latitude": 27.242167, "longitude": -82.074725},
-        {"latitude": 27.175862, "longitude": -81.461201},
-        {"latitude": 27.189757, "longitude": -81.195667},
-        {"latitude": 27.264911, "longitude": -81.067270},
-        {"latitude": 27.037494, "longitude": -81.176805},
-        {"latitude": 26.796580, "longitude": -81.220619},
-        {"latitude": 26.646564, "longitude": -81.206014},
-        {"latitude": 26.522489, "longitude": -81.279037},
-        {"latitude": 26.378655, "longitude": -81.454292},
-        {"latitude": 26.195335, "longitude": -81.498106},
-        {"latitude": 26.037974, "longitude": -81.468897},
-        {"latitude": 26.051095, "longitude": -81.198712},
-        {"latitude": 26.064215, "longitude": -80.957736},
-        {"latitude": 26.319763, "longitude": -80.826294},
-        {"latitude": 26.260840, "longitude": -80.629132},
-        {"latitude": 26.110124, "longitude": -80.497691},
-        {"latitude": 25.978909, "longitude": -80.541504},
-        {"latitude": 25.840975, "longitude": -80.687551},
-        {"latitude": 25.702879, "longitude": -80.745969},
-        {"latitude": 25.919814, "longitude": -80.541504},
-        {"latitude": 25.722617, "longitude": -80.556109},
-        {"latitude": 25.630480, "longitude": -80.753271},
-        {"latitude": 25.538271, "longitude": -80.833597},
-        {"latitude": 25.426209, "longitude": -80.592621},
-        {"latitude": 25.314042, "longitude": -80.541504},
-        {"latitude": 25.818571, "longitude": -80.344273},
-        {"latitude": 25.920899, "longitude": -80.361579},
-        {"latitude": 26.038690, "longitude": -80.378885},
-        {"latitude": 26.063122, "longitude": -80.304716},
-        {"latitude": 26.158581, "longitude": -80.228075},
-        {"latitude": 26.194080, "longitude": -80.186046},
-        {"latitude": 26.327422, "longitude": -80.199521},
-        {"latitude": 26.452348, "longitude": -80.185849},
-        {"latitude": 26.415619, "longitude": -80.150300},
-        {"latitude": 26.545343, "longitude": -80.177645},
-        {"latitude": 26.689580, "longitude": -80.163973},
-        {"latitude": 26.779940, "longitude": -80.188583},
-        {"latitude": 26.914127, "longitude": -80.174911},
-        {"latitude": 27.067636, "longitude": -80.267884},
-        {"latitude": 27.194184, "longitude": -80.338981},
-        {"latitude": 27.325447, "longitude": -80.478440},
-        {"latitude": 27.451702, "longitude": -80.503051},
-        {"latitude": 27.546299, "longitude": -80.538599},
-        {"latitude": 27.589932, "longitude": -80.590555},
-        {"latitude": 27.730407, "longitude": -80.672590},
-        {"latitude": 27.880370, "longitude": -80.686262},
-        {"latitude": 27.984256, "longitude": -80.724545},
-        {"latitude": 28.044608, "longitude": -80.814784},
-        {"latitude": 28.170033, "longitude": -80.754625},
-        {"latitude": 28.467230, "longitude": -80.949765},
-        {"latitude": 28.657637, "longitude": -81.044611},
-        {"latitude": 28.930741, "longitude": -81.078484},
-        {"latitude": 29.078866, "longitude": -81.410445},
-        {"latitude": 29.356766, "longitude": -81.329149},
-        {"latitude": 29.527859, "longitude": -81.417220},
-        {"latitude": 29.610352, "longitude": -81.667884},
-        {"latitude": 29.728083, "longitude": -81.457868},
-        {"latitude": 29.869178, "longitude": -81.437544},
-        {"latitude": 30.021805, "longitude": -81.816928},
-        {"latitude": 30.215187, "longitude": -81.471418},
-        {"latitude": 30.644946, "longitude": -81.820757}
+        {'latitude': 30.152394, 'longitude': -81.470318},
+        {'latitude': 30.188011, 'longitude': -81.464825},
+        {'latitude': 30.144081, 'longitude': -81.567822},
+        {'latitude': 30.151206, 'longitude': -81.626873},
+        {'latitude': 30.210563, 'longitude': -81.602154},
+        {'latitude': 30.260394, 'longitude': -81.628246},
+        {'latitude': 30.286487, 'longitude': -81.596661},
+        {'latitude': 30.305459, 'longitude': -81.547222},
+        {'latitude': 30.282929, 'longitude': -81.934490}
     ]
-    for type in typeList:
-        for data in latlang:
-            lat = data['latitude']
-            lng = data['longitude']
-            url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}"
-            response = requests.get(url)
-            if response.status_code == 200:
-                data = response.json()
-                if not Hotel.objects.filter(place_id=data.get('place_id')).exists():
-                    saveToDb(data)
-                    next_page_token = data.get('next_page_token')
-                    # print('next_page_token = ',next_page_token)
-                    while next_page_token:
-                        newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next_page_token}&key={settings.GOOGLE_API_KEY}"
-                        res = requests.get(newUrl)
-                        newData = res.json()
-                        next_page_token = newData.get('next_page_token')
-                        # #print('2nd calling next page url, Status = ',res.status_code)
-                        if res.status_code == 200:
-                            if not Hotel.objects.filter(place_id=data.get('place_id')).exists():
-                                saveToDb(newData)
-                        if not next_page_token:
-                            break
-                    else:
-                        print('Hotel exists')
+    city = City.objects.filter(id="f37eb49a-6415-4614-bfa9-6036f8d6f6e0").first()
+
+    # MIAMI
+#     latlang=[
+#         {'latitude': 25.843952, 'longitude':-80.187044},
+# {'latitude': 25.844673, 'longitude':-80.199120},
+# {'latitude': 25.829970, 'longitude':-80.190792},
+# {'latitude': 25.823338, 'longitude':-80.222184},
+# {'latitude': 25.798293, 'longitude':-80.216817},
+# {'latitude': 25.805181, 'longitude':-80.247685},
+# {'latitude': 25.789029, 'longitude':-80.248740},
+# {'latitude': 25.779527, 'longitude':-80.258237},
+# {'latitude': 25.771925, 'longitude':-80.279871},
+# {'latitude': 25.769311, 'longitude':-80.302823},
+# {'latitude': 25.753445, 'longitude':-80.248190},
+# {'latitude': 25.731077, 'longitude':-80.248559},
+# {'latitude': 25.745889, 'longitude':-80.236336},
+# {'latitude': 25.760624, 'longitude':-80.220720},
+# {'latitude': 25.759954, 'longitude':-80.209194},
+# {'latitude': 25.768660, 'longitude':-80.201014}
+#     ]
+#     city=City.objects.filter(id="2089800e-c9b1-439b-a20d-a480ae8d7419").first()
+    categoryList = Category.objects.all()
+    print("categoryList = ", categoryList)
+
+    for category in categoryList:
+        if category.keywords:
+            for type in category.keywords:
+                for data in latlang:
+                    lat = data['latitude']
+                    lng = data['longitude']
+                    print(f"Latitude: {lat}, Longitude: {lng}")
+                    # "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=25.792277, -80.225343&radius=50000&type=Jacksonville&key=AIzaSyAgqQFWfvoWJgCQMdETHj_kq63t6PRg0ks"
+                    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}"
+                    print(url)
+                    response = requests.get(url)
+                    print("Status code = ", response.status_code)
+                    if response.status_code == 200:
+                        data = response.json()
+                        print("Data = ", data)
+                        if not Site.objects.filter(place_id=data.get('place_id')). exists():
+                            print("Hotel does not exists")
+                            saveToDb(data, city)
+                            # next_page_token = data.get('next_page_token')
+                            # todo: uncomment
+                            # while next_page_token:
+                            #     newUrl = f"https://maps.googleapis.comaps/api/place/nearbysearch/json?pagetoke{next_page_token}&key={settings.GOOGLE_API_KE"
+                            #     res = requests.get(newUrl)
+                            #     newData = res.json()
+                            #     next_page_token = newData.g('next_page_token')
+                            #     # #print('2nd calling next page urlStatus =   ',res.status_code)
+                            #     if res.status_code == 200:
+                            #         if not Site.objects.filt(place_id=data.   get('place_id')).   exists():
+                            #             saveToDb(newData)
+                            #     if not next_page_token:
+                            #         break
+                        else:
+                            print('Hotel exists')
 
     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
 
 
 def fetch_latestHotels(request):
-    hotels = Hotel.objects.all()
+    hotels = Site.objects.all()
     results = []
 
     for hotel in hotels:
@@ -3277,7 +3350,7 @@ def get_coordinates_along_polyline(request):
                 plans.append(plan)
 
     if only_hotels:
-        data = Hotel.objects.annotate(icon_url=F('category__icon_url'))
+        data = Site.objects.annotate(icon_url=F('category__icon_url'))
         for plan in data:
             point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
             condition = is_distance_one(plan.geometry.location.lat, plan.geometry.location.lng, decoded_points, threshold_distance)
@@ -3305,8 +3378,8 @@ def get_coordinates_along_polyline(request):
 
         for category in category_list:
             print("category = ", category)
-            if Hotel.objects.filter(category_id=category).exists():
-                data = Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
+            if Site.objects.filter(category_id=category).exists():
+                data = Site.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
                 for plan in data:
                     point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
                     # print('Hotel point')
@@ -3368,7 +3441,7 @@ def getSitesNearMe(request):
                 plans.append(plan)
 
     if only_hotels:
-        data = Hotel.objects.annotate(icon_url=F('category__icon_url'))
+        data = Site.objects.annotate(icon_url=F('category__icon_url'))
         for plan in data:
             point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
 
@@ -3397,8 +3470,8 @@ def getSitesNearMe(request):
         model_list = [Site]
 
         for category in category_list:
-            if Hotel.objects.filter(category_id=category).exists():
-                data = Hotel.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
+            if Site.objects.filter(category_id=category).exists():
+                data = Site.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
                 for plan in data:
                     point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
 

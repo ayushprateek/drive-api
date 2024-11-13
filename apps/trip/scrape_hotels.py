@@ -7,7 +7,7 @@ import random
 
 from apps.trip import helper
 from selenium import webdriver
-from apps.trip.models import City, Hotel
+from apps.trip.models import City, Site
 from common.cloud_service import process_hotel_images, upload_file_to_aws_s3
 from common.constants import Constant, common_descriptions
 
@@ -61,7 +61,7 @@ class ScrapeHotels:
         images = [f"https://www.choicehotels.com{i}" for i in source_urls]
 
         hotel_rating = ScrapeHotels.find_key(ld_json_data, 'aggregateRating')
-        hotel_reviews = {
+        reviews = {
             "text": f"{hotel_rating.get('ratingValue')} / 5",
             "image": None,
             "rating_data": {
@@ -110,11 +110,11 @@ class ScrapeHotels:
             "address": address,
             "latitude": None,
             "longitude": None,
-            "hotel_reviews": hotel_reviews,
+            "reviews": reviews,
             "amenities": {"amenities": amenities},
             "service_amenities": {},
             "facility_overview": facility_overview,
-            "hotel_policy": {},
+            "policy": {},
             "meta_data": meta_data,
             "cover_image": None,
             "images": images
@@ -130,9 +130,9 @@ class ScrapeHotels:
 
         # Extract hotel review details
         img_tag = html_content.find('img', class_="relative -left-4 mb-2 block w-44 sm:left-0 md:w-40")
-        hotel_reviews = {}
+        reviews = {}
         if img_tag:
-            hotel_reviews = {
+            reviews = {
                 "text": img_tag['alt'],
                 "image": img_tag['src']
             }
@@ -163,7 +163,7 @@ class ScrapeHotels:
             "address": json_data.get("address"),
             "latitude": json_data.get("geo", {}).get("latitude"),
             "longitude": json_data.get("geo", {}).get("longitude"),
-            "hotel_reviews": hotel_reviews,
+            "reviews": reviews,
             "amenities": {"amenities": amenities},
             "service_amenities": {"service_amenities": service_amenities},
             "facility_overview": facility_overview,
@@ -190,7 +190,7 @@ class ScrapeHotels:
         if content:
             scrapped_data.update({"description": content.find('p').text.replace("\n", "")})
 
-        # Extract title 
+        # Extract title
         if content:
             title = content.find('h2')
         else:
@@ -204,7 +204,7 @@ class ScrapeHotels:
         if contact_info:
             scrapped_data.update({"contact_info": {"contact_info": contact_info.text}})
 
-        # Extract location elements    
+        # Extract location elements
         location_content = content_body.find(class_="dynamic-footer__social-media col-12 col-xl-6 px-0 px-xl-2")
         location_elements = html_content.find(class_='dynamic-footer__social-media col-12 col-xl-6 px-0 px-xl-2')
 
@@ -233,9 +233,9 @@ class ScrapeHotels:
         if check_in_data:
             cleaned_data = '\n'.join(line.strip() for line in check_in_time.get_text().splitlines() if line.strip())
             scrapped_data.update({"check_in_data":
-                                      {"check_in_data": check_in_data.find(
-                                          class_="accordion-content py-3").get_text().replace("\n", " "),
-                                       "check_in_timings": cleaned_data.replace("\n", ", ")}})
+                                  {"check_in_data": check_in_data.find(
+                                      class_="accordion-content py-3").get_text().replace("\n", " "),
+                                   "check_in_timings": cleaned_data.replace("\n", ", ")}})
 
         return scrapped_data
 
@@ -299,7 +299,6 @@ class ScrapeHotels:
             if cover_image and cover_image.startswith('/'):
                 images = [f"https://{Constant.WYNDHAM_HOTELS}/{cover_image}"]
 
-
         # Collate all details into a single dictionary
         scrapped_data = {
             "name": hotel_name,
@@ -310,7 +309,7 @@ class ScrapeHotels:
             "address": address,
             "latitude": latitude,
             "longitude": longitude,
-            "hotel_reviews": {},
+            "reviews": {},
             "amenities": {"amenities": amenities},
             "service_amenities": {"service_amenities": []},
             "facility_overview": {},
@@ -354,7 +353,7 @@ class ScrapeHotels:
 
         # Extract hotel information from the JSON data
         hotel_rating = ScrapeHotels.find_key(ld_json_data, 'aggregateRating')
-        hotel_reviews = {
+        reviews = {
             "text": f"{hotel_rating.get('ratingValue')} / 5",
             "image": None,
             "rating_data": {
@@ -390,7 +389,7 @@ class ScrapeHotels:
             "address": address,
             "latitude": latitude,
             "longitude": longitude,
-            "hotel_reviews": hotel_reviews,
+            "reviews": reviews,
             "amenities": {"amenities": amenities},
             "service_amenities": {"service_amenities": []},
             "facility_overview": {},
@@ -462,7 +461,7 @@ class ScrapeHotels:
                                   "name": "Off the Charts Inn & Out Island Resort",
                                   "city_name": "St. James City"})
         scrapped_data.update({"meta_data": meta_data})
-        # Return the scrapped data 
+        # Return the scrapped data
         return scrapped_data
 
     def scrape_from_dunnelon_site(self, html_content):
@@ -531,7 +530,7 @@ class ScrapeHotels:
 
         hotel_html_contents = html_content.find_all(class_="cui-content")
         for item in hotel_html_contents:
-            # Extract each hotel details 
+            # Extract each hotel details
             hotel_data = {}
             meta_data = {"scraped_from": self.url}
             # Extract each hotel html content
@@ -579,7 +578,7 @@ class ScrapeHotels:
                     for item in image_element.split(','):
                         original_image_url = item.replace('\n', '').replace(' ', '')
                         modified_url = ''.join([original_image_url[:-2] if original_image_url.endswith('1x')
-                                                                           or original_image_url.endswith(
+                                                or original_image_url.endswith(
                             '2x') else original_image_url])
                         updated_modified_url = "https:" + modified_url
                         image_url, s3_key = upload_file_to_aws_s3(updated_modified_url)
@@ -611,9 +610,9 @@ class ScrapeHotels:
         # Extract image URLs from the style attribute
         images = [element['style'].split('url(')[-1].rstrip(');') for element in image_elements]
 
-        scrapped_data.update({"images":images, "name":title,
-                              "description":description, "meta_data":meta_data, 
-                              "latitude":None, "longitude":None})
+        scrapped_data.update({"images": images, "name": title,
+                              "description": description, "meta_data": meta_data,
+                              "latitude": None, "longitude": None})
 
         return scrapped_data
 
@@ -621,7 +620,7 @@ class ScrapeHotels:
         """Main method to orchestrate the scraping process."""
         domain = self.url.split('/')[2]
         # If URL has already been scraped, we avoid scraping it again
-        if Hotel.filter_instance({"meta_data__scraped_from": self.url}):
+        if Site.filter_instance({"meta_data__scraped_from": self.url}):
             return None
         if domain == Constant.MARRIOT_HOTELS:
             response = requests.get(self.url)
@@ -684,12 +683,12 @@ class ScrapeHotels:
                     data['latitude'] = geo_dt.get("latitude")
                     data['longitude'] = geo_dt.get("longitude")
 
-                    instance = Hotel(**data)
+                    instance = Site(**data)
                     instances_to_insert.append(instance)
 
                 # Bulk create hotel instances
                 if instances_to_insert:
-                    instances = Hotel.objects.bulk_create(instances_to_insert)
+                    instances = Site.objects.bulk_create(instances_to_insert)
                     return instances
                 else:
                     return []
@@ -714,10 +713,10 @@ class ScrapeHotels:
 
                 scrape_data['city_id'] = city_object.id if city_object else None
 
-        hotel_obj = Hotel.get_instance_or_none({"name": scrape_data.get("name")})
+        hotel_obj = Site.get_instance_or_none({"name": scrape_data.get("name")})
         if hotel_obj:
             return scrape_data
 
         scrape_data["images"] = process_hotel_images(images=scrape_data["images"])
-        Hotel.create_instance(scrape_data)
+        Site.create_instance(scrape_data)
         return scrape_data

@@ -58,7 +58,7 @@ class ModelMap:
         Constant.SITES: trip_models.Site,
         # Constant.EXTREME_SPORTS: trip_models.ExtremeSport,
         # Constant.EVENT_CALENDAR: trip_models.Event,
-        Constant.HOTEL: trip_models.Hotel,
+        # Constant.HOTEL: trip_models.Hotel,
     }
 
 
@@ -88,7 +88,7 @@ MODEL_MAPPING = {
     Constant.SITES: trip_models.Site,
     # Constant.EXTREME_SPORTS: trip_models.ExtremeSport,
     # Constant.EVENT_CALENDAR: trip_models.Event,
-    Constant.HOTEL: trip_models.Hotel,
+    # Constant.HOTEL: trip_models.Hotel,
 }
 
 

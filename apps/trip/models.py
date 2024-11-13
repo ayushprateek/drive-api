@@ -21,6 +21,7 @@ class Category(BaseModel):
     name = models.CharField(max_length=100)
     icon_url = models.URLField(max_length=255, blank=True, null=True)
     image_url = models.URLField(max_length=255, blank=True, null=True)
+    keywords = ArrayField(models.TextField(null=True), default=list)
 
     class Meta:
         verbose_name = "Category"
@@ -67,6 +68,7 @@ class City(BaseModel):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     images = ArrayField(models.TextField(null=True), default=list)
     description = models.TextField(null=True, blank=True)
+    lat_long = ArrayField(models.TextField(null=True), default=list)
 
     class Meta:
         verbose_name = "City"
@@ -262,27 +264,27 @@ class DriveWebsite(BaseModel):
 #         return self.name
 
 
-class Site(BaseModel):
-    """
-    "Site" model in Django typically represents objects, individuals, or items with
-    specific attributes and relationships.
-    """
-    name = models.CharField(max_length=500, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='historicalsite_city')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    description = models.TextField(null=True)
-    images = ArrayField(models.TextField(null=True), default=list)
-    meta_data = models.JSONField(default=dict)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+# class Site(BaseModel):
+#     """
+#     "Site" model in Django typically represents objects, individuals, or items with
+#     specific attributes and relationships.
+#     """
+#     name = models.CharField(max_length=500, null=True)
+#     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='historicalsite_city')
+#     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+#     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+#     description = models.TextField(null=True)
+#     images = ArrayField(models.TextField(null=True), default=list)
+#     meta_data = models.JSONField(default=dict)
+#     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
-    class Meta:
-        verbose_name = "Historical Site"
-        verbose_name_plural = "Historical Sites"
-        ordering = ["-created_at"]
+#     class Meta:
+#         verbose_name = "Historical Site"
+#         verbose_name_plural = "Historical Sites"
+#         ordering = ["-created_at"]
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 # class ExtremeSport(BaseModel):
@@ -328,39 +330,39 @@ class Site(BaseModel):
 #             category=Category.objects.filter(name="Hotels").first()).first().url_link
 #         get_hotel_metadata(instance, food_scrap_url + instance.name + "/")
 
-class LatLng:
-    def __init__(self, lat, lng):
-        self.lat = lat
-        self.lng = lng
+# class LatLng:
+#     def __init__(self, lat, lng):
+#         self.lat = lat
+#         self.lng = lng
 
 
-class Location(models.Model):
-    lat = models.FloatField(null=True)
-    lng = models.FloatField(null=True)
+# class Location(models.Model):
+#     lat = models.FloatField(null=True)
+#     lng = models.FloatField(null=True)
 
 
-class Viewport(models.Model):
-    northeast_lat = models.FloatField(null=True)
-    northeast_lng = models.FloatField(null=True)
-    southwest_lat = models.FloatField(null=True)
-    southwest_lng = models.FloatField(null=True)
+# class Viewport(models.Model):
+#     northeast_lat = models.FloatField(null=True)
+#     northeast_lng = models.FloatField(null=True)
+#     southwest_lat = models.FloatField(null=True)
+#     southwest_lng = models.FloatField(null=True)
 
 
-class Geometry(models.Model):
-    location = models.OneToOneField(Location, on_delete=models.CASCADE)
-    viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE)
+# class Geometry(models.Model):
+#     location = models.OneToOneField(Location, on_delete=models.CASCADE)
+#     viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE)
 
 
-class Photo(models.Model):
-    height = models.IntegerField()
-    width = models.IntegerField()
-    html_attributions = models.TextField()
-    photo_reference = models.CharField(max_length=255)
+# class Photo(models.Model):
+#     height = models.IntegerField()
+#     width = models.IntegerField()
+#     html_attributions = models.TextField()
+#     photo_reference = models.CharField(max_length=255)
 
 
-class PlusCode(models.Model):
-    compound_code = models.CharField(max_length=250)
-    global_code = models.CharField(max_length=250)
+# class PlusCode(models.Model):
+#     compound_code = models.CharField(max_length=250)
+#     global_code = models.CharField(max_length=250)
 
 
 class Status(models.Model):
@@ -397,9 +399,39 @@ class PlanUser(models.Model):
     user = models.ForeignKey(user, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+class LatLng:
+    def __init__(self, lat, lng):
+        self.lat = lat
+        self.lng = lng
+        
+class Location(models.Model):
+    lat = models.FloatField(null=True)
+    lng = models.FloatField(null=True)
 
+class Viewport(models.Model):
+    northeast_lat = models.FloatField(null=True)
+    northeast_lng = models.FloatField(null=True)
+    southwest_lat = models.FloatField(null=True)
+    southwest_lng = models.FloatField(null=True)
 
-class Hotel(BaseModel):
+class Geometry(models.Model):
+    location = models.OneToOneField(Location, on_delete=models.CASCADE,null=True)
+    viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE,null=True)
+
+# class Geometry(models.Model):
+#     location = models.OneToOneField(Location, on_delete=models.CASCADE,null=True)
+#     viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE,null=True)
+class Photo(models.Model):
+    height = models.IntegerField()
+    width = models.IntegerField()
+    html_attributions = models.TextField()
+    photo_reference = models.CharField(max_length=255)
+
+class PlusCode(models.Model):
+    compound_code = models.CharField(max_length=250)
+    global_code = models.CharField(max_length=250)
+class Site(BaseModel):
     """
     Represents hotel entities with details about the hotel, its facilities,
     policies, reviews, geographical data, images, and other related metadata.
@@ -420,20 +452,20 @@ class Hotel(BaseModel):
     - cover_image (TextField): Primary image representing the hotel.
     - images (ArrayField): A list of URLs or texts representing various images of the hotel.
     """
-    place_id = models.CharField(max_length=500, unique=True, default='')
+    place_id = models.CharField(max_length=500, unique=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
-    name = models.TextField()
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, related_name="hotels_city", null=True)
+    name = models.TextField(null=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, related_name="city", null=True)
     description = models.TextField(null=True)
     contact_info = models.JSONField(default=dict)
     check_in_data = models.JSONField(default=dict)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    hotel_reviews = models.JSONField(default=dict)
+    reviews = models.JSONField(default=dict)
     amenities = JSONField(default=dict)
     service_amenities = JSONField(default=dict)
     facility_overview = models.TextField(null=True, blank=True)
-    hotel_policy = models.JSONField(default=dict)
+    policy = models.JSONField(default=dict)
     meta_data = models.JSONField(default=dict)
     cover_image = models.TextField(null=True)
     images = ArrayField(models.TextField(null=True), default=list)
@@ -461,8 +493,8 @@ class Hotel(BaseModel):
     photos = models.ManyToManyField(Photo)
 
     class Meta:
-        verbose_name = "Hotel"
-        verbose_name_plural = "Hotels"
+        verbose_name = "Site"
+        verbose_name_plural = "Sites"
         ordering = ["-created_at"]
 
     def __str__(self):
@@ -482,7 +514,7 @@ class Hotel(BaseModel):
 class UserLikes(models.Model):
     user = models.OneToOneField(user, on_delete=models.CASCADE)
 
-    liked_hotels_new = models.ManyToManyField(Hotel, through='UserLikesHotel')
+    # liked_hotels_new = models.ManyToManyField(Hotel, through='UserLikesHotel')
     # liked_extremesports_new = models.ManyToManyField(ExtremeSport, through='UserLikesExtremeSport')
     liked_sites_new = models.ManyToManyField(Site, through='UserLikesSite')
     # liked_events_new = models.ManyToManyField(Event, through='UserLikesEvent')
@@ -491,10 +523,10 @@ class UserLikes(models.Model):
     # liked_attractions_new = models.ManyToManyField(Attraction, through='UserLikesAttraction')
 
 
-class UserLikesHotel(models.Model):
-    userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+# class UserLikesHotel(models.Model):
+#     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
+#     # hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
 
 
 # class UserLikesExtremeSport(models.Model):
@@ -538,7 +570,7 @@ class UserLikesSite(models.Model):
 
 class Itinerary(models.Model):
     user = models.OneToOneField(user, on_delete=models.CASCADE)
-    hotel_itinerary = models.ManyToManyField(Hotel, through='ItineraryHotel')
+    # hotel_itinerary = models.ManyToManyField(Hotel, through='ItineraryHotel')
     # extremesports_itinerary = models.ManyToManyField(ExtremeSport, through='ItineraryExtremeSport')
     sites_itinerary = models.ManyToManyField(Site, through='ItinerarySite')
     # events_itinerary = models.ManyToManyField(Event, through='ItineraryEvent')
@@ -547,11 +579,11 @@ class Itinerary(models.Model):
     # attractions_itinerary = models.ManyToManyField(Attraction, through='ItineraryAttraction')
 
 
-class ItineraryHotel(models.Model):
-    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
-    date = models.DateTimeField(null=True)
+# class ItineraryHotel(models.Model):
+#     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+#     # hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+#     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
+#     date = models.DateTimeField(null=True)
 
 
 # class ItineraryExtremeSport(models.Model):

@@ -24,43 +24,43 @@ from common.constants import Constant
 #                   "longitude", "description", "images",
 #                   "meta_data")
 
-    # def get_name(self, obj):
-    #     try:
-    #         if obj.name:
-    #             return " ".join(obj.name.split("-")).title()
-    #     except Exception:
-    #         return obj.name
+# def get_name(self, obj):
+#     try:
+#         if obj.name:
+#             return " ".join(obj.name.split("-")).title()
+#     except Exception:
+#         return obj.name
 
-    # def get_images(self, obj):
-    #     if obj.images:
-    #         return get_images(obj.images)
-    #     return []
+# def get_images(self, obj):
+#     if obj.images:
+#         return get_images(obj.images)
+#     return []
 
-    # def get_is_favorite(self, obj):
-    #     user_id = self.context["request"].user.id
-    #     category_name = self.context["category"]
+# def get_is_favorite(self, obj):
+#     user_id = self.context["request"].user.id
+#     category_name = self.context["category"]
 
-    #     # Create a dictionary to map category names to their corresponding liked fields
-    #     category_to_field = {
-    #         # "Extreme Sports": "liked_extremesports",
-    #         "Sites": "liked_sites",
-    #         # "Events Calendar": "liked_events",
-    #         # "Weird and Wacky": "liked_wierdandwacky",
-    #         # "National Park": "liked_parks",
-    #         # "Attractions": "liked_attractions",
-    #     }
+#     # Create a dictionary to map category names to their corresponding liked fields
+#     category_to_field = {
+#         # "Extreme Sports": "liked_extremesports",
+#         "Sites": "liked_sites",
+#         # "Events Calendar": "liked_events",
+#         # "Weird and Wacky": "liked_wierdandwacky",
+#         # "National Park": "liked_parks",
+#         # "Attractions": "liked_attractions",
+#     }
 
-    #     liked_field = category_to_field.get(category_name)
+#     liked_field = category_to_field.get(category_name)
 
-    #     if liked_field:
-    #         # Dynamically access the liked field based on the category
-    #         is_favorited = trip_models.UserLikes.objects.filter(user=user_id, **{liked_field: obj}).exists()
-    #         return is_favorited
+#     if liked_field:
+#         # Dynamically access the liked field based on the category
+#         is_favorited = trip_models.UserLikes.objects.filter(user=user_id, **{liked_field: obj}).exists()
+#         return is_favorited
 
-    #     return False
+#     return False
 
 
-class HotelModelSerializer(serializers.ModelSerializer):
+class SiteModelSerializer(serializers.ModelSerializer):
     """Prepares Serialized Objects
 
     Args:
@@ -71,10 +71,10 @@ class HotelModelSerializer(serializers.ModelSerializer):
     is_favorite = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = trip_models.Hotel
+        model = trip_models.Site
         fields = ("id", "name", "is_favorite", "city_name", "latitude",
                   "longitude", "contact_info", "check_in_data", "address",
-                  "hotel_reviews", "amenities", "service_amenities", "facility_overview",
+                  "reviews", "amenities", "service_amenities", "facility_overview",
                   "hotel_policy", "meta_data",
                   "description", "images", "cover_image")
 
@@ -178,7 +178,7 @@ class CitySerializer(serializers.ModelSerializer):
         component_list = []
 
         # Extract Hotel Obj.
-        hotel_obj = trip_models.Hotel.filter_instance({"city": obj}).first()
+        hotel_obj = trip_models.Site.filter_instance({"city": obj}).first()
         if hotel_obj:
             component_list.append({"type": Constant.HOTEL,
                                    **CommonSerializer(hotel_obj).data})
@@ -301,7 +301,7 @@ class CityDetailSerializer(serializers.ModelSerializer):
         component_list = []
 
         # Extract Hotel Obj.
-        hotel_obj = trip_models.Hotel.filter_instance({"city": obj})
+        hotel_obj = trip_models.Site.filter_instance({"city": obj})
         if hotel_obj:
             data = CommonSerializer(hotel_obj[:3], many=True).data
             component_list.append({"type": Constant.HOTEL,

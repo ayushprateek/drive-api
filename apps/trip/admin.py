@@ -155,18 +155,18 @@ class SiteAdmin(admin.ModelAdmin):
 #     list_display = ['id', 'name', 'city', 'latitude', 'longitude']
 
 
-@admin.register(trip_models.Hotel)
-class HotelAdmin(admin.ModelAdmin):
-    """
-    The ExtremeSport class specifies how the Entity model should be displayed and filtered
-    in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
-    and category fields, enables searching for these fields, and specifies the columns
-    to display in the list view as id, name, city, latitude, longitude, and category.
-    """
-    list_filter = ['name']
-    search_fields = ['id', 'name']
-    list_display = ['id', 'name']
-    exclude = ["cover_image"]
+# @admin.register(trip_models.Hotel)
+# class HotelAdmin(admin.ModelAdmin):
+#     """
+#     The ExtremeSport class specifies how the Entity model should be displayed and filtered
+#     in the admin interface. It sets up filters for the id, name, city, latitude, longitude,
+#     and category fields, enables searching for these fields, and specifies the columns
+#     to display in the list view as id, name, city, latitude, longitude, and category.
+#     """
+#     list_filter = ['name']
+#     search_fields = ['id', 'name']
+#     list_display = ['id', 'name']
+#     exclude = ["cover_image"]
 
 
 @admin.register(trip_models.UserLikes)
