@@ -402,15 +402,18 @@ class PlanUser(models.Model):
     user = models.ForeignKey(user, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
+
 class LatLng:
     def __init__(self, lat, lng):
         self.lat = lat
         self.lng = lng
-        
+
+
 class Location(models.Model):
     lat = models.FloatField(null=True)
     lng = models.FloatField(null=True)
+
 
 class Viewport(models.Model):
     northeast_lat = models.FloatField(null=True)
@@ -418,22 +421,28 @@ class Viewport(models.Model):
     southwest_lat = models.FloatField(null=True)
     southwest_lng = models.FloatField(null=True)
 
+
 class Geometry(models.Model):
-    location = models.OneToOneField(Location, on_delete=models.CASCADE,null=True)
-    viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE,null=True)
+    location = models.OneToOneField(Location, on_delete=models.CASCADE, null=True)
+    viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE, null=True)
 
 # class Geometry(models.Model):
 #     location = models.OneToOneField(Location, on_delete=models.CASCADE,null=True)
 #     viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE,null=True)
+
+
 class Photo(models.Model):
     height = models.IntegerField()
     width = models.IntegerField()
     html_attributions = models.TextField()
     photo_reference = models.CharField(max_length=255)
 
+
 class PlusCode(models.Model):
     compound_code = models.CharField(max_length=250)
     global_code = models.CharField(max_length=250)
+
+
 class Site(BaseModel):
     """
     Represents hotel entities with details about the hotel, its facilities,
@@ -540,7 +549,7 @@ class UserLikes(models.Model):
 
 class UserLikesSite(models.Model):
     userlikes = models.ForeignKey(UserLikes, on_delete=models.CASCADE)
-    site = models.ForeignKey(Site, on_delete=models.CASCADE,null=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True)
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
 
 
@@ -598,7 +607,7 @@ class Itinerary(models.Model):
 
 class ItinerarySite(models.Model):
     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
-    site = models.ForeignKey(Site, on_delete=models.CASCADE,null=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True)
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
     date = models.DateTimeField(null=True)
 

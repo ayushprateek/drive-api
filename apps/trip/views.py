@@ -1,4 +1,5 @@
 from drive_ai import settings
+from django.core.exceptions import ObjectDoesNotExist
 import math
 from shapely.geometry import Point, LineString, box
 import json
@@ -158,20 +159,28 @@ def getAllRestaurantBrand(request):
 @api_view(['POST'])
 def addTrip(request):
     # print('Called')
-    category1 = Category.objects.filter(id='159fd81e-a253-4c97-af45-655b1fad6fef').first()
-    TripCategory.objects.create(
-        category=category1
-    )
-    # results=Category.objects.all()
-    # for row in results:
-    #     if not PlanCategory.objects.filter(category_id=row.id).exists():
-    #         PlanCategory.objects.create(
-    #         category=row
-    #     )
-    #     if not TripCategory.objects.filter(category_id=row.id).exists():
-    #         TripCategory.objects.create(
-    #             category=row
-    #         )
+    # category1 = Category.objects.filter(id='159fd81e-a253-4c97-af45-655b1fad6fef').first()
+    # TripCategory.objects.create(
+    #     category=category1
+    # )
+    results = Category.objects.all()
+    for row in results:
+        # if not PlanCategory.objects.filter(category_id=row.id).exists():
+        #     PlanCategory.objects.create(
+        #         category=row
+        #     )
+        if not TripCategory.objects.filter(category_id=row.id).exists():
+            TripCategory.objects.create(
+                category=row
+            )
+            
+    # delete from trip_plancategory where category_id not in()
+    
+    # delete from trip_tripcategory where category_id not in('7590e882-4ae7-499f-b54a-419d2f613297','8590275f-3736-4c73-8abc-1e29c5b55a9c','70787b00-c78b-4a47-a86b-d9f24f879729','03b2e91e-3275-42fd-aa32-403e8d2252d7','d7a03343-b08e-46c4-96c2-444566714796','9dce7a13-1ace-408c-85e8-895cd933bd22','7327f81a-5e95-447c-9bbb-e5a6b898cd3b','82ef73f3-7b68-4531-a158-ea4fa6afa051','26387b2b-b709-4011-a0de-cbd166d4625e')
+
+   
+
+
     # Category.objects.create(
     # name='Attractions',
     # image_url='static/AttractionsIcon.svg',
@@ -537,35 +546,68 @@ def addCountry(request):
 
 
 def printRoot(request):
-    # print(settings.STATIC_ROOT+'Temp.png')
-    # print(settings.STATIC_URL)
 
+    Category.objects.create(
+        name='Attractions',
+        image_url='static/AttractionsIcon.svg',
+        icon_url='static/AttractionsIcon.svg',
+        scrape=False,
+        keywords=[],
+    )
+    Category.objects.create(
+        name='Travel Info',
+        image_url='static/TravelInfoIcon.svg',
+        icon_url='static/TravelInfoIcon.svg',
+        scrape=False,
+        keywords=[],
+    )
+    Category.objects.create(
+        name='Cheap Gas',
+        image_url='static/CheapGasIcon.svg',
+        icon_url='static/CheapGasIcon.svg',
+        scrape=False,
+        keywords=[],
+    )
+    Category.objects.create(
+        name='Foodie',
+        image_url='static/FoodieIcon.svg',
+        icon_url='static/FoodieIcon.svg',
+        scrape=False,
+        keywords=[],
+    )
+    Category.objects.create(
+        name='Camping',
+        image_url='static/CampingIcon.svg',
+        icon_url='static/CampingIcon.svg',
+        scrape=False,
+        keywords=[],
+    )
     Category.objects.create(
         name='Experiences',
         image_url='static/Experiences.jpeg',
         icon_url='static/Experiences.jpeg',
         scrape=True,
-        keywords=['Aquarium','Museum','Water Park'],
+        keywords=['Aquarium', 'Museum', 'Water Park'],
     )
     Category.objects.create(
         name='Weird Wacky',
         image_url='static/WeirdWacky.png',
         icon_url='static/WeirdWacky.png',
         scrape=True,
-        keywords=['Haunted House','Escape Room Center'],
+        keywords=['Haunted House', 'Escape Room Center'],
     )
     Category.objects.create(
         name='Extream Soprts',
         image_url='static/ExtreamSoprts.png',
         icon_url='static/ExtreamSoprts.png',
         scrape=True,
-        keywords=['Skydiving Center','Adventure Sports','Parasailing Ride Operator'],
+        keywords=['Skydiving Center', 'Adventure Sports', 'Parasailing Ride Operator'],
     )
     Category.objects.create(
         name='Hotel Deals',
         image_url='static/HotelDeals.png',
         icon_url='static/HotelDeals.png',
-        keywords=['hotel','motel','lodging'],
+        keywords=['hotel', 'motel', 'lodging'],
         scrape=True,
     )
     Category.objects.create(
@@ -573,7 +615,7 @@ def printRoot(request):
         image_url='static/NationalPark.png',
         icon_url='static/NationalPark.png',
         scrape=True,
-        keywords=['National Park','State Park'],
+        keywords=['National Park', 'State Park'],
     )
     Category.objects.create(
         name='Evant Calendar',
@@ -587,7 +629,7 @@ def printRoot(request):
         image_url='static/HistoricSites.png',
         icon_url='static/HistoricSites.png',
         scrape=True,
-        keywords=['History Museum','Historical Landmark','Natural History Museum'],
+        keywords=['History Museum', 'Historical Landmark', 'Natural History Museum'],
     )
 
     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
@@ -2216,19 +2258,35 @@ def getTripViaId(request, id=None):
 
 @api_view(['POST'])
 def getSites(request):
-    data = json.loads(request.body)
-    print("Calles")
-    print("category_id = ", data['category_id'])
-    plans = Site.objects.filter(city_id=data['city_id'], category_id=data['category_id']).all().values(
-        'id', 'name',
-        'description', 'images',
-    )
-    # print(len(plans))
-    plans_list = list(plans)
-    print("Calles")
-    print(plans_list)
+    try:
+        data = request.data  # Using request.data for parsing JSON data
 
-    return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
+        # Validate that 'category_id' and 'city_id' are present in the data
+        if 'category_id' not in data or 'city_id' not in data:
+            return Response({"error": "Missing 'category_id' or 'city_id' in request body"}, status=status.HTTP_400_BAD_REQUEST)
+
+        category_id = data['category_id']
+        city_id = data['city_id']
+
+        # Fetch the filtered Site objects and extract required fields
+        sites = Site.objects.filter(city_id=city_id, category_id=category_id).values(
+            'id', 'name', 'description'
+        )
+
+        plans_list = []
+        for site in sites:
+            site_instance = Site.objects.get(id=site['id'])
+            # Get one photo_reference from the related Photo objects
+            photo_reference = site_instance.photos.values_list('photo_reference', flat=True).first()
+            site['photo_reference'] = photo_reference  # Add the photo_reference to the site dictionary
+            plans_list.append(site)
+
+        return Response(plans_list, status=status.HTTP_200_OK)
+
+    except ObjectDoesNotExist:
+        return Response({"error": "Data not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # @api_view(['POST'])
@@ -3278,7 +3336,7 @@ def saveHotel(request):
                             print(f"Latitude: {lat}, Longitude: {lng}")
                             # "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=25.792277, -80.225343& radius=50000&        type=Jacksonville&key=AIzaSyAgqQFWfvoWJgCQMdETHj_kq63t6PRg0ks"
                             url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}"
-                            
+
                             logger.info("Scraping API Called")
                             response = requests.get(url)
                             print("Status code = ", response.status_code)
