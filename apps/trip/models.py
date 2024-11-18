@@ -22,6 +22,7 @@ class Category(BaseModel):
     icon_url = models.URLField(max_length=255, blank=True, null=True)
     image_url = models.URLField(max_length=255, blank=True, null=True)
     keywords = ArrayField(models.TextField(null=True), default=list)
+    scrape = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Category"
@@ -68,7 +69,9 @@ class City(BaseModel):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     images = ArrayField(models.TextField(null=True), default=list)
     description = models.TextField(null=True, blank=True)
-    lat_long = ArrayField(models.TextField(null=True), default=list)
+    # lat_long = ArrayField(models.TextField(null=True), default=list)
+    lat_long = models.JSONField(default=list)
+    scrape = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "City"
