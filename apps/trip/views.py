@@ -2267,15 +2267,30 @@ def getSites(request):
 
         category_id = data['category_id']
         city_id = data['city_id']
+        category=Category.objects.filter(id=category_id).first()
+        city=City.objects.filter(id=city_id).first()
 
         # Fetch the filtered Site objects and extract required fields
         sites = Site.objects.filter(city_id=city_id, category_id=category_id).values(
-            'id', 'name', 'description'
+            'id', 'name', 'description','place_id','rating','user_ratings_total'
         )
 
         plans_list = []
         for site in sites:
             site_instance = Site.objects.get(id=site['id'])
+            
+            geometry = site_instance.geometry
+            if geometry and geometry.location:
+                site['latitude'] = geometry.location.lat  # Add latitude
+                site['longitude'] = geometry.location.lng  # Add longitude
+            else:
+                site['latitude'] = None
+                site['longitude'] = None
+            if category:
+                site['icon_url']=category.icon_url
+            site['city_id']=city_id
+            site['city_name']=city.name
+            
             # Get one photo_reference from the related Photo objects
             photo_reference = site_instance.photos.values_list('photo_reference', flat=True).first()
             site['photo_reference'] = photo_reference  # Add the photo_reference to the site dictionary
