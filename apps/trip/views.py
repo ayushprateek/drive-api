@@ -3228,10 +3228,19 @@ def truncate_all_tables(request):
 def saveToDb(api_response, city, category):
     data = api_response
     logger.info("Saved Data Length = " + str(len(data['results'])))
+    print("Category id ",category.id)
+    print("Category name ",category.name)
+    print("City name ",city.name)
+    
+    city = City.objects.filter(id=city.id).first()
+    # city=City.objects.filter(id="2089800e-c9b1-439b-a20d-a480ae8d7419").first()
+    category = Category.objects.filter(id=category.id).first()
 
     for result in data['results']:
+        
+        
 
-        if not Site.objects.filter(place_id=result['place_id']).exists():
+        if not Site.objects.filter(place_id=result['place_id'],category_id=category.id).exists():
             location_data = result['geometry']['location']
             print("location_data = ", location_data['lat'])
             print("location_data = ", location_data['lng'])
@@ -3303,7 +3312,9 @@ def saveToDb(api_response, city, category):
                 hotel.photos.add(photo_obj)
 
             hotel.save()
-            # print("Hotel ",hotel.id,'-->',hotel.name)
+            print("Hotel ",hotel.id,'-->',hotel.name)
+        else:
+            print("Hotel already exists")
 
 
 def saveHotel(request):
