@@ -3205,6 +3205,8 @@ def truncate_all_tables(request):
 
 def saveToDb(api_response, city, category):
     data = api_response
+    logger.info("Saved Data Length = " + str(len(data['results'])))
+
 
     for result in data['results']:
 
@@ -3337,7 +3339,7 @@ def saveHotel(request):
                             # "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=25.792277, -80.225343& radius=50000&        type=Jacksonville&key=AIzaSyAgqQFWfvoWJgCQMdETHj_kq63t6PRg0ks"
                             url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}"
 
-                            logger.info("Scraping API Called")
+                            logger.info("Scraping API Called "+url)
                             response = requests.get(url)
                             print("Status code = ", response.status_code)
                             if response.status_code == 200:
