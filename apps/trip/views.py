@@ -61,9 +61,16 @@ from django.db import models
 from django.db.models import F, Q
 from django.db.models.functions import Coalesce
 import logging
+from rest_framework.pagination import PageNumberPagination
 
 # Get the logger instance
 logger = logging.getLogger('django.request')
+
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10  # Set the number of items per page
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
 @api_view(['GET'])
@@ -173,13 +180,10 @@ def addTrip(request):
             TripCategory.objects.create(
                 category=row
             )
-            
+
     # delete from trip_plancategory where category_id not in()
-    
+
     # delete from trip_tripcategory where category_id not in('7590e882-4ae7-499f-b54a-419d2f613297','8590275f-3736-4c73-8abc-1e29c5b55a9c','70787b00-c78b-4a47-a86b-d9f24f879729','03b2e91e-3275-42fd-aa32-403e8d2252d7','d7a03343-b08e-46c4-96c2-444566714796','9dce7a13-1ace-408c-85e8-895cd933bd22','7327f81a-5e95-447c-9bbb-e5a6b898cd3b','82ef73f3-7b68-4531-a158-ea4fa6afa051','26387b2b-b709-4011-a0de-cbd166d4625e')
-
-   
-
 
     # Category.objects.create(
     # name='Attractions',
@@ -2267,36 +2271,35 @@ def getSites(request):
 
         category_id = data['category_id']
         city_id = data['city_id']
-        category=Category.objects.filter(id=category_id).first()
-        city=City.objects.filter(id=city_id).first()
+        category = Category.objects.filter(id=category_id).first()
+        city = City.objects.filter(id=city_id).first()
 
-        # Fetch the filtered Site objects and extract required fields
-        sites = Site.objects.filter(city_id=city_id, category_id=category_id).values(
-            'id', 'name', 'description','place_id','rating','user_ratings_total'
-        )
+        # Fetch the filtered Site objects
+        sites = Site.objects.filter(city_id=city_id, category_id=category_id)
+
+        # Apply pagination
+        paginator = CustomPagination()
+        paginated_sites = paginator.paginate_queryset(sites, request)
 
         plans_list = []
-        for site in sites:
-            site_instance = Site.objects.get(id=site['id'])
-            
-            geometry = site_instance.geometry
-            if geometry and geometry.location:
-                site['latitude'] = geometry.location.lat  # Add latitude
-                site['longitude'] = geometry.location.lng  # Add longitude
-            else:
-                site['latitude'] = None
-                site['longitude'] = None
-            if category:
-                site['icon_url']=category.icon_url
-            site['city_id']=city_id
-            site['city_name']=city.name
-            
-            # Get one photo_reference from the related Photo objects
-            photo_reference = site_instance.photos.values_list('photo_reference', flat=True).first()
-            site['photo_reference'] = photo_reference  # Add the photo_reference to the site dictionary
+        for site_instance in paginated_sites:
+            site = {
+                'id': site_instance.id,
+                'name': site_instance.name,
+                'description': site_instance.description,
+                'place_id': site_instance.place_id,
+                'rating': site_instance.rating,
+                'user_ratings_total': site_instance.user_ratings_total,
+                'latitude': getattr(site_instance.geometry.location, 'lat', None),
+                'longitude': getattr(site_instance.geometry.location, 'lng', None),
+                'icon_url': category.icon_url if category else None,
+                'city_id': city_id,
+                'city_name': city.name if city else None,
+                'photo_reference': site_instance.photos.values_list('photo_reference', flat=True).first(),
+            }
             plans_list.append(site)
 
-        return Response(plans_list, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(plans_list)
 
     except ObjectDoesNotExist:
         return Response({"error": "Data not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -3222,7 +3225,6 @@ def saveToDb(api_response, city, category):
     data = api_response
     logger.info("Saved Data Length = " + str(len(data['results'])))
 
-
     for result in data['results']:
 
         if not Site.objects.filter(place_id=result['place_id']).exists():
@@ -3354,7 +3356,7 @@ def saveHotel(request):
                             # "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=25.792277, -80.225343& radius=50000&        type=Jacksonville&key=AIzaSyAgqQFWfvoWJgCQMdETHj_kq63t6PRg0ks"
                             url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}"
 
-                            logger.info("Scraping API Called "+url)
+                            logger.info("Scraping API Called " + url)
                             response = requests.get(url)
                             print("Status code = ", response.status_code)
                             if response.status_code == 200:
@@ -3586,7 +3588,7 @@ def get_coordinates_along_polyline(request):
                 queryset = Site.objects.filter(category_id=category).annotate(
                     icon_url=F('category__icon_url')
                 ).values(
-                    'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url','place_id'
+                    'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url', 'place_id'
                 )
                 print("queryset = ", queryset)
                 process_data(queryset)
