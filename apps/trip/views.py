@@ -3550,6 +3550,7 @@ def get_coordinates_along_polyline(request):
                     "name": plan.name,
                     "description": plan.description,
                     "icon_url": plan.icon_url,
+                    "place_id": plan.place_id,
                     "images": [plan.place_id],
                     "latitude": plan.geometry.location.lat,
                     "longitude": plan.geometry.location.lng,
@@ -3570,6 +3571,7 @@ def get_coordinates_along_polyline(request):
                     if is_distance_one(plan.geometry.location.lat, plan.geometry.location.lng, decoded_points, threshold_distance) and bounding_box.contains(point):
                         plans.append({
                             "id": plan.id,
+                            "place_id": plan.place_id,
                             "name": plan.name,
                             "description": plan.description,
                             "icon_url": plan.icon_url,
@@ -3584,7 +3586,7 @@ def get_coordinates_along_polyline(request):
                 queryset = Site.objects.filter(category_id=category).annotate(
                     icon_url=F('category__icon_url')
                 ).values(
-                    'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url'
+                    'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url','place_id'
                 )
                 print("queryset = ", queryset)
                 process_data(queryset)
