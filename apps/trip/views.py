@@ -1231,12 +1231,14 @@ def getItineraryViaPlan(request):
                 plans = fetch.all().values(
                     'id', 'name',
                     'description', 'images',
-                    'city_id'
+                    'city_id',
+                    'place_id'
                 ).annotate(city_name=F('city__name')).values(
                     'id', 'name',
                     'description', 'images',
                     'city_id',
-                    'city_name'
+                    'city_name',
+                    'place_id'
                 )
                 imageList = []
                 userList = ItinerarySite.objects.filter(plan_id=plan_id).all()\
@@ -2704,12 +2706,14 @@ def getLikedSitesViaPlan(request):
             plans = fetch.all().values(
                 'id', 'name',
                 'description', 'images',
-                'city_id'
+                'city_id',
+                'place_id'
             ).annotate(city_name=F('city__name')).values(
                 'id', 'name',
                 'description', 'images',
                 'city_id',
-                'city_name'
+                'city_name',
+                'place_id'
             )
             imageList = []
             userList = UserLikesSite.objects.filter(plan_id=plan_id).all()\
