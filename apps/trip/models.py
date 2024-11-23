@@ -3,6 +3,7 @@ from django.db.models import JSONField
 from apps.trip.choices import ChoicesFields
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.db import transaction
 
 from django.contrib.postgres.fields import ArrayField
 from apps.trip.services.common import get_geo_code, get_geo_code_area
@@ -471,8 +472,10 @@ class Site(BaseModel):
     description = models.TextField(null=True)
     contact_info = models.JSONField(default=dict)
     check_in_data = models.JSONField(default=dict)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    # latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    # longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
     reviews = models.JSONField(default=dict)
     amenities = JSONField(default=dict)
     service_amenities = JSONField(default=dict)
@@ -511,6 +514,17 @@ class Site(BaseModel):
 
     def __str__(self):
         return self.name
+    
+    def updateLocationInSite(self):
+        """
+        Updates the latitude and longitude of the Site instance
+        using the associated Geometry's Location model.
+        """
+        if self.geometry and self.geometry.location:
+            with transaction.atomic():  # Ensures atomicity of the operation
+                self.latitude = self.geometry.location.lat  # Fetch latitude from Location
+                self.longitude = self.geometry.location.lng  # Fetch longitude from Location
+                self.save()
 
 # class UserLikes(models.Model):
 #     user = models.OneToOneField(user, on_delete=models.CASCADE)

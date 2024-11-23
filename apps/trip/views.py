@@ -3317,6 +3317,12 @@ def saveToDb(api_response, city, category):
             print("Hotel already exists")
 
 
+def updateLocationInSite(request):
+    # site = Site.objects.get(id='aef52d85-9979-411b-aa73-e546ccf7281c')
+    siteList=Site.objects.all()
+    for site in siteList:
+        site.updateLocationInSite()
+    return JsonResponse({'message': 'Location Updated'})
 def saveHotel(request):
 
     # Jacksonville
