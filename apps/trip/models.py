@@ -448,37 +448,19 @@ class Site(BaseModel):
     """
     Represents hotel entities with details about the hotel, its facilities,
     policies, reviews, geographical data, images, and other related metadata.
-
-    Attributes:
-    - name (TextField): The name of the hotel.
-    - description (TextField): A brief description of the hotel.
-    - contact_info (JSONField): Contact details like phone, email, etc.
-    - check_in_data (JSONField): Details about check-in and check-out times.
-    - address (JSONField): Address information stored in JSON format.
-    - latitude (DecimalField): Geographical latitude of the hotel.
-    - longitude (DecimalField): Geographical longitude of the hotel.
-    - amenities (JSONField): List or dictionary of amenities available at the hotel.
-    - service_amenities (JSONField): List or dictionary of service amenities provided by the hotel.
-    - facility_overview (TextField): A text overview of the hotel's facilities.
-    - hotel_policy (JSONField): Hotel's policies stored in JSON format.
-    - meta_data (JSONField): Additional metadata about the hotel.
-    - cover_image (TextField): Primary image representing the hotel.
-    - images (ArrayField): A list of URLs or texts representing various images of the hotel.
     """
-    place_id = models.CharField(max_length=500, unique=True, null=True)
+    place_id = models.CharField(max_length=500, null=True)  # Removed unique=True
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     name = models.TextField(null=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, related_name="city", null=True)
     description = models.TextField(null=True)
     contact_info = models.JSONField(default=dict)
     check_in_data = models.JSONField(default=dict)
-    # latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    # longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
     reviews = models.JSONField(default=dict)
-    amenities = JSONField(default=dict)
-    service_amenities = JSONField(default=dict)
+    amenities = models.JSONField(default=dict)
+    service_amenities = models.JSONField(default=dict)
     facility_overview = models.TextField(null=True, blank=True)
     policy = models.JSONField(default=dict)
     meta_data = models.JSONField(default=dict)
@@ -493,19 +475,29 @@ class Site(BaseModel):
     media = models.ForeignKey(Media, on_delete=models.CASCADE, null=True)
     discount_url = models.CharField(max_length=400, null=True)
     business_status = models.CharField(max_length=50, null=True)
-    # geometry = models.OneToOneField(Geometry, on_delete=models.CASCADE, null=True)
     icon_background_color = models.CharField(max_length=10, null=True)
     icon_mask_base_uri = models.URLField(null=True)
-
     open_now = models.BooleanField(default=False)
-    # plus_code = models.OneToOneField(PlusCode, on_delete=models.CASCADE, null=True)
-
     reference = models.CharField(max_length=50, null=True)
     scope = models.CharField(max_length=50, null=True)
     types = models.TextField(null=True)  # Will be stored as a comma-separated string
-
     vicinity = models.CharField(max_length=255, null=True)
     photos = models.ManyToManyField(Photo)
+
+    class Meta:
+        verbose_name = "Site"
+        verbose_name_plural = "Sites"
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["place_id", "category"],
+                name="unique_place_category"
+            )  # Enforces unique composite key
+        ]
+
+    def __str__(self):
+        return self.name
+
 
     class Meta:
         verbose_name = "Site"

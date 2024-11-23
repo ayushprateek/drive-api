@@ -3282,7 +3282,8 @@ def saveToDb(api_response, city, category):
             else:
                 user_ratings_total = 0
             print("creatig site")
-            hotel = Site.objects.create(
+            try:
+                hotel = Site.objects.create(
                 business_status=result.get('business_status'),
                 # geometry=geometry,
                 icon=result.get('icon'),
@@ -3303,6 +3304,9 @@ def saveToDb(api_response, city, category):
                 user_ratings_total=user_ratings_total,
                 vicinity=result.get('vicinity', {}) if result.get('vicinity', {}) is not None else 0
             )
+            except Exception as e:
+                print("exception = ", e)
+            print("Site created")
 
             for photo in result.get('photos', []):
                 photo_obj = Photo.objects.create(
