@@ -411,21 +411,21 @@ class LatLng:
         self.lng = lng
 
 
-class Location(models.Model):
-    lat = models.FloatField(null=True)
-    lng = models.FloatField(null=True)
+# class Location(models.Model):
+#     lat = models.FloatField(null=True)
+#     lng = models.FloatField(null=True)
 
 
-class Viewport(models.Model):
-    northeast_lat = models.FloatField(null=True)
-    northeast_lng = models.FloatField(null=True)
-    southwest_lat = models.FloatField(null=True)
-    southwest_lng = models.FloatField(null=True)
+# class Viewport(models.Model):
+#     northeast_lat = models.FloatField(null=True)
+#     northeast_lng = models.FloatField(null=True)
+#     southwest_lat = models.FloatField(null=True)
+#     southwest_lng = models.FloatField(null=True)
 
 
-class Geometry(models.Model):
-    location = models.OneToOneField(Location, on_delete=models.CASCADE, null=True)
-    viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE, null=True)
+# class Geometry(models.Model):
+#     location = models.OneToOneField(Location, on_delete=models.CASCADE, null=True)
+#     viewport = models.OneToOneField(Viewport, on_delete=models.CASCADE, null=True)
 
 # class Geometry(models.Model):
 #     location = models.OneToOneField(Location, on_delete=models.CASCADE,null=True)
@@ -439,9 +439,9 @@ class Photo(models.Model):
     photo_reference = models.CharField(max_length=255)
 
 
-class PlusCode(models.Model):
-    compound_code = models.CharField(max_length=250)
-    global_code = models.CharField(max_length=250)
+# class PlusCode(models.Model):
+#     compound_code = models.CharField(max_length=250)
+#     global_code = models.CharField(max_length=250)
 
 
 class Site(BaseModel):
@@ -493,12 +493,12 @@ class Site(BaseModel):
     media = models.ForeignKey(Media, on_delete=models.CASCADE, null=True)
     discount_url = models.CharField(max_length=400, null=True)
     business_status = models.CharField(max_length=50, null=True)
-    geometry = models.OneToOneField(Geometry, on_delete=models.CASCADE, null=True)
+    # geometry = models.OneToOneField(Geometry, on_delete=models.CASCADE, null=True)
     icon_background_color = models.CharField(max_length=10, null=True)
     icon_mask_base_uri = models.URLField(null=True)
 
     open_now = models.BooleanField(default=False)
-    plus_code = models.OneToOneField(PlusCode, on_delete=models.CASCADE, null=True)
+    # plus_code = models.OneToOneField(PlusCode, on_delete=models.CASCADE, null=True)
 
     reference = models.CharField(max_length=50, null=True)
     scope = models.CharField(max_length=50, null=True)
@@ -515,16 +515,16 @@ class Site(BaseModel):
     def __str__(self):
         return self.name
     
-    def updateLocationInSite(self):
-        """
-        Updates the latitude and longitude of the Site instance
-        using the associated Geometry's Location model.
-        """
-        if self.geometry and self.geometry.location:
-            with transaction.atomic():  # Ensures atomicity of the operation
-                self.latitude = self.geometry.location.lat  # Fetch latitude from Location
-                self.longitude = self.geometry.location.lng  # Fetch longitude from Location
-                self.save()
+    # def updateLocationInSite(self):
+    #     """
+    #     Updates the latitude and longitude of the Site instance
+    #     using the associated Geometry's Location model.
+    #     """
+    #     if self.geometry and self.geometry.location:
+    #         with transaction.atomic():  # Ensures atomicity of the operation
+    #             self.latitude = self.geometry.location.lat  # Fetch latitude from Location
+    #             self.longitude = self.geometry.location.lng  # Fetch longitude from Location
+    #             self.save()
 
 # class UserLikes(models.Model):
 #     user = models.OneToOneField(user, on_delete=models.CASCADE)

@@ -42,7 +42,7 @@ from apps.trip.helper import (
     fetch_pois_save_with_route,
     get_route,
 )
-from .models import Location, Viewport, Geometry, Photo, PlusCode, Site
+from .models import Photo, Site
 from shapely.geometry import Point, LineString
 import datetime
 from collections import defaultdict
@@ -3244,39 +3244,39 @@ def saveToDb(api_response, city, category):
             location_data = result['geometry']['location']
             print("location_data = ", location_data['lat'])
             print("location_data = ", location_data['lng'])
-            try:
-                location = Location.objects.create(
-                    lat=location_data['lat'],
-                    lng=location_data['lng']
-                )
-            except Exception as e:
-                print("exception = ", e)
-            print("Creating Viewport")
-            viewport_data = result['geometry']['viewport']
-            print("viewport_data = ", viewport_data)
-            print("Creating Viewport")
-            try:
-                viewport = Viewport.objects.create(
-                    northeast_lat=viewport_data['northeast']['lat'],
-                    northeast_lng=viewport_data['northeast']['lng'],
-                    southwest_lat=viewport_data['southwest']['lat'],
-                    southwest_lng=viewport_data['southwest']['lng']
-                )
-            except Exception as e:
-                print("Exception = ", e)
+            # try:
+            #     location = Location.objects.create(
+            #         lat=location_data['lat'],
+            #         lng=location_data['lng']
+            #     )
+            # except Exception as e:
+            #     print("exception = ", e)
+            # print("Creating Viewport")
+            # viewport_data = result['geometry']['viewport']
+            # print("viewport_data = ", viewport_data)
+            # print("Creating Viewport")
+            # try:
+            #     viewport = Viewport.objects.create(
+            #         northeast_lat=viewport_data['northeast']['lat'],
+            #         northeast_lng=viewport_data['northeast']['lng'],
+            #         southwest_lat=viewport_data['southwest']['lat'],
+            #         southwest_lng=viewport_data['southwest']['lng']
+            #     )
+            # except Exception as e:
+            #     print("Exception = ", e)
 
-            print("Creating Geometry")
+            # print("Creating Geometry")
 
-            geometry = Geometry.objects.create(
-                location=location,
-                viewport=viewport
+            # geometry = Geometry.objects.create(
+            #     location=location,
+            #     viewport=viewport
 
-            )
-            plus_code_data = result.get('plus_code', {})
-            plus_code = PlusCode.objects.create(
-                compound_code=plus_code_data.get('compound_code', ''),
-                global_code=plus_code_data.get('global_code', '')
-            )
+            # )
+            # plus_code_data = result.get('plus_code', {})
+            # plus_code = PlusCode.objects.create(
+            #     compound_code=plus_code_data.get('compound_code', ''),
+            #     global_code=plus_code_data.get('global_code', '')
+            # )
             if result.get('user_ratings_total', {}):
                 user_ratings_total = result.get('user_ratings_total', {})
             else:
@@ -3284,14 +3284,16 @@ def saveToDb(api_response, city, category):
             print("creatig site")
             hotel = Site.objects.create(
                 business_status=result.get('business_status'),
-                geometry=geometry,
+                # geometry=geometry,
                 icon=result.get('icon'),
                 icon_background_color=result['icon_background_color'],
                 icon_mask_base_uri=result['icon_mask_base_uri'],
                 name=result['name'],
                 open_now=result.get('opening_hours', {}).get('open_now', False),
                 place_id=result['place_id'],
-                plus_code=plus_code,
+                # plus_code=plus_code,location_data['lng']
+                latitude=location_data['lat'],
+                longitude=location_data['lng'],
                 rating=result.get('rating'),
                 reference=result['reference'],
                 scope=result['scope'],
@@ -3317,12 +3319,12 @@ def saveToDb(api_response, city, category):
             print("Hotel already exists")
 
 
-def updateLocationInSite(request):
-    # site = Site.objects.get(id='aef52d85-9979-411b-aa73-e546ccf7281c')
-    siteList=Site.objects.all()
-    for site in siteList:
-        site.updateLocationInSite()
-    return JsonResponse({'message': 'Location Updated'})
+# def updateLocationInSite(request):
+#     # site = Site.objects.get(id='aef52d85-9979-411b-aa73-e546ccf7281c')
+#     siteList=Site.objects.all()
+#     for site in siteList:
+#         site.updateLocationInSite()
+#     return JsonResponse({'message': 'Location Updated'})
 def saveHotel(request):
 
     # Jacksonville

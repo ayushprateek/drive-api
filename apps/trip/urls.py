@@ -61,5 +61,5 @@ urlpatterns = [
     path('is-place-in-itinerary/', isPlaceInItinerary, name='add trip plan'),
     path('get-itinerary-via-plan/', getItineraryViaPlan, name='add trip plan'),
     path('get-itinerary-filter/', getItineraryFilter, name='add-user'),
-    path('update-location-in-site/', updateLocationInSite, name='add-user'),
+    # path('update-location-in-site/', updateLocationInSite, name='add-user'),
 ]
