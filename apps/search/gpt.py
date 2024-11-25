@@ -52,7 +52,7 @@ class TravelAssistant:
         travel_keywords = ["deals", "best", "deal", "travel", "hotel", "discount", "stay", "accommodation", "plan", "trip", "journey",
                            "hotels", "attractions", "restaurants", "station", "electric", "fuel", "restaurant",
                            "fastest", "shortest", "nearest", "cheapest", "mexican",
-                           "italian", "sea", "sushi", "tapas", "hotdog", "fast", "highest"]
+                           "italian", "sea", "sushi", "tapas", "hotdog", "fast", "highest","tinerary"]
 
         if any(keyword in query.lower() for keyword in travel_keywords):
             return True
