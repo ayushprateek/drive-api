@@ -3228,18 +3228,12 @@ def truncate_all_tables(request):
 def saveToDb(api_response, city, category):
     data = api_response
     logger.info("Saved Data Length = " + str(len(data['results'])))
-    print("Category id ",category.id)
-    print("Category name ",category.name)
-    print("City name ",city.name)
     
-    city = City.objects.filter(id=city.id).first()
+    # city = City.objects.filter(id=city.id).first()
     # city=City.objects.filter(id="2089800e-c9b1-439b-a20d-a480ae8d7419").first()
-    category = Category.objects.filter(id=category.id).first()
+    # category = Category.objects.filter(id=category.id).first()
 
     for result in data['results']:
-        
-        
-
         if not Site.objects.filter(place_id=result['place_id'],category_id=category.id).exists():
             location_data = result['geometry']['location']
             print("location_data = ", location_data['lat'])
@@ -3323,6 +3317,58 @@ def saveToDb(api_response, city, category):
             print("Hotel already exists")
 
 
+
+def fetchModels(request):
+    lat = request.GET.get('lat') 
+    lng = request.GET.get('lng') 
+    city_id = request.GET.get('city_id')  
+    category_id = request.GET.get('category_id')
+    print("Id = ",city_id)
+    print("Id = ",category_id)
+    try:
+        if not City.objects.filter(id=city_id).exists():
+            return JsonResponse({"error": "City does not exist"}, status=400)
+    except Exception as e:
+        print("Exception e = ",e)
+        return JsonResponse({"error": e}, status=400)
+    try:
+        if not Category.objects.filter(id=category_id).exists():
+            return JsonResponse({"error": "Category does not exist"}, status=400)
+    except Exception as e:
+        print("Exception e = ",e)
+        return JsonResponse({"error": e}, status=400)
+    
+    city=City.objects.filter(id=city_id).first()
+    category=Category.objects.filter(id=category_id).first()
+    placesAPICall(lat,lng,city, category,'Historical Landmark')
+    return JsonResponse({'message': 'City and Category fetched and saved successfully'})
+
+
+def placesAPICall(lat,lng,city, category,type):
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}&keyword={type}"
+    logger.info("Scraping API Called " + url)
+    response = requests.get(url)
+    print("Status code = ", response.status_code)
+    if response.status_code == 200:
+        data = response.json()
+        print("Next page = ", data['next_page_token'],data.get('next_page_token'))
+        print("Data = ", data)
+        saveToDb(data, city, category)
+        next_page_token = data.get('next_page_token')
+        print('Next token =   ',next_page_token)
+        while next_page_token:
+            newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next_page_token}&key={settings.GOOGLE_API_KEY}"
+            print("New url = ",newUrl)
+            logger.info("Next page Scraping API Called " + newUrl)
+            res = requests.get(newUrl)
+            newData = res.json()
+            print('Next Status code =   ',res.status_code)
+            next_page_token = newData.get('next_page_token')
+            if res.status_code == 200:
+                saveToDb(newData, city, category)
+            if not next_page_token:
+                break
+
 # def updateLocationInSite(request):
 #     # site = Site.objects.get(id='aef52d85-9979-411b-aa73-e546ccf7281c')
 #     siteList=Site.objects.all()
@@ -3330,41 +3376,7 @@ def saveToDb(api_response, city, category):
 #         site.updateLocationInSite()
 #     return JsonResponse({'message': 'Location Updated'})
 def saveHotel(request):
-
-    # Jacksonville
-    # latlang = [
-    #     {'latitude': 30.152394, 'longitude': -81.470318},
-    #     {'latitude': 30.188011, 'longitude': -81.464825},
-    #     {'latitude': 30.144081, 'longitude': -81.567822},
-    #     {'latitude': 30.151206, 'longitude': -81.626873},
-    #     {'latitude': 30.210563, 'longitude': -81.602154},
-    #     {'latitude': 30.260394, 'longitude': -81.628246},
-    #     {'latitude': 30.286487, 'longitude': -81.596661},
-    #     {'latitude': 30.305459, 'longitude': -81.547222},
-    #     {'latitude': 30.282929, 'longitude': -81.934490}
-    # ]
-
-    # MIAMI
-    #     latlang=[
-    #         {'latitude': 25.843952, 'longitude':-80.187044},
-    # {'latitude': 25.844673, 'longitude':-80.199120},
-    # {'latitude': 25.829970, 'longitude':-80.190792},
-    # {'latitude': 25.823338, 'longitude':-80.222184},
-    # {'latitude': 25.798293, 'longitude':-80.216817},
-    # {'latitude': 25.805181, 'longitude':-80.247685},
-    # {'latitude': 25.789029, 'longitude':-80.248740},
-    # {'latitude': 25.779527, 'longitude':-80.258237},
-    # {'latitude': 25.771925, 'longitude':-80.279871},
-    # {'latitude': 25.769311, 'longitude':-80.302823},
-    # {'latitude': 25.753445, 'longitude':-80.248190},
-    # {'latitude': 25.731077, 'longitude':-80.248559},
-    # {'latitude': 25.745889, 'longitude':-80.236336},
-    # {'latitude': 25.760624, 'longitude':-80.220720},
-    # {'latitude': 25.759954, 'longitude':-80.209194},
-    # {'latitude': 25.768660, 'longitude':-80.201014}
-    #     ]
     cityList = City.objects.filter(scrape=True).all()
-    # city=City.objects.filter(id="2089800e-c9b1-439b-a20d-a480ae8d7419").first()
     categoryList = Category.objects.filter(scrape=True).all()
     print("categoryList = ", categoryList)
 
@@ -3389,22 +3401,28 @@ def saveHotel(request):
                             if response.status_code == 200:
                                 data = response.json()
                                 print("Data = ", data)
-                                if not Site.objects.filter(place_id=data.get('place_id')). exists():
+                                if not Site.objects.filter(place_id=data.get('place_id'),category_id=category.id).exists():
                                     print("Hotel does not exists")
                                     saveToDb(data, city, category)
-                                    # next_page_token = data.get('next_page_token')
+                                    print('Status code =   ',response.status_code)
+                                    next_page_token = data.get('next_page_token')
+                                    print('Next token =   ',next_page_token)
                                     # todo: uncomment
-                                    # while next_page_token:
-                                    #     newUrl = f"https://maps.googleapis.comaps/api/place/nearbysearch/json?pagetoke            {next_page_token}&key={settings.GOOGLE_API_KE"
-                                    #     res = requests.get(newUrl)
-                                    #     newData = res.json()
-                                    #     next_page_token = newData.g('next_page_token')
-                                    #     # #print('2nd calling next page urlStatus =   ',res.status_code)
-                                    #     if res.status_code == 200:
-                                    #         if not Site.objects.filt(place_id=data.   get('place_id')).   exists():
-                                    #             saveToDb(newData)
-                                    #     if not next_page_token:
-                                    #         break
+                                    while next_page_token:
+                                        newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken{next_page_token}&key={settings.GOOGLE_API_KEY}"
+                                        print("New url = ",newUrl)
+                                        logger.info("Scraping API Called " + newUrl)
+                                        res = requests.get(newUrl)
+                                        print("Requested url = ",newUrl)
+                                        newData = res.json()
+                                        print('Next Status code =   ',res.status_code)
+                                        next_page_token = newData.get('next_page_token')
+                                        print('2nd calling next page urlStatus =   ',res.status_code)
+                                        if res.status_code == 200:
+                                            if not Site.objects.filter(place_id=newData.get('place_id'),category_id=category.id).exists():
+                                                saveToDb(newData, city, category)
+                                        if not next_page_token:
+                                            break
                                 else:
                                     print('Hotel exists')
         else:
