@@ -345,7 +345,7 @@ class UserProfileAPIView(generics.GenericAPIView):
         except Exception as ex:
             print('An error occurred:', ex)
 
-            raise ValidationError(ApplicationMessages.SOMETHING_WENT_WRONG)
+            raise ValidationError(str(ex))
 
     def get(self, request, *args, **kwargs):
         """Get User Profile"""
