@@ -498,7 +498,6 @@ class Site(BaseModel):
     def __str__(self):
         return self.name
 
-
     class Meta:
         verbose_name = "Site"
         verbose_name_plural = "Sites"
@@ -506,7 +505,7 @@ class Site(BaseModel):
 
     def __str__(self):
         return self.name
-    
+
     # def updateLocationInSite(self):
     #     """
     #     Updates the latitude and longitude of the Site instance
@@ -514,8 +513,8 @@ class Site(BaseModel):
     #     """
     #     if self.geometry and self.geometry.location:
     #         with transaction.atomic():  # Ensures atomicity of the operation
-    #             self.latitude = self.geometry.location.lat  # Fetch latitude from Location
-    #             self.longitude = self.geometry.location.lng  # Fetch longitude from Location
+    #             self.latitude = self.latitude  # Fetch latitude from Location
+    #             self.longitude = self.plan.longitude  # Fetch longitude from Location
     #             self.save()
 
 # class UserLikes(models.Model):

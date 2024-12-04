@@ -14,7 +14,7 @@ import json
 # views.py
 from django.http import JsonResponse
 
-from shapely.geometry import Point, LineString,box
+from shapely.geometry import Point, LineString, box
 
 import requests
 from django.http import JsonResponse
@@ -33,9 +33,9 @@ import math
 
 # def saveToDb(api_response):
 #     data = api_response
-    
+
 #     for result in data['results']:
-        
+
 #         if not Hotel.objects.filter(place_id=result['place_id']).exists():
 #             location_data = result['geometry']['location']
 #             location = Location.objects.create(
@@ -94,7 +94,6 @@ import math
 
 #             hotel.save()
 #             print("Hotel ",hotel.id,'-->',hotel.name)
-   
 
 
 # def saveHotel(request):
@@ -208,7 +207,7 @@ import math
 #     {"latitude": 30.644946, "longitude": -81.820757}
 # ]
 #     for type in typeList:
-    
+
 #         for data in latlang:
 #             lat = data['latitude']
 #             lng =  data['longitude']
@@ -233,11 +232,11 @@ import math
 #                             break
 #                     else:
 #                         print('Hotel exists')
-            
-            
+
+
 #     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
-    
-    
+
+
 # def fetch_latestHotels(request):
 #     hotels = Hotel.objects.all()
 #     results = []
@@ -247,8 +246,8 @@ import math
 #             "business_status": hotel.business_status,
 #             "geometry": {
 #                 "location": {
-#                     "lat": hotel.geometry.location.lat,
-#                     "lng": hotel.geometry.location.lng
+#                     "lat": hotel.latitude,
+#                     "lng": hotel.plan.longitude
 #                 },
 #                 "viewport": {
 #                     "northeast": {
@@ -317,16 +316,16 @@ import math
 #     west_lon = float(request.GET.get('west_lon'))
 #     north_lat = float(request.GET.get('north_lat'))
 #     east_lon = float(request.GET.get('east_lon'))
-    
+
 #     # Create a bounding box using shapely
 #     bounding_box = box(west_lon, south_lat, east_lon, north_lat)
 #     print(lat1,lon1)
 #     print(lat2,lon2)
-    
+
 #     # Create LineString from A to B
 #     # line = LineString([(lon1, lat1), (lon2, lat2)])
 #     decoded_points=[]
-    
+
 #     # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
 #     url = f"https://maps.googleapis.com/maps/api/directions/json?origin={lat1},{lon1}&destination={lat2},{lon2}&key={settings.GOOGLE_API_KEY}"
 #     response = requests.get(url)
@@ -335,11 +334,11 @@ import math
 #         decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
 #         # for point in decoded_points:
 #             # print(f"Lat: {point.lat}, Lng: {point.lng}")
-    
-    
+
+
 #     # Threshold distance for points to be considered 'alongside' the polyline
 #     threshold_distance = float(request.GET.get('threshold_distance'))
-    
+
 #     hotels = Hotel.objects.all()
 #     results = []
 
@@ -348,8 +347,8 @@ import math
 #             "business_status": hotel.business_status,
 #             "geometry": {
 #                 "location": {
-#                     "lat": hotel.geometry.location.lat,
-#                     "lng": hotel.geometry.location.lng
+#                     "lat": hotel.latitude,
+#                     "lng": hotel.plan.longitude
 #                 },
 #                 "viewport": {
 #                     "northeast": {
@@ -389,25 +388,25 @@ import math
 #             "vicinity": hotel.vicinity
 #         }
 #         results.append(result)
-    
+
 #     # Get all coordinates from the database
 #     # allHotelList = Hotel.objects.all().values('id','place_id','name','address','rating','latitude','longitude','icon')
-    
+
 #     # Filter coordinates that are alongside the polyline
 #     result = []
-    
-    
+
+
 #     for hotel in results:
 #         # print("latitude == ",hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'])
 #         point = Point(hotel['geometry']['location']['lng'], hotel['geometry']['location']['lat'])
 #         # print("distance from point == ",line.distance(point),bounding_box.contains(point))
-        
+
 #         # if line.distance(point) <= threshold_distance and bounding_box.contains(point):
 #         if is_distance_one(hotel['geometry']['location']['lat'],hotel['geometry']['location']['lng'], decoded_points,threshold_distance) and bounding_box.contains(point):
 #             print('inserting')
 #             result.append(hotel)
 #     print('Len', len(results))
-    
+
 #     return JsonResponse(result, safe=False)
 
 # def decode_poly(encoded):
@@ -462,10 +461,10 @@ import math
 #         # except ValueError:
 #         #     return JsonResponse({'error': 'Invalid latitude or longitude'}, status=400)
 #         # latlang=[{"latitude":29.679547,"longitude":-82.379897},{"latitude":29.679578,"longitude":-82.380034},{"latitude":29.679627,"longitude":-82.380513},{"latitude":29.679804,"longitude":-82.381193},{"latitude":29.679943,"longitude":-82.38145},{"latitude":29.680216,"longitude":-82.381955},{"latitude":29.677717,"longitude":-82.383302},{"latitude":29.675189,"longitude":-82.383311},{"latitude":29.675189,"longitude":-82.383669},{"latitude":29.67525,"longitude":-82.383744},{"latitude":29.675472,"longitude":-82.383969},{"latitude":29.675603,"longitude":-82.384184},{"latitude":29.675632,"longitude":-82.384412},{"latitude":29.675611,"longitude":-82.384866},{"latitude":29.67556,"longitude":-82.385087},{"latitude":29.675499,"longitude":-82.385306},{"latitude":29.67549,"longitude":-82.385412},{"latitude":29.675392,"longitude":-82.386263},{"latitude":29.674703,"longitude":-82.386236},{"latitude":29.673954,"longitude":-82.386243},{"latitude":29.67351,"longitude":-82.38624},{"latitude":29.673228,"longitude":-82.386266},{"latitude":29.672914,"longitude":-82.386413},{"latitude":29.673199,"longitude":-82.386966},{"latitude":29.673956,"longitude":-82.388644},{"latitude":29.674086,"longitude":-82.388981},{"latitude":29.672808,"longitude":-82.388989},{"latitude":29.672062,"longitude":-82.38901},{"latitude":29.67113,"longitude":-82.388986},{"latitude":29.671031,"longitude":-82.388986},{"latitude":29.670093,"longitude":-82.38899},{"latitude":29.669899,"longitude":-82.388991},{"latitude":29.669918,"longitude":-82.389157},{"latitude":29.66992,"longitude":-82.389663},{"latitude":29.671027,"longitude":-82.389668},{"latitude":29.671062,"longitude":-82.389677},{"latitude":29.671091,"longitude":-82.389695},{"latitude":29.671129,"longitude":-82.389736},{"latitude":29.671146,"longitude":-82.389769},{"latitude":29.671156,"longitude":-82.389807},{"latitude":29.671157,"longitude":-82.39082},{"latitude":29.671158,"longitude":-82.39197},{"latitude":29.672004,"longitude":-82.392038},{"latitude":29.672286,"longitude":-82.392052},{"latitude":29.674104,"longitude":-82.392041},{"latitude":29.674104,"longitude":-82.392656},{"latitude":29.674105,"longitude":-82.393312},{"latitude":29.674107,"longitude":-82.393688},{"latitude":29.674108,"longitude":-82.394615},{"latitude":29.674108,"longitude":-82.394983},{"latitude":29.674111,"longitude":-82.397338},{"latitude":29.674108,"longitude":-82.397763},{"latitude":29.674116,"longitude":-82.399786},{"latitude":29.674112,"longitude":-82.400703},{"latitude":29.674113,"longitude":-82.401078},{"latitude":29.674105,"longitude":-82.401495},{"latitude":29.674095,"longitude":-82.4023},{"latitude":29.674104,"longitude":-82.403927},{"latitude":29.674111,"longitude":-82.405782},{"latitude":29.674113,"longitude":-82.405934},{"latitude":29.67412,"longitude":-82.406351},{"latitude":29.674137,"longitude":-82.407342},{"latitude":29.674142,"longitude":-82.40765},{"latitude":29.674171,"longitude":-82.409397},{"latitude":29.674173,"longitude":-82.409779},{"latitude":29.67418,"longitude":-82.410352},{"latitude":29.674227,"longitude":-82.413173},{"latitude":29.674227,"longitude":-82.413207},{"latitude":29.674229,"longitude":-82.413525},{"latitude":29.674232,"longitude":-82.413899},{"latitude":29.674234,"longitude":-82.415307},{"latitude":29.674241,"longitude":-82.416242},{"latitude":29.67424,"longitude":-82.416961},{"latitude":29.674247,"longitude":-82.417297},{"latitude":29.674247,"longitude":-82.418067},{"latitude":29.674248,"longitude":-82.418615},{"latitude":29.674233,"longitude":-82.419265},{"latitude":29.674215,"longitude":-82.420078},{"latitude":29.674172,"longitude":-82.421023},{"latitude":29.67417,"longitude":-82.421041},{"latitude":29.674144,"longitude":-82.421525},{"latitude":29.674118,"longitude":-82.42213},{"latitude":29.674109,"longitude":-82.422262},{"latitude":29.67409,"longitude":-82.422564},{"latitude":29.674091,"longitude":-82.422754},{"latitude":29.67409,"longitude":-82.422816},{"latitude":29.674083,"longitude":-82.423091},{"latitude":29.674068,"longitude":-82.423502},{"latitude":29.674085,"longitude":-82.424289},{"latitude":29.674108,"longitude":-82.42461},{"latitude":29.674114,"longitude":-82.424952},{"latitude":29.674141,"longitude":-82.425419},{"latitude":29.674177,"longitude":-82.4258},{"latitude":29.674212,"longitude":-82.426725},{"latitude":29.674259,"longitude":-82.427455},{"latitude":29.674294,"longitude":-82.428482},{"latitude":29.674293,"longitude":-82.430031},{"latitude":29.674304,"longitude":-82.430354},{"latitude":29.674314,"longitude":-82.431393},{"latitude":29.674307,"longitude":-82.432091},{"latitude":29.674307,"longitude":-82.432548},{"latitude":29.673463,"longitude":-82.431726},{"latitude":29.67251,"longitude":-82.430798},{"latitude":29.6682,"longitude":-82.426605},{"latitude":29.664706,"longitude":-82.42339},{"latitude":29.664368,"longitude":-82.423103},{"latitude":29.659838,"longitude":-82.419248},{"latitude":29.659656,"longitude":-82.419093},{"latitude":29.659654,"longitude":-82.41976},{"latitude":29.659657,"longitude":-82.420036},{"latitude":29.659664,"longitude":-82.420516},{"latitude":29.659668,"longitude":-82.420757},{"latitude":29.659687,"longitude":-82.421575},{"latitude":29.659694,"longitude":-82.422084},{"latitude":29.659698,"longitude":-82.422373},{"latitude":29.658529,"longitude":-82.422389},{"latitude":29.658527,"longitude":-82.423453},{"latitude":29.659105,"longitude":-82.424168},{"latitude":29.659239,"longitude":-82.424085},{"latitude":29.659709,"longitude":-82.424076},{"latitude":29.659717,"longitude":-82.424704},{"latitude":29.65973,"longitude":-82.425765},{"latitude":29.659731,"longitude":-82.426204},{"latitude":29.659737,"longitude":-82.42777},{"latitude":29.65976,"longitude":-82.428106},{"latitude":29.659811,"longitude":-82.428569},{"latitude":29.660094,"longitude":-82.429754},{"latitude":29.660207,"longitude":-82.430196},{"latitude":29.660275,"longitude":-82.430588},{"latitude":29.660326,"longitude":-82.430981},{"latitude":29.660324,"longitude":-82.431521},{"latitude":29.660343,"longitude":-82.433577},{"latitude":29.660345,"longitude":-82.434333},{"latitude":29.660327,"longitude":-82.436342},{"latitude":29.66033,"longitude":-82.436754},{"latitude":29.66033,"longitude":-82.436844},{"latitude":29.660258,"longitude":-82.43811},{"latitude":29.660203,"longitude":-82.438937},{"latitude":29.66015,"longitude":-82.439525},{"latitude":29.660033,"longitude":-82.440638},{"latitude":29.659949,"longitude":-82.441488},{"latitude":29.659917,"longitude":-82.442251},{"latitude":29.659905,"longitude":-82.442592},{"latitude":29.65988,"longitude":-82.443381},{"latitude":29.659879,"longitude":-82.443585},{"latitude":29.659877,"longitude":-82.444552},{"latitude":29.659876,"longitude":-82.445552},{"latitude":29.659875,"longitude":-82.446603},{"latitude":29.659912,"longitude":-82.453247},{"latitude":29.659918,"longitude":-82.4538},{"latitude":29.659921,"longitude":-82.454962},{"latitude":29.659923,"longitude":-82.455858},{"latitude":29.65993,"longitude":-82.456642},{"latitude":29.659934,"longitude":-82.458383},{"latitude":29.659943,"longitude":-82.459945},{"latitude":29.659942,"longitude":-82.460922},{"latitude":29.659965,"longitude":-82.463128},{"latitude":29.659969,"longitude":-82.463489},{"latitude":29.659961,"longitude":-82.463732},{"latitude":29.659947,"longitude":-82.464161},{"latitude":29.659948,"longitude":-82.464204},{"latitude":29.659979,"longitude":-82.465139},{"latitude":29.659968,"longitude":-82.467777},{"latitude":29.65998,"longitude":-82.468713},{"latitude":29.659982,"longitude":-82.470503},{"latitude":29.65997,"longitude":-82.471067},{"latitude":29.659971,"longitude":-82.471318},{"latitude":29.659942,"longitude":-82.471598},{"latitude":29.659917,"longitude":-82.471782},{"latitude":29.659887,"longitude":-82.472012},{"latitude":29.659871,"longitude":-82.47211},{"latitude":29.659825,"longitude":-82.472384},{"latitude":29.659991,"longitude":-82.472413},{"latitude":29.660333,"longitude":-82.472426},{"latitude":29.66091,"longitude":-82.472436},{"latitude":29.661158,"longitude":-82.472428},{"latitude":29.661254,"longitude":-82.472434},{"latitude":29.661464,"longitude":-82.472416},{"latitude":29.66172,"longitude":-82.472414},{"latitude":29.661835,"longitude":-82.472406},{"latitude":29.662383,"longitude":-82.472411},{"latitude":29.662572,"longitude":-82.472421},{"latitude":29.66279,"longitude":-82.472414},{"latitude":29.662972,"longitude":-82.4724},{"latitude":29.663114,"longitude":-82.472394},{"latitude":29.663259,"longitude":-82.472373},{"latitude":29.663438,"longitude":-82.472358},{"latitude":29.663647,"longitude":-82.472333},{"latitude":29.663985,"longitude":-82.472339},{"latitude":29.66415,"longitude":-82.47235},{"latitude":29.664527,"longitude":-82.472405},{"latitude":29.664655,"longitude":-82.472445},{"latitude":29.664668,"longitude":-82.488956},{"latitude":29.664678,"longitude":-82.489981},{"latitude":29.664727,"longitude":-82.495293},{"latitude":29.664734,"longitude":-82.496027},{"latitude":29.664945,"longitude":-82.496023},{"latitude":29.666409,"longitude":-82.496029},{"latitude":29.668079,"longitude":-82.496007},{"latitude":29.668786,"longitude":-82.496006},{"latitude":29.670659,"longitude":-82.496002},{"latitude":29.671946,"longitude":-82.496009},{"latitude":29.672088,"longitude":-82.496004},{"latitude":29.672238,"longitude":-82.496003},{"latitude":29.672567,"longitude":-82.496002},{"latitude":29.674785,"longitude":-82.496002},{"latitude":29.675489,"longitude":-82.496001},{"latitude":29.677005,"longitude":-82.496035},{"latitude":29.67813,"longitude":-82.496022},{"latitude":29.678488,"longitude":-82.496018},{"latitude":29.679486,"longitude":-82.496007},{"latitude":29.680945,"longitude":-82.495991},{"latitude":29.68104,"longitude":-82.495991},{"latitude":29.682703,"longitude":-82.495991},{"latitude":29.682969,"longitude":-82.495991},{"latitude":29.686397,"longitude":-82.495989},{"latitude":29.686892,"longitude":-82.495985},{"latitude":29.688442,"longitude":-82.495974},{"latitude":29.689227,"longitude":-82.495985},{"latitude":29.690107,"longitude":-82.495999},{"latitude":29.691208,"longitude":-82.495985},{"latitude":29.692439,"longitude":-82.495984},{"latitude":29.694141,"longitude":-82.495995},{"latitude":29.694724,"longitude":-82.495995},{"latitude":29.694959,"longitude":-82.495991},{"latitude":29.695854,"longitude":-82.495979},{"latitude":29.696797,"longitude":-82.49598},{"latitude":29.697377,"longitude":-82.495981},{"latitude":29.697798,"longitude":-82.495982},{"latitude":29.698794,"longitude":-82.495992},{"latitude":29.699289,"longitude":-82.495992},{"latitude":29.699564,"longitude":-82.495992},{"latitude":29.700309,"longitude":-82.495979},{"latitude":29.701115,"longitude":-82.49599},{"latitude":29.701196,"longitude":-82.495991},{"latitude":29.70163,"longitude":-82.495982},{"latitude":29.702394,"longitude":-82.495982},{"latitude":29.704654,"longitude":-82.495977},{"latitude":29.706681,"longitude":-82.495973},{"latitude":29.706681,"longitude":-82.482689},{"latitude":29.703692,"longitude":-82.479652},{"latitude":29.697256,"longitude":-82.467959},{"latitude":29.699976,"longitude":-82.457045},{"latitude":29.699977,"longitude":-82.457046},{"latitude":29.700697,"longitude":-82.457548},{"latitude":29.701458,"longitude":-82.458048},{"latitude":29.702164,"longitude":-82.458485},{"latitude":29.702883,"longitude":-82.458906},{"latitude":29.703562,"longitude":-82.459271},{"latitude":29.708848,"longitude":-82.462114},{"latitude":29.713732,"longitude":-82.464697},{"latitude":29.716325,"longitude":-82.466092},{"latitude":29.716217,"longitude":-82.465768},{"latitude":29.716085,"longitude":-82.465374},{"latitude":29.715541,"longitude":-82.463789},{"latitude":29.71421,"longitude":-82.459736},{"latitude":29.712781,"longitude":-82.455421},{"latitude":29.712498,"longitude":-82.454581},{"latitude":29.712157,"longitude":-82.453568},{"latitude":29.711969,"longitude":-82.453082},{"latitude":29.711778,"longitude":-82.45252},{"latitude":29.711599,"longitude":-82.451953},{"latitude":29.711433,"longitude":-82.451381},{"latitude":29.711279,"longitude":-82.450804},{"latitude":29.711138,"longitude":-82.450223},{"latitude":29.711009,"longitude":-82.449638},{"latitude":29.71098,"longitude":-82.449496},{"latitude":29.703537,"longitude":-82.449506},{"latitude":29.702209,"longitude":-82.449324},{"latitude":29.702209,"longitude":-82.430575},{"latitude":29.702209,"longitude":-82.426366},{"latitude":29.700279,"longitude":-82.423483},{"latitude":29.70004,"longitude":-82.41893},{"latitude":29.698613,"longitude":-82.418516},{"latitude":29.695545,"longitude":-82.410969},{"latitude":29.696684,"longitude":-82.404678},{"latitude":29.699632,"longitude":-82.403477},{"latitude":29.699632,"longitude":-82.397301},{"latitude":29.699608,"longitude":-82.397186},{"latitude":29.697863,"longitude":-82.393454},{"latitude":29.703259,"longitude":-82.388888},{"latitude":29.703268,"longitude":-82.388606},{"latitude":29.703246,"longitude":-82.388111},{"latitude":29.703239,"longitude":-82.387244},{"latitude":29.703258,"longitude":-82.386828},{"latitude":29.70326,"longitude":-82.386801},{"latitude":29.70333,"longitude":-82.38607},{"latitude":29.703374,"longitude":-82.385372},{"latitude":29.703365,"longitude":-82.381897},{"latitude":29.696969,"longitude":-82.381897},{"latitude":29.695985,"longitude":-82.381436},{"latitude":29.691314,"longitude":-82.379463},{"latitude":29.688657,"longitude":-82.379463},{"latitude":29.688656,"longitude":-82.379109},{"latitude":29.685891,"longitude":-82.37904},{"latitude":29.684431,"longitude":-82.379038},{"latitude":29.684427,"longitude":-82.379798},{"latitude":29.683846,"longitude":-82.379761},{"latitude":29.683373,"longitude":-82.379654},{"latitude":29.682718,"longitude":-82.379478},{"latitude":29.681981,"longitude":-82.379334},{"latitude":29.681211,"longitude":-82.379107},{"latitude":29.680578,"longitude":-82.378957},{"latitude":29.680298,"longitude":-82.378812},{"latitude":29.680094,"longitude":-82.378686},{"latitude":29.679808,"longitude":-82.378403},{"latitude":29.679505,"longitude":-82.378037},{"latitude":29.679467,"longitude":-82.378031},{"latitude":29.679467,"longitude":-82.378258},{"latitude":29.679412,"longitude":-82.378649},{"latitude":29.67944,"longitude":-82.379423},{"latitude":29.679547,"longitude":-82.379897}]
-        
+
 #          #{"latitude":30.135078,"longitude": -82.303956},
 #         # latlang=[
-           
+
 #         #     30.528997, -85.884900,
 #         #     30.467823, -85.481728,
 #         #     30.177115, -85.285272,
@@ -680,9 +679,7 @@ import math
 #             self.save_hotels_to_db(hotels)
 
 #         return JsonResponse({'message': 'Hotels fetched and saved successfully'})
-            
 
-        
 
 #     def fetch_hotels_from_google(self, lat, lng):
 #         url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=lodging&key={settings.GOOGLE_API_KEY}"
@@ -690,7 +687,7 @@ import math
 #         results = response.json().get('results', [])
 
 #         hotels = []
-        
+
 #         for result in results:
 #             print("Icon : ",result.get('icon'),result['icon'])
 #             hotel = {
@@ -714,7 +711,7 @@ import math
 #                     'address': hotel['address'],
 #                     'latitude': hotel['latitude'],
 #                     'longitude': hotel['longitude'],
-#                     'icon': hotel.get('icon') 
+#                     'icon': hotel.get('icon')
 #                 }
 #             )
 # def getAllHotels(request):

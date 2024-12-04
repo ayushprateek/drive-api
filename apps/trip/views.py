@@ -1429,8 +1429,8 @@ def getItineraryViaPlan(request):
                 #     #             "description":plan.description,
                 #     #             "icon_url":plan.icon_url,
                 #     #             "images": [plan.place_id],
-                #     #             "latitude": plan.geometry.location.lat,
-                #     #             "longitude": plan.geometry.location.lng,
+                #     #             "latitude": plan.latitude,
+                #     #             "longitude": plan.longitude,
                 #     #              "rating": plan.rating,
                 #     #              "user_ratings_total": plan.user_ratings_total,
                 #     #        })
@@ -2292,8 +2292,10 @@ def getSites(request):
                 'place_id': site_instance.place_id,
                 'rating': site_instance.rating,
                 'user_ratings_total': site_instance.user_ratings_total,
-                'latitude': getattr(site_instance.geometry.location, 'lat', None),
-                'longitude': getattr(site_instance.geometry.location, 'lng', None),
+                # 'latitude': getattr(site_instance.geometry.location, 'lat', None),
+                # 'longitude': getattr(site_instance.geometry.location, 'lng', None),
+                'latitude': site_instance.latitude,
+                'longitude': site_instance.longitude,
                 'icon_url': category.icon_url if category else None,
                 'city_id': city_id,
                 'city_name': city.name if city else None,
@@ -3228,13 +3230,13 @@ def truncate_all_tables(request):
 def saveToDb(api_response, city, category):
     data = api_response
     logger.info("Saved Data Length = " + str(len(data['results'])))
-    
+
     # city = City.objects.filter(id=city.id).first()
     # city=City.objects.filter(id="2089800e-c9b1-439b-a20d-a480ae8d7419").first()
     # category = Category.objects.filter(id=category.id).first()
 
     for result in data['results']:
-        if not Site.objects.filter(place_id=result['place_id'],category_id=category.id).exists():
+        if not Site.objects.filter(place_id=result['place_id'], category_id=category.id).exists():
             location_data = result['geometry']['location']
             print("location_data = ", location_data['lat'])
             print("location_data = ", location_data['lng'])
@@ -3278,26 +3280,26 @@ def saveToDb(api_response, city, category):
             print("creatig site")
             try:
                 hotel = Site.objects.create(
-                business_status=result.get('business_status'),
-                # geometry=geometry,
-                icon=result.get('icon'),
-                icon_background_color=result['icon_background_color'],
-                icon_mask_base_uri=result['icon_mask_base_uri'],
-                name=result['name'],
-                open_now=result.get('opening_hours', {}).get('open_now', False),
-                place_id=result['place_id'],
-                # plus_code=plus_code,location_data['lng']
-                latitude=location_data['lat'],
-                longitude=location_data['lng'],
-                rating=result.get('rating'),
-                reference=result['reference'],
-                scope=result['scope'],
-                types=','.join(result['types']),
-                city=city,
-                category=category,
-                user_ratings_total=user_ratings_total,
-                vicinity=result.get('vicinity', {}) if result.get('vicinity', {}) is not None else 0
-            )
+                    business_status=result.get('business_status'),
+                    # geometry=geometry,
+                    icon=result.get('icon'),
+                    icon_background_color=result['icon_background_color'],
+                    icon_mask_base_uri=result['icon_mask_base_uri'],
+                    name=result['name'],
+                    open_now=result.get('opening_hours', {}).get('open_now', False),
+                    place_id=result['place_id'],
+                    # plus_code=plus_code,location_data['lng']
+                    latitude=location_data['lat'],
+                    longitude=location_data['lng'],
+                    rating=result.get('rating'),
+                    reference=result['reference'],
+                    scope=result['scope'],
+                    types=','.join(result['types']),
+                    city=city,
+                    category=category,
+                    user_ratings_total=user_ratings_total,
+                    vicinity=result.get('vicinity', {}) if result.get('vicinity', {}) is not None else 0
+                )
             except Exception as e:
                 print("exception = ", e)
             print("Site created")
@@ -3312,57 +3314,56 @@ def saveToDb(api_response, city, category):
                 hotel.photos.add(photo_obj)
 
             hotel.save()
-            print("Hotel ",hotel.id,'-->',hotel.name)
+            print("Hotel ", hotel.id, '-->', hotel.name)
         else:
             print("Hotel already exists")
 
 
-
 def fetchModels(request):
-    lat = request.GET.get('lat') 
-    lng = request.GET.get('lng') 
-    city_id = request.GET.get('city_id')  
+    lat = request.GET.get('lat')
+    lng = request.GET.get('lng')
+    city_id = request.GET.get('city_id')
     category_id = request.GET.get('category_id')
-    print("Id = ",city_id)
-    print("Id = ",category_id)
+    print("Id = ", city_id)
+    print("Id = ", category_id)
     try:
         if not City.objects.filter(id=city_id).exists():
             return JsonResponse({"error": "City does not exist"}, status=400)
     except Exception as e:
-        print("Exception e = ",e)
+        print("Exception e = ", e)
         return JsonResponse({"error": e}, status=400)
     try:
         if not Category.objects.filter(id=category_id).exists():
             return JsonResponse({"error": "Category does not exist"}, status=400)
     except Exception as e:
-        print("Exception e = ",e)
+        print("Exception e = ", e)
         return JsonResponse({"error": e}, status=400)
-    
-    city=City.objects.filter(id=city_id).first()
-    category=Category.objects.filter(id=category_id).first()
-    placesAPICall(lat,lng,city, category,'Historical Landmark')
+
+    city = City.objects.filter(id=city_id).first()
+    category = Category.objects.filter(id=category_id).first()
+    placesAPICall(lat, lng, city, category, 'Historical Landmark')
     return JsonResponse({'message': 'City and Category fetched and saved successfully'})
 
 
-def placesAPICall(lat,lng,city, category,type):
+def placesAPICall(lat, lng, city, category, type):
     url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}&keyword={type}"
     logger.info("Scraping API Called " + url)
     response = requests.get(url)
     print("Status code = ", response.status_code)
     if response.status_code == 200:
         data = response.json()
-        print("Next page = ", data['next_page_token'],data.get('next_page_token'))
+        print("Next page = ", data['next_page_token'], data.get('next_page_token'))
         print("Data = ", data)
         saveToDb(data, city, category)
         next_page_token = data.get('next_page_token')
-        print('Next token =   ',next_page_token)
+        print('Next token =   ', next_page_token)
         while next_page_token:
             newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next_page_token}&key={settings.GOOGLE_API_KEY}"
-            print("New url = ",newUrl)
+            print("New url = ", newUrl)
             logger.info("Next page Scraping API Called " + newUrl)
             res = requests.get(newUrl)
             newData = res.json()
-            print('Next Status code =   ',res.status_code)
+            print('Next Status code =   ', res.status_code)
             next_page_token = newData.get('next_page_token')
             if res.status_code == 200:
                 saveToDb(newData, city, category)
@@ -3375,6 +3376,8 @@ def placesAPICall(lat,lng,city, category,type):
 #     for site in siteList:
 #         site.updateLocationInSite()
 #     return JsonResponse({'message': 'Location Updated'})
+
+
 def saveHotel(request):
     cityList = City.objects.filter(scrape=True).all()
     categoryList = Category.objects.filter(scrape=True).all()
@@ -3401,25 +3404,25 @@ def saveHotel(request):
                             if response.status_code == 200:
                                 data = response.json()
                                 print("Data = ", data)
-                                if not Site.objects.filter(place_id=data.get('place_id'),category_id=category.id).exists():
+                                if not Site.objects.filter(place_id=data.get('place_id'), category_id=category.id).exists():
                                     print("Hotel does not exists")
                                     saveToDb(data, city, category)
-                                    print('Status code =   ',response.status_code)
+                                    print('Status code =   ', response.status_code)
                                     next_page_token = data.get('next_page_token')
-                                    print('Next token =   ',next_page_token)
+                                    print('Next token =   ', next_page_token)
                                     # todo: uncomment
                                     while next_page_token:
                                         newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken{next_page_token}&key={settings.GOOGLE_API_KEY}"
-                                        print("New url = ",newUrl)
+                                        print("New url = ", newUrl)
                                         logger.info("Scraping API Called " + newUrl)
                                         res = requests.get(newUrl)
-                                        print("Requested url = ",newUrl)
+                                        print("Requested url = ", newUrl)
                                         newData = res.json()
-                                        print('Next Status code =   ',res.status_code)
+                                        print('Next Status code =   ', res.status_code)
                                         next_page_token = newData.get('next_page_token')
-                                        print('2nd calling next page urlStatus =   ',res.status_code)
+                                        print('2nd calling next page urlStatus =   ', res.status_code)
                                         if res.status_code == 200:
-                                            if not Site.objects.filter(place_id=newData.get('place_id'),category_id=category.id).exists():
+                                            if not Site.objects.filter(place_id=newData.get('place_id'), category_id=category.id).exists():
                                                 saveToDb(newData, city, category)
                                         if not next_page_token:
                                             break
@@ -3441,8 +3444,8 @@ def fetch_latestHotels(request):
             "business_status": hotel.business_status,
             "geometry": {
                 "location": {
-                    "lat": hotel.geometry.location.lat,
-                    "lng": hotel.geometry.location.lng
+                    "lat": hotel.latitude,
+                    "lng": hotel.longitude
                 },
                 "viewport": {
                     "northeast": {
@@ -3582,14 +3585,14 @@ def get_coordinates_along_polyline(request):
     if only_hotels:
         data = Site.objects.annotate(icon_url=F('category__icon_url'))
         for plan in data:
-            point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
-            condition = is_distance_one(plan.geometry.location.lat, plan.geometry.location.lng, decoded_points, threshold_distance)
+            point = Point(plan.longitude, plan.latitude)
+            condition = is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance)
 
             if format == 'map':
-                condition = is_distance_one(plan.geometry.location.lat, plan.geometry.location.lng,
+                condition = is_distance_one(plan.latitude, plan.longitude,
                                             decoded_points, threshold_distance) and bounding_box.contains(point)
             else:
-                condition = is_distance_one(plan.geometry.location.lat, plan.geometry.location.lng, decoded_points, threshold_distance)
+                condition = is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance)
 
             if condition:
                 plans.append({
@@ -3599,8 +3602,8 @@ def get_coordinates_along_polyline(request):
                     "icon_url": plan.icon_url,
                     "place_id": plan.place_id,
                     "images": [plan.place_id],
-                    "latitude": plan.geometry.location.lat,
-                    "longitude": plan.geometry.location.lng,
+                    "latitude": plan.latitude,
+                    "longitude": plan.longitude,
                     "rating": plan.rating,
                     "user_ratings_total": plan.user_ratings_total,
                     "is_hotel": True
@@ -3612,10 +3615,10 @@ def get_coordinates_along_polyline(request):
             if Site.objects.filter(category_id=category).exists():
                 data = Site.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
                 for plan in data:
-                    point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
+                    point = Point(plan.longitude, plan.latitude)
                     # print('Hotel point')
 
-                    if is_distance_one(plan.geometry.location.lat, plan.geometry.location.lng, decoded_points, threshold_distance) and bounding_box.contains(point):
+                    if is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance) and bounding_box.contains(point):
                         plans.append({
                             "id": plan.id,
                             "place_id": plan.place_id,
@@ -3623,8 +3626,8 @@ def get_coordinates_along_polyline(request):
                             "description": plan.description,
                             "icon_url": plan.icon_url,
                             "images": [plan.place_id],
-                            "latitude": plan.geometry.location.lat,
-                            "longitude": plan.geometry.location.lng,
+                            "latitude": plan.latitude,
+                            "longitude": plan.longitude,
                             "rating": plan.rating,
                             "user_ratings_total": plan.user_ratings_total,
                             "is_hotel": True
@@ -3675,15 +3678,15 @@ def getSitesNearMe(request):
     if only_hotels:
         data = Site.objects.annotate(icon_url=F('category__icon_url'))
         for plan in data:
-            point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
+            point = Point(plan.geometry.location.ln, plan.latitude)
 
-            condition = haversine(lat1=lat1, lon1=lon1, lat2=plan.geometry.location.lat, lon2=plan.geometry.location.lng) < radius
+            condition = haversine(lat1=lat1, lon1=lon1, lat2=plan.latitude, lon2=plan.longitude) < radius
 
             if format == 'map':
-                condition = haversine(lat1=lat1, lon1=lon1, lat2=plan.geometry.location.lat,
-                                      lon2=plan.geometry.location.lng) < radius and bounding_box.contains(point)
+                condition = haversine(lat1=lat1, lon1=lon1, lat2=plan.latitude,
+                                      lon2=plan.longitude) < radius and bounding_box.contains(point)
             else:
-                condition = haversine(lat1=lat1, lon1=lon1, lat2=plan.geometry.location.lat, lon2=plan.geometry.location.lng) < radius
+                condition = haversine(lat1=lat1, lon1=lon1, lat2=plan.latitude, lon2=plan.longitude) < radius
 
             if condition:
                 plans.append({
@@ -3692,8 +3695,8 @@ def getSitesNearMe(request):
                     "description": plan.description,
                     "icon_url": plan.icon_url,
                     "images": [plan.place_id],
-                    "latitude": plan.geometry.location.lat,
-                    "longitude": plan.geometry.location.lng,
+                    "latitude": plan.latitude,
+                    "longitude": plan.longitude,
                     "rating": plan.rating,
                     "user_ratings_total": plan.user_ratings_total,
                 })
@@ -3705,17 +3708,17 @@ def getSitesNearMe(request):
             if Site.objects.filter(category_id=category).exists():
                 data = Site.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
                 for plan in data:
-                    point = Point(plan.geometry.location.lng, plan.geometry.location.lat)
+                    point = Point(plan.longitude, plan.latitude)
 
-                    if haversine(lat1=lat1, lon1=lon1, lat2=plan.geometry.location.lat, lon2=plan.geometry.location.lng) < radius and bounding_box.contains(point):
+                    if haversine(lat1=lat1, lon1=lon1, lat2=plan.latitude, lon2=plan.longitude) < radius and bounding_box.contains(point):
                         plans.append({
                             "id": plan.id,
                             "name": plan.name,
                             "description": plan.description,
                             "icon_url": plan.icon_url,
                             "images": [plan.place_id],
-                            "latitude": plan.geometry.location.lat,
-                            "longitude": plan.geometry.location.lng,
+                            "latitude": plan.latitude,
+                            "longitude": plan.longitude,
                             "rating": plan.rating,
                             "user_ratings_total": plan.user_ratings_total,
                         })
