@@ -395,7 +395,7 @@ class UserEmailLoginAPIView(generics.GenericAPIView):
                 )
         except Exception as ex:
             # ex = "You're logged out."
-            return Response(f'{ex}', status.HTTP_200_OK)
+            return Response(f'{ex}', status.HTTP_401_UNAUTHORIZED)
 
 
 class UserLogoutAPIView(views.APIView):

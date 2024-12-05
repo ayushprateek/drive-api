@@ -65,6 +65,7 @@ class ApplicationMessages:
     # USER Login and Signup
     USER_CREATED = "Account Created Successfully"
     USER_NOT_EXISTS = "User Does Not Exist"
+    USER_NOT_EXISTS_SIGNUP = "User not Found. Please Signup if you are a new user"
     USER_N_EMAIL_EXISTS = "User with this Email Does not Exist"
     USER_NOT_ACTIVE = "User is not Active!"
     DOES_NOT_EXISTS = "{} not exists"

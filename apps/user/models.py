@@ -59,7 +59,7 @@ class BaseModel(models.Model):
         try:
             return cls.objects.get(**query)
         except Exception as err:
-            raise ValidationError(str(err), status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(str(ApplicationMessages.USER_NOT_EXISTS_SIGNUP), status.HTTP_400_BAD_REQUEST)
 
     @classmethod
     def get_instance_or_none(cls, query):

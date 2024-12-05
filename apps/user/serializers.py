@@ -55,14 +55,14 @@ class GetMediaSerializer(serializers.Serializer):
         """take id and return the s3 url"""
         return cloud_service.convert_image_id_to_s3_signed_url(self.initial_data.get("id"))
 
+
 class SendEmailOTPSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    
 
     def create(self, data):
         """create and mail the token to the user"""
-        print('SendEmailOTPSerializer called',data)
-        print("Email = ",data.get("email"))
+        print('SendEmailOTPSerializer called', data)
+        print("Email = ", data.get("email"))
         verification_code = utils.generate_verification_code(6)
         data = {
             "email": data.get("email"),
@@ -71,11 +71,11 @@ class SendEmailOTPSerializer(serializers.Serializer):
         }
         instance = user_models.UserSignupVerification.create_signup_verification(data)
         mail.SignupOTP(
-                {
-                    "verification_code": instance.verification_code,
-                    "email": instance.email
-                }
-            )
+            {
+                "verification_code": instance.verification_code,
+                "email": instance.email
+            }
+        )
         # if data:
         #     print('data exists')
         #     instance = user_models.UserVerification.create_reset_password_verification(data)
@@ -87,9 +87,10 @@ class SendEmailOTPSerializer(serializers.Serializer):
         #     )
         # else:
         #     raise ValidationError(ApplicationMessages.BAD_REQUEST)
-        
+
         return data
-    
+
+
 class UserSignUpSerializer(serializers.ModelSerializer):
     """Customer profile serializer"""
     profile_pic = serializers.PrimaryKeyRelatedField(queryset=user_models.Media.objects.all(), required=False)
@@ -275,7 +276,7 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = user_models.User
-        fields = ("email", "first_name", "last_name", "gender", "dob", "profile_pic",'meta_data')
+        fields = ("email", "first_name", "last_name", "gender", "dob", "profile_pic", 'meta_data')
 
     def update(self, instance, validated_data):
         """Update User Profile"""
@@ -306,6 +307,7 @@ class UserProfileGetSerializer(serializers.ModelSerializer):
             # s3_url = cloud_service.convert_s3_key_to_s3_signed_url(obj.profile_pic.media_key)
             return obj.profile_pic.media_url
         return image_url
+
     def get_profile_pic(self, obj):
         """take id and return the s3 url"""
         image_url = None
