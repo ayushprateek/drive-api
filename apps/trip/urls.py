@@ -21,7 +21,7 @@ urlpatterns = [
     path('get-hotels-along-route/', get_coordinates_along_polyline),
     # todo: uncomment
     path('temp-save-hotel/', saveHotel),
-    path('fetch_latestHotels/', fetch_latestHotels),
+    # path('fetch_latestHotels/', fetch_latestHotels),
     path('truncate_all_tables/', truncate_all_tables),
     path('printRoot/', printRoot),
     path('city-scrape/', cityScrape),
