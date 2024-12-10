@@ -139,24 +139,24 @@ CORS_ALLOW_METHODS = (
 
 DATABASES = {
     # localhost
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'drive_dev_rds',
-        'USER': 'postgres',
-        'PASSWORD': 'Ayush@123',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-
-    # Server
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'drive_dev',
-    #     'USER': 'drive',
-    #     'PASSWORD': 'drive#2024',
-    #     'HOST': 'drive-dev.cv6ymyemiw54.us-east-1.rds.amazonaws.com',
+    #     'NAME': 'drive_dev_rds',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'Ayush@123',
+    #     'HOST': 'localhost',
     #     'PORT': '5432',
     # }
+
+    # Server
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'drive_dev',
+        'USER': 'drive',
+        'PASSWORD': 'drive#2024',
+        'HOST': 'drive-dev.cv6ymyemiw54.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',
+    }
 }
 
 # Password validation

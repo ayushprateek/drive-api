@@ -5,13 +5,14 @@ from shapely.geometry import Point, LineString, box
 import json
 import time
 from django.db import connection
+import environ
 from django.conf import settings
 from .models import *
 import requests
 from django.views import View
 from django.http import JsonResponse
 from django.shortcuts import render
-from drive_ai.settings import GOOGLE_API_KEY
+from drive_ai.settings import GOOGLE_API_KEY, ROOT_DIR
 from apps.trip import (
     serializers as trip_serializer,
     models as trip_models,
@@ -2244,10 +2245,10 @@ def getTripPlan(request):
 
 
 @api_view(['DELETE'])
-def deletePlan(request,id=None):
-    
+def deletePlan(request, id=None):
+
     try:
-        
+
         if not Plan.objects.filter(id=id).exists():
             return JsonResponse({'message': 'Plan does not exist'}, safe=False, status=status.  HTTP_404_NOT_FOUND)
         if UserLikesSite.objects.filter(plan_id=id).exists():
@@ -2259,10 +2260,9 @@ def deletePlan(request,id=None):
         Plan.objects.filter(id=id).delete()
     except Exception as e:
         return JsonResponse({'Error': str(e)})
-        
-        
+
     return JsonResponse({'message': 'Trip plan delete successfully'})
-    
+
 
 @api_view(['GET'])
 def getTripViaId(request, id=None):
@@ -2325,6 +2325,39 @@ def getSites(request):
             plans_list.append(site)
 
         return paginator.get_paginated_response(plans_list)
+
+    except ObjectDoesNotExist:
+        return Response({"error": "Data not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def getAd(request):
+    try:
+        env = environ.Env()
+        environ.Env.read_env(env_file=ROOT_DIR('.env'))
+        catgeory_id=env('AD_CATEGORY_ID')
+        print('catgeory_id = ',catgeory_id)
+        category=Category.objects.filter(id=catgeory_id).first()
+        site_instance = Site.objects.filter(ad_status=1,category=category).order_by('?').first()
+        if site_instance:
+            site = {
+                'id': site_instance.id,
+                'name': site_instance.name,
+                'description': site_instance.description,
+                'place_id': site_instance.place_id,
+                'rating': site_instance.rating,
+                'user_ratings_total': site_instance.user_ratings_total,
+                'latitude': site_instance.latitude,
+                'longitude': site_instance.longitude,
+                'icon_url': site_instance.category.icon_url if site_instance.category else None,
+                'city_id': site_instance.city.id,
+                'city_name': site_instance.city.name if site_instance.city else None,
+                'photo_reference': site_instance.photos.values_list('photo_reference', flat=True).first(),
+            }
+            return JsonResponse({"results": site})
+        return JsonResponse({"results": None}, status=status.HTTP_204_NO_CONTENT)
 
     except ObjectDoesNotExist:
         return Response({"error": "Data not found"}, status=status.HTTP_404_NOT_FOUND)
