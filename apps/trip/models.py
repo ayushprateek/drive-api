@@ -450,6 +450,7 @@ class Site(BaseModel):
     policies, reviews, geographical data, images, and other related metadata.
     """
     place_id = models.CharField(max_length=500, null=True)  # Removed unique=True
+    ad_status = models.IntegerField(default=0)  # Removed unique=True
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     name = models.TextField(null=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, related_name="city", null=True)
