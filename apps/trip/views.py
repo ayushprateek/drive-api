@@ -2243,6 +2243,27 @@ def getTripPlan(request):
     return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
 
 
+@api_view(['DELETE'])
+def deletePlan(request,id=None):
+    
+    try:
+        
+        if not Plan.objects.filter(id=id).exists():
+            return JsonResponse({'message': 'Plan does not exist'}, safe=False, status=status.  HTTP_404_NOT_FOUND)
+        if UserLikesSite.objects.filter(plan_id=id).exists():
+            UserLikesSite.objects.filter(plan_id=id).delete()
+            # todo: delete UserLikes if no records in UserLikesSite exists for thisuser
+        if ItinerarySite.objects.filter(plan_id=id).exists():
+            ItinerarySite.objects.filter(plan_id=id).delete()
+            # todo: delete Itinerary if no records in ItinerarySite exists for thisuser
+        Plan.objects.filter(id=id).delete()
+    except Exception as e:
+        return JsonResponse({'Error': str(e)})
+        
+        
+    return JsonResponse({'message': 'Trip plan delete successfully'})
+    
+
 @api_view(['GET'])
 def getTripViaId(request, id=None):
 
