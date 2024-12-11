@@ -2337,10 +2337,10 @@ def getAd(request):
     try:
         env = environ.Env()
         environ.Env.read_env(env_file=ROOT_DIR('.env'))
-        catgeory_id=env('AD_CATEGORY_ID')
-        print('catgeory_id = ',catgeory_id)
-        category=Category.objects.filter(id=catgeory_id).first()
-        site_instance = Site.objects.filter(ad_status=1,category=category).order_by('?').first()
+        catgeory_id = env('AD_CATEGORY_ID')
+        print('catgeory_id = ', catgeory_id)
+        category = Category.objects.filter(id=catgeory_id).first()
+        site_instance = Site.objects.filter(ad_status=1, category=category).order_by('?').first()
         if site_instance:
             site = {
                 'id': site_instance.id,
@@ -3281,7 +3281,7 @@ def truncate_all_tables(request):
         return JsonResponse([], safe=False)
 
 
-def saveToDb(api_response, city, category):
+def saveToDb(api_response, city, category, type):
     data = api_response
     logger.info("Saved Data Length = " + str(len(data['results'])))
 
@@ -3350,6 +3350,7 @@ def saveToDb(api_response, city, category):
                     scope=result['scope'],
                     types=','.join(result['types']),
                     city=city,
+                    keyword=type,
                     category=category,
                     user_ratings_total=user_ratings_total,
                     vicinity=result.get('vicinity', {}) if result.get('vicinity', {}) is not None else 0
@@ -3450,7 +3451,9 @@ def saveHotel(request):
                             lng = latlang['longitude']
                             print(f"Latitude: {lat}, Longitude: {lng}")
                             # "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=25.792277, -80.225343& radius=50000&        type=Jacksonville&key=AIzaSyAgqQFWfvoWJgCQMdETHj_kq63t6PRg0ks"
-                            url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}"
+                            # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}"
+
+                            url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&key={settings.GOOGLE_API_KEY}&keyword={type}&radius=10000"
 
                             logger.info("Scraping API Called " + url)
                             response = requests.get(url)
@@ -3460,7 +3463,7 @@ def saveHotel(request):
                                 print("Data = ", data)
                                 if not Site.objects.filter(place_id=data.get('place_id'), category_id=category.id).exists():
                                     print("Hotel does not exists")
-                                    saveToDb(data, city, category)
+                                    saveToDb(data, city, category, type)
                                     print('Status code =   ', response.status_code)
                                     next_page_token = data.get('next_page_token')
                                     print('Next token =   ', next_page_token)
@@ -3477,7 +3480,7 @@ def saveHotel(request):
                                         print('2nd calling next page urlStatus =   ', res.status_code)
                                         if res.status_code == 200:
                                             if not Site.objects.filter(place_id=newData.get('place_id'), category_id=category.id).exists():
-                                                saveToDb(newData, city, category)
+                                                saveToDb(newData, city, category, type)
                                         if not next_page_token:
                                             break
                                 else:
