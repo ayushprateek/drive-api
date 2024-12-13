@@ -2730,6 +2730,7 @@ def getUserAssignedToPlan(request):
 @api_view(['POST'])
 def getLikedSitesViaPlan(request):
     data = json.loads(request.body)
+    print("Called")
     plan_id = data['plan_id']
     selectedCity = data['selected_cities']
     selectedCategory = data['selected_categories']
@@ -2750,17 +2751,18 @@ def getLikedSitesViaPlan(request):
     # userLikesExtremeSport = UserLikesExtremeSport.objects.filter(plan_id=plan_id).all().values('extremesport_id', 'id')
     # userLikesWeirdAndWacky = UserLikesWeirdAndWacky.objects.filter(plan_id=plan_id).all().values('weirdandwacky_id', 'id')
     # userLikesAttraction = UserLikesAttraction.objects.filter(plan_id=plan_id).all().values('attraction_id', 'id')
+    print("Length = ",len(userLikesSite))
 
     if userLikesSite:
-        userLikesSiteData = userLikesSite[0]
-        if Site.objects.filter(id=userLikesSiteData['site_id'],show=True).exists():
-            if selectedCity:
-                fetch = Site.objects.filter(id=userLikesSiteData['site_id'],show=True).filter(city_id__in=selectedCity)
-            else:
-                fetch = Site.objects.filter(id=userLikesSiteData['site_id'],show=True)
-            if selectedCategory:
-                fetch = fetch.filter(category_id__in=selectedCategory)
-            plans = fetch.all().values(
+        for userLikesSiteData in userLikesSite:
+            if Site.objects.filter(id=userLikesSiteData['site_id'],show=True).exists():
+                if selectedCity:
+                    fetch = Site.objects.filter(id=userLikesSiteData['site_id'],show=True).filter(city_id__in=selectedCity)
+                else:
+                    fetch = Site.objects.filter(id=userLikesSiteData['site_id'],show=True)
+                if selectedCategory:
+                    fetch = fetch.filter(category_id__in=selectedCategory)
+                plans = fetch.all().values(
                 'id', 'name',
                 'description', 'images',
                 'city_id',
@@ -2772,26 +2774,26 @@ def getLikedSitesViaPlan(request):
                 'city_name',
                 'place_id'
             )
-            imageList = []
-            userList = UserLikesSite.objects.filter(plan_id=plan_id).all()\
+                imageList = []
+                userList = UserLikesSite.objects.filter(plan_id=plan_id).all()\
                 .values('site_id', 'id', 'userlikes_id')\
                 .annotate(user_id=F('userlikes__user_id'))\
                 .values('site_id', 'id', 'userlikes_id', 'user_id')
 
-            for users in userList:
-                profile_pic = user_models.User.objects.filter(id=users['user_id']).\
+                for users in userList:
+                    profile_pic = user_models.User.objects.filter(id=users['user_id']).\
                     values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
-                for pic in profile_pic:
-                    imageList.append({
+                    for pic in profile_pic:
+                        imageList.append({
                         "profile_pic_id": pic['profile_pic_id'],
                         "profile_picture": pic['profile_picture'],
                     })
                 # #print('profile_pic = ',profile_pic)
 
-            for plan in plans:
-                plan['user_count'] = len(userLikesSite)
-                plan['users'] = list(imageList)
-                siteList.append(plan)
+                for plan in plans:
+                    plan['user_count'] = len(userLikesSite)
+                    plan['users'] = list(imageList)
+                    siteList.append(plan)
 
     # if userLikesEvent:
     #     userLikesEventData = userLikesEvent[0]
