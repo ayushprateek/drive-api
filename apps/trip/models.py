@@ -485,6 +485,7 @@ class Site(BaseModel):
     keyword = models.CharField(max_length=255,null=True)  # Keyword using which this site is scraped
     vicinity = models.CharField(max_length=255, null=True)
     photos = models.ManyToManyField(Photo)
+    show = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Site"

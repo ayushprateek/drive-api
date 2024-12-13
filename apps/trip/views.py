@@ -63,6 +63,7 @@ from django.db.models import F, Q
 from django.db.models.functions import Coalesce
 import logging
 from rest_framework.pagination import PageNumberPagination
+import openai
 
 # Get the logger instance
 logger = logging.getLogger('django.request')
@@ -1052,7 +1053,7 @@ def saveToItinerary(request):
 
     for planId in planIds:
         planModel = Plan.objects.filter(id=planId).first()
-        if Site.objects.filter(id=data['place_id']).exists():
+        if Site.objects.filter(id=data['place_id'],show=True).exists():
 
             site = Site.objects.get(id=data['place_id'])
 
@@ -1222,11 +1223,11 @@ def getItineraryViaPlan(request):
 
     if itinerarySite:
         for itinerarySiteData in itinerarySite:
-            if Site.objects.filter(id=itinerarySiteData['site_id']).exists():
+            if Site.objects.filter(id=itinerarySiteData['site_id'],show=True).exists():
                 if selectedCity:
-                    fetch = Site.objects.filter(id=itinerarySiteData['site_id']).   filter(city_id__in=selectedCity)
+                    fetch = Site.objects.filter(id=itinerarySiteData['site_id'],show=True).filter(city_id__in=selectedCity)
                 else:
-                    fetch = Site.objects.filter(id=itinerarySiteData['site_id'])
+                    fetch = Site.objects.filter(id=itinerarySiteData['site_id'],show=True)
                 if selectedCategory:
                     fetch = fetch.filter(category_id__in=selectedCategory)
                 plans = fetch.all().values(
@@ -1657,8 +1658,8 @@ def getItineraryFilter(request):
 
     if itinerarySite:
         itinerarySiteData = itinerarySite[0]
-        if Site.objects.filter(id=itinerarySiteData['site_id']).exists():
-            plans = Site.objects.filter(id=itinerarySiteData['site_id']).all().values(
+        if Site.objects.filter(id=itinerarySiteData['site_id'],show=True).exists():
+            plans = Site.objects.filter(id=itinerarySiteData['site_id'],show=True).all().values(
                 'city_id',
                 'category_id'
             ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
@@ -1873,8 +1874,8 @@ def likePlace(request):
     else:
         user_likes = UserLikes.objects.create(user=userdata)
 
-    if Site.objects.filter(id=data['like_id']).exists():
-        site = Site.objects.get(id=data['like_id'])
+    if Site.objects.filter(id=data['like_id'],show=True).exists():
+        site = Site.objects.get(id=data['like_id'],show=True)
         UserLikesSite.objects.create(
             userlikes=user_likes,
             site=site,
@@ -2298,7 +2299,7 @@ def getSites(request):
         city = City.objects.filter(id=city_id).first()
 
         # Fetch the filtered Site objects
-        sites = Site.objects.filter(city_id=city_id, category_id=category_id)
+        sites = Site.objects.filter(city_id=city_id, category_id=category_id,show=True)
 
         # Apply pagination
         paginator = CustomPagination()
@@ -2340,7 +2341,7 @@ def getAd(request):
         catgeory_id = env('AD_CATEGORY_ID')
         print('catgeory_id = ', catgeory_id)
         category = Category.objects.filter(id=catgeory_id).first()
-        site_instance = Site.objects.filter(ad_status=1, category=category).order_by('?').first()
+        site_instance = Site.objects.filter(ad_status=1, category=category,show=True).order_by('?').first()
         if site_instance:
             site = {
                 'id': site_instance.id,
@@ -2381,7 +2382,7 @@ def getAd(request):
 @api_view(['POST'])
 def getHotelSites(request):
     data = json.loads(request.body)
-    plans = Site.objects.filter(city_id=data['city_id']).all().values(
+    plans = Site.objects.filter(city_id=data['city_id'],show=True).all().values(
         'id', 'name',
         'description', 'images',
     )
@@ -2498,8 +2499,8 @@ def getTripFilter(request):
 
     if userLikesSite:
         userLikesiteData = userLikesSite[0]
-        if Site.objects.filter(id=userLikesiteData['site_id']).exists():
-            plans = Site.objects.filter(id=userLikesiteData['site_id']).all().values(
+        if Site.objects.filter(id=userLikesiteData['site_id'],show=True).exists():
+            plans = Site.objects.filter(id=userLikesiteData['site_id'],show=True).all().values(
                 'city_id',
                 'category_id'
             ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
@@ -2752,11 +2753,11 @@ def getLikedSitesViaPlan(request):
 
     if userLikesSite:
         userLikesSiteData = userLikesSite[0]
-        if Site.objects.filter(id=userLikesSiteData['site_id']).exists():
+        if Site.objects.filter(id=userLikesSiteData['site_id'],show=True).exists():
             if selectedCity:
-                fetch = Site.objects.filter(id=userLikesSiteData['site_id']).filter(city_id__in=selectedCity)
+                fetch = Site.objects.filter(id=userLikesSiteData['site_id'],show=True).filter(city_id__in=selectedCity)
             else:
-                fetch = Site.objects.filter(id=userLikesSiteData['site_id'])
+                fetch = Site.objects.filter(id=userLikesSiteData['site_id'],show=True)
             if selectedCategory:
                 fetch = fetch.filter(category_id__in=selectedCategory)
             plans = fetch.all().values(
@@ -3261,7 +3262,7 @@ class ScrapeHotelsView(View):
 
 def getAllHotels(request):
     logger.info("Hii This is test message")
-    results = Site.objects.all().values('id', 'place_id', 'name', 'address', 'rating', 'latitude', 'longitude', 'icon')
+    results = Site.objects.filter(show=True).values('id', 'place_id', 'name', 'address', 'rating', 'latitude', 'longitude', 'icon')
     customers = []
     # print('Result')
     # print(len(results))
@@ -3351,6 +3352,7 @@ def saveToDb(api_response, city, category, type):
                     types=','.join(result['types']),
                     city=city,
                     keyword=type,
+                    show=True,
                     category=category,
                     user_ratings_total=user_ratings_total,
                     vicinity=result.get('vicinity', {}) if result.get('vicinity', {}) is not None else 0
@@ -3431,8 +3433,52 @@ def placesAPICall(lat, lng, city, category, type):
 #     for site in siteList:
 #         site.updateLocationInSite()
 #     return JsonResponse({'message': 'Location Updated'})
+openai.api_key = settings.GPT_SECRET_KEY
+def get_place_description(request):
+    
+    """
+    Fetches a description of a place using ChatGPT API.
 
+    Args:
+        place_name (str): Name of the place.
+        address (str): Address of the place.
 
+    Returns:
+        str: A description of the place or an error message.
+    """
+    # miami
+    site_list = Site.objects.filter(city_id='d2818443-da0b-4304-9351-11539df28735').all()
+    descriptionList=[]
+    try:
+        # Construct the prompt for ChatGPT
+        for site in site_list:
+            print("name = ",site.name)
+            prompt = (
+                f"Provide a detailed and engaging description of the place called '{site.name}' "
+                f"located at '{site.vicinity}'. Include notable details if available."
+            )
+
+            # Call the OpenAI API
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that provides descriptions of places. The user is considering to visit a place and is looking forward to get more information for the destination which will help them make a decision."},
+                    {"role": "user", "content": prompt}
+                ]
+            )
+
+            # Extract and return the response content
+            site.description = response['choices'][0]['message']['content'].strip()
+            site.save()
+            # descriptionList.append({
+            #     "id":site.id,
+            #     "name":site.name,
+            #     "description":site.description,
+            # })
+        return JsonResponse({'message':'Site description saved successfully'})
+
+    except Exception as e:
+        return f"An error occurred while fetching the description: {e}"
 def saveHotel(request):
     cityList = City.objects.filter(scrape=True).all()
     categoryList = Category.objects.filter(scrape=True).all()
@@ -3469,7 +3515,7 @@ def saveHotel(request):
                                     print('Next token =   ', next_page_token)
                                     # todo: uncomment
                                     while next_page_token:
-                                        newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken{next_page_token}&key={settings.GOOGLE_API_KEY}"
+                                        newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next_page_token}&key={settings.GOOGLE_API_KEY}"
                                         print("New url = ", newUrl)
                                         logger.info("Scraping API Called " + newUrl)
                                         res = requests.get(newUrl)
@@ -3493,7 +3539,7 @@ def saveHotel(request):
 
 
 def fetch_latestHotels(request):
-    hotels = Site.objects.all()
+    hotels = Site.objects.filter(show=True).all()
     results = []
 
     for hotel in hotels:
@@ -3640,7 +3686,7 @@ def get_coordinates_along_polyline(request):
                 plans.append(plan)
 
     if only_hotels:
-        data = Site.objects.annotate(icon_url=F('category__icon_url'))
+        data = Site.objects.filter(show=True).annotate(icon_url=F('category__icon_url'))
         for plan in data:
             point = Point(plan.longitude, plan.latitude)
             condition = is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance)
@@ -3669,8 +3715,8 @@ def get_coordinates_along_polyline(request):
 
         for category in category_list:
             print("category = ", category)
-            if Site.objects.filter(category_id=category).exists():
-                data = Site.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
+            if Site.objects.filter(category_id=category,show=True).exists():
+                data = Site.objects.filter(category_id=category,show=True).annotate(icon_url=F('category__icon_url'))
                 for plan in data:
                     point = Point(plan.longitude, plan.latitude)
                     # print('Hotel point')
@@ -3690,7 +3736,7 @@ def get_coordinates_along_polyline(request):
                             "is_hotel": True
                         })
             else:
-                queryset = Site.objects.filter(category_id=category).annotate(
+                queryset = Site.objects.filter(category_id=category,show=True).annotate(
                     icon_url=F('category__icon_url')
                 ).values(
                     'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url', 'place_id'
@@ -3733,7 +3779,7 @@ def getSitesNearMe(request):
                 plans.append(plan)
 
     if only_hotels:
-        data = Site.objects.annotate(icon_url=F('category__icon_url'))
+        data = Site.objects.annotate(icon_url=F('category__icon_url'),show=True)
         for plan in data:
             point = Point(plan.longitude, plan.latitude)
 
@@ -3762,8 +3808,8 @@ def getSitesNearMe(request):
         model_list = [Site]
 
         for category in category_list:
-            if Site.objects.filter(category_id=category).exists():
-                data = Site.objects.filter(category_id=category).annotate(icon_url=F('category__icon_url'))
+            if Site.objects.filter(category_id=category,show=True).exists():
+                data = Site.objects.filter(category_id=category,show=True).annotate(icon_url=F('category__icon_url'))
                 for plan in data:
                     point = Point(plan.longitude, plan.latitude)
 
