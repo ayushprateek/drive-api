@@ -3446,14 +3446,14 @@ def saveHotel(request):
                 print(latlang['longitude'])
                 for category in categoryList:
                     if category.keywords:
-                        for type in category.keywords:
+                        for keyword in category.keywords:
                             lat = latlang['latitude']
                             lng = latlang['longitude']
                             print(f"Latitude: {lat}, Longitude: {lng}")
                             # "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=25.792277, -80.225343& radius=50000&        type=Jacksonville&key=AIzaSyAgqQFWfvoWJgCQMdETHj_kq63t6PRg0ks"
                             # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&rankby=distance&type={type}&key={settings.GOOGLE_API_KEY}"
 
-                            url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&key={settings.GOOGLE_API_KEY}&keyword={type}&radius=10000"
+                            url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&key={settings.GOOGLE_API_KEY}&keyword={keyword}&radius=10000"
 
                             logger.info("Scraping API Called " + url)
                             response = requests.get(url)
@@ -3463,7 +3463,7 @@ def saveHotel(request):
                                 print("Data = ", data)
                                 if not Site.objects.filter(place_id=data.get('place_id'), category_id=category.id).exists():
                                     print("Hotel does not exists")
-                                    saveToDb(data, city, category, type)
+                                    saveToDb(data, city, category, keyword)
                                     print('Status code =   ', response.status_code)
                                     next_page_token = data.get('next_page_token')
                                     print('Next token =   ', next_page_token)
@@ -3480,7 +3480,7 @@ def saveHotel(request):
                                         print('2nd calling next page urlStatus =   ', res.status_code)
                                         if res.status_code == 200:
                                             if not Site.objects.filter(place_id=newData.get('place_id'), category_id=category.id).exists():
-                                                saveToDb(newData, city, category, type)
+                                                saveToDb(newData, city, category, keyword)
                                         if not next_page_token:
                                             break
                                 else:
