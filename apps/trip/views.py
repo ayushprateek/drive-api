@@ -2346,6 +2346,7 @@ def getAd(request):
             site = {
                 'id': site_instance.id,
                 'name': site_instance.name,
+                'facility': site_instance.facility,
                 'description': site_instance.description,
                 'place_id': site_instance.place_id,
                 'rating': site_instance.rating,

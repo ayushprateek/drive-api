@@ -481,6 +481,7 @@ class Site(BaseModel):
     open_now = models.BooleanField(default=False)
     reference = models.CharField(max_length=50, null=True)
     scope = models.CharField(max_length=50, null=True)
+    facility = models.CharField(max_length=50, null=True)
     types = models.TextField(null=True)  # Will be stored as a comma-separated string
     keyword = models.CharField(max_length=255,null=True)  # Keyword using which this site is scraped
     vicinity = models.CharField(max_length=255, null=True)
