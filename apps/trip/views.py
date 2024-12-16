@@ -2244,6 +2244,15 @@ def getTripPlan(request):
 
     return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def getCityList(request):
+    print("Cities called")
+    try:
+        cityList = list(City.objects.all().values('id','name','images','lat_long'))
+        return JsonResponse(cityList, safe=False, status=status.HTTP_200_OK)
+    except Exception as e:
+        return JsonResponse({"Error":str(e)})
+
 
 @api_view(['DELETE'])
 def deletePlan(request, id=None):
