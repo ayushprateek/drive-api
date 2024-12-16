@@ -3491,6 +3491,86 @@ def get_place_description(request):
 
     except Exception as e:
         return f"An error occurred while fetching the description: {e}"
+    
+def newScrapeAPI(request):
+    cityList = City.objects.filter(scrape=True).all()
+    categoryList = Category.objects.filter(scrape=True).all()
+    print("categoryList = ", categoryList)
+
+    for city in cityList:
+        if city.lat_long:
+            print(city.name, "Exist")
+            for latlang in city.lat_long:
+                print(latlang['latitude'])
+                print(latlang['longitude'])
+                for category in categoryList:
+                    if category.keywords:
+                        for keyword in category.keywords:
+                            lat = latlang['latitude']
+                            lng = latlang['longitude']
+                            print(f"Latitude: {lat}, Longitude: {lng}")
+                            api_url = "https://places.googleapis.com/v1/places:searchText"
+
+                            # Define the request payload (body)
+                            payload = {
+                                "textQuery": keyword,
+                                "locationBias": {
+                                    "circle": {
+                                        "center": {
+                                            "latitude": lat, 
+                                            "longitude": lng},
+                                        "radius": 10000
+                                    }
+                                }
+                            }
+
+                            # Define the headers
+                            headers = {
+                                "X-Goog-Api-Key": settings.GOOGLE_API_KEY,
+                                "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,                      places.location,places.rating,places.photos,nextPageToken"
+                            }
+
+                            # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&key={settings.GOOGLE_API_KEY}&keyword={keyword}&radius=10000"
+
+                            # logger.info("Scraping API Called " + url)
+                            # response = requests.get(url)
+                            response = requests.post(api_url, json=payload, headers=headers)
+                            print("Status code = ", response.status_code)
+                            if response.status_code == 200:
+                                data = response.json()
+                                print("Data = ", data)
+                                if not Site.objects.filter(place_id=data.get('place_id'), category_id=category.id).exists():
+                                    print("Hotel does not exists")
+                                    
+                                    # saveToDb(data, city, category, keyword)
+                                    # print('Status code =   ', response.status_code)
+                                    # next_page_token = data.get('next_page_token')
+                                    # print('Next token =   ', next_page_token)
+                                    # todo: uncomment
+                                    # while next_page_token:
+                                    #     newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next_page_token}&key={settings.GOOGLE_API_KEY}"
+                                    #     print("New url = ", newUrl)
+                                    #     logger.info("Scraping API Called " + newUrl)
+                                    #     res = requests.get(newUrl)
+                                    #     print("Requested url = ", newUrl)
+                                    #     newData = res.json()
+                                    #     print('Next Status code =   ', res.status_code)
+                                    #     next_page_token = newData.get('next_page_token')
+                                    #     print('2nd calling next page urlStatus =   ', res.status_code)
+                                    #     if res.status_code == 200:
+                                    #         if not Site.objects.filter(place_id=newData.get('place_id'), category_id=category.id).exists():
+                                    #             saveToDb(newData, city, category, keyword)
+                                    #     if not next_page_token:
+                                    #         break
+                                else:
+                                    print('Hotel exists')
+        else:
+            print(city.name, "Does not exist")
+#
+
+    return JsonResponse({'message': 'Hotels fetched and saved successfully'})
+
+
 def saveHotel(request):
     cityList = City.objects.filter(scrape=True).all()
     categoryList = Category.objects.filter(scrape=True).all()
