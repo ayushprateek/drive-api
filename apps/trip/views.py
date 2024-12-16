@@ -1243,7 +1243,7 @@ def getItineraryViaPlan(request):
                     'place_id'
                 )
                 imageList = []
-                userList = ItinerarySite.objects.filter(plan_id=plan_id).all()\
+                userList = ItinerarySite.objects.filter(plan_id=plan_id,site_id=itinerarySiteData['site_id']).all()\
                     .values('site_id', 'id', 'itinerary_id')\
                     .annotate(user_id=F('itinerary__user_id'))\
                     .values('site_id', 'id', 'itinerary_id', 'user_id')
@@ -2785,7 +2785,7 @@ def getLikedSitesViaPlan(request):
                 'place_id'
             )
                 imageList = []
-                userList = UserLikesSite.objects.filter(plan_id=plan_id).all()\
+                userList = UserLikesSite.objects.filter(plan_id=plan_id,site_id=userLikesSiteData['site_id']).all()\
                 .values('site_id', 'id', 'userlikes_id')\
                 .annotate(user_id=F('userlikes__user_id'))\
                 .values('site_id', 'id', 'userlikes_id', 'user_id')
@@ -3065,20 +3065,20 @@ def getLikedSitesViaPlan(request):
     # plans_list.append({"WeirdAndWacky": list(weirdAndWackyList)})
     # plans_list.append({"ExtremeSport": list(extremeSportList)})
     # plans_list.append({"Attraction": list(attractionList)})
-    return JsonResponse(json.dumps(
-        {
-            "Site": list(siteList),
-            # "Event": list(eventList),
-            # "Park": list(parkList),
-            # "Hotel": list(hotelList),
-            # "WeirdAndWacky": list(weirdAndWackyList),
-            # "ExtremeSports": list(extremeSportList),
-            # "Attraction": list(attractionList)
-        },
-        default=str
-    ), safe=False, status=status.HTTP_200_OK)
+    # return JsonResponse(json.dumps(
+    #     {
+    #         "Site": list(siteList),
+    #         # "Event": list(eventList),
+    #         # "Park": list(parkList),
+    #         # "Hotel": list(hotelList),
+    #         # "WeirdAndWacky": list(weirdAndWackyList),
+    #         # "ExtremeSports": list(extremeSportList),
+    #         # "Attraction": list(attractionList)
+    #     },
+    #     default=str
+    # ), safe=False, status=status.HTTP_200_OK)
 
-    return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
+    return JsonResponse(list(siteList), safe=False, status=status.HTTP_200_OK)
 
 
 # @api_view(['POST'])
