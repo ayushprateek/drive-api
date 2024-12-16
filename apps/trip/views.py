@@ -1053,7 +1053,7 @@ def saveToItinerary(request):
 
     for planId in planIds:
         planModel = Plan.objects.filter(id=planId).first()
-        if Site.objects.filter(id=data['place_id'],show=True).exists():
+        if Site.objects.filter(id=data['place_id'], show=True).exists():
 
             site = Site.objects.get(id=data['place_id'])
 
@@ -1223,11 +1223,11 @@ def getItineraryViaPlan(request):
 
     if itinerarySite:
         for itinerarySiteData in itinerarySite:
-            if Site.objects.filter(id=itinerarySiteData['site_id'],show=True).exists():
+            if Site.objects.filter(id=itinerarySiteData['site_id'], show=True).exists():
                 if selectedCity:
-                    fetch = Site.objects.filter(id=itinerarySiteData['site_id'],show=True).filter(city_id__in=selectedCity)
+                    fetch = Site.objects.filter(id=itinerarySiteData['site_id'], show=True).filter(city_id__in=selectedCity)
                 else:
-                    fetch = Site.objects.filter(id=itinerarySiteData['site_id'],show=True)
+                    fetch = Site.objects.filter(id=itinerarySiteData['site_id'], show=True)
                 if selectedCategory:
                     fetch = fetch.filter(category_id__in=selectedCategory)
                 plans = fetch.all().values(
@@ -1243,7 +1243,7 @@ def getItineraryViaPlan(request):
                     'place_id'
                 )
                 imageList = []
-                userList = ItinerarySite.objects.filter(plan_id=plan_id,site_id=itinerarySiteData['site_id']).all()\
+                userList = ItinerarySite.objects.filter(plan_id=plan_id, site_id=itinerarySiteData['site_id']).all()\
                     .values('site_id', 'id', 'itinerary_id')\
                     .annotate(user_id=F('itinerary__user_id'))\
                     .values('site_id', 'id', 'itinerary_id', 'user_id')
@@ -1658,8 +1658,8 @@ def getItineraryFilter(request):
 
     if itinerarySite:
         itinerarySiteData = itinerarySite[0]
-        if Site.objects.filter(id=itinerarySiteData['site_id'],show=True).exists():
-            plans = Site.objects.filter(id=itinerarySiteData['site_id'],show=True).all().values(
+        if Site.objects.filter(id=itinerarySiteData['site_id'], show=True).exists():
+            plans = Site.objects.filter(id=itinerarySiteData['site_id'], show=True).all().values(
                 'city_id',
                 'category_id'
             ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
@@ -1874,8 +1874,8 @@ def likePlace(request):
     else:
         user_likes = UserLikes.objects.create(user=userdata)
 
-    if Site.objects.filter(id=data['like_id'],show=True).exists():
-        site = Site.objects.get(id=data['like_id'],show=True)
+    if Site.objects.filter(id=data['like_id'], show=True).exists():
+        site = Site.objects.get(id=data['like_id'], show=True)
         UserLikesSite.objects.create(
             userlikes=user_likes,
             site=site,
@@ -2244,14 +2244,15 @@ def getTripPlan(request):
 
     return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
 
+
 @api_view(['GET'])
 def getCityList(request):
     print("Cities called")
     try:
-        cityList = list(City.objects.all().values('id','name','images','lat_long'))
+        cityList = list(City.objects.all().values('id', 'name', 'images', 'lat_long'))
         return JsonResponse(cityList, safe=False, status=status.HTTP_200_OK)
     except Exception as e:
-        return JsonResponse({"Error":str(e)})
+        return JsonResponse({"Error": str(e)})
 
 
 @api_view(['DELETE'])
@@ -2308,7 +2309,7 @@ def getSites(request):
         city = City.objects.filter(id=city_id).first()
 
         # Fetch the filtered Site objects
-        sites = Site.objects.filter(city_id=city_id, category_id=category_id,show=True)
+        sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True)
 
         # Apply pagination
         paginator = CustomPagination()
@@ -2350,7 +2351,7 @@ def getAd(request):
         catgeory_id = env('AD_CATEGORY_ID')
         print('catgeory_id = ', catgeory_id)
         category = Category.objects.filter(id=catgeory_id).first()
-        site_instance = Site.objects.filter(ad_status=1, category=category,show=True).order_by('?').first()
+        site_instance = Site.objects.filter(ad_status=1, category=category, show=True).order_by('?').first()
         if site_instance:
             site = {
                 'id': site_instance.id,
@@ -2392,7 +2393,7 @@ def getAd(request):
 @api_view(['POST'])
 def getHotelSites(request):
     data = json.loads(request.body)
-    plans = Site.objects.filter(city_id=data['city_id'],show=True).all().values(
+    plans = Site.objects.filter(city_id=data['city_id'], show=True).all().values(
         'id', 'name',
         'description', 'images',
     )
@@ -2509,8 +2510,8 @@ def getTripFilter(request):
 
     if userLikesSite:
         userLikesiteData = userLikesSite[0]
-        if Site.objects.filter(id=userLikesiteData['site_id'],show=True).exists():
-            plans = Site.objects.filter(id=userLikesiteData['site_id'],show=True).all().values(
+        if Site.objects.filter(id=userLikesiteData['site_id'], show=True).exists():
+            plans = Site.objects.filter(id=userLikesiteData['site_id'], show=True).all().values(
                 'city_id',
                 'category_id'
             ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
@@ -2761,43 +2762,43 @@ def getLikedSitesViaPlan(request):
     # userLikesExtremeSport = UserLikesExtremeSport.objects.filter(plan_id=plan_id).all().values('extremesport_id', 'id')
     # userLikesWeirdAndWacky = UserLikesWeirdAndWacky.objects.filter(plan_id=plan_id).all().values('weirdandwacky_id', 'id')
     # userLikesAttraction = UserLikesAttraction.objects.filter(plan_id=plan_id).all().values('attraction_id', 'id')
-    print("Length = ",len(userLikesSite))
+    print("Length = ", len(userLikesSite))
 
     if userLikesSite:
         for userLikesSiteData in userLikesSite:
-            if Site.objects.filter(id=userLikesSiteData['site_id'],show=True).exists():
+            if Site.objects.filter(id=userLikesSiteData['site_id'], show=True).exists():
                 if selectedCity:
-                    fetch = Site.objects.filter(id=userLikesSiteData['site_id'],show=True).filter(city_id__in=selectedCity)
+                    fetch = Site.objects.filter(id=userLikesSiteData['site_id'], show=True).filter(city_id__in=selectedCity)
                 else:
-                    fetch = Site.objects.filter(id=userLikesSiteData['site_id'],show=True)
+                    fetch = Site.objects.filter(id=userLikesSiteData['site_id'], show=True)
                 if selectedCategory:
                     fetch = fetch.filter(category_id__in=selectedCategory)
                 plans = fetch.all().values(
-                'id', 'name',
-                'description', 'images',
-                'city_id',
-                'place_id'
-            ).annotate(city_name=F('city__name')).values(
-                'id', 'name',
-                'description', 'images',
-                'city_id',
-                'city_name',
-                'place_id'
-            )
+                    'id', 'name',
+                    'description', 'images',
+                    'city_id',
+                    'place_id'
+                ).annotate(city_name=F('city__name')).values(
+                    'id', 'name',
+                    'description', 'images',
+                    'city_id',
+                    'city_name',
+                    'place_id'
+                )
                 imageList = []
-                userList = UserLikesSite.objects.filter(plan_id=plan_id,site_id=userLikesSiteData['site_id']).all()\
-                .values('site_id', 'id', 'userlikes_id')\
-                .annotate(user_id=F('userlikes__user_id'))\
-                .values('site_id', 'id', 'userlikes_id', 'user_id')
+                userList = UserLikesSite.objects.filter(plan_id=plan_id, site_id=userLikesSiteData['site_id']).all()\
+                    .values('site_id', 'id', 'userlikes_id')\
+                    .annotate(user_id=F('userlikes__user_id'))\
+                    .values('site_id', 'id', 'userlikes_id', 'user_id')
 
                 for users in userList:
                     profile_pic = user_models.User.objects.filter(id=users['user_id']).\
-                    values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
+                        values('profile_pic_id', profile_picture=F('profile_pic__media_url'))
                     for pic in profile_pic:
                         imageList.append({
-                        "profile_pic_id": pic['profile_pic_id'],
-                        "profile_picture": pic['profile_picture'],
-                    })
+                            "profile_pic_id": pic['profile_pic_id'],
+                            "profile_picture": pic['profile_picture'],
+                        })
                 # #print('profile_pic = ',profile_pic)
 
                 for plan in plans:
@@ -3065,20 +3066,20 @@ def getLikedSitesViaPlan(request):
     # plans_list.append({"WeirdAndWacky": list(weirdAndWackyList)})
     # plans_list.append({"ExtremeSport": list(extremeSportList)})
     # plans_list.append({"Attraction": list(attractionList)})
-    # return JsonResponse(json.dumps(
-    #     {
-    #         "Site": list(siteList),
-    #         # "Event": list(eventList),
-    #         # "Park": list(parkList),
-    #         # "Hotel": list(hotelList),
-    #         # "WeirdAndWacky": list(weirdAndWackyList),
-    #         # "ExtremeSports": list(extremeSportList),
-    #         # "Attraction": list(attractionList)
-    #     },
-    #     default=str
-    # ), safe=False, status=status.HTTP_200_OK)
+    return JsonResponse(json.dumps(
+        {
+            "Site": list(siteList),
+            # "Event": list(eventList),
+            # "Park": list(parkList),
+            # "Hotel": list(hotelList),
+            # "WeirdAndWacky": list(weirdAndWackyList),
+            # "ExtremeSports": list(extremeSportList),
+            # "Attraction": list(attractionList)
+        },
+        default=str
+    ), safe=False, status=status.HTTP_200_OK)
 
-    return JsonResponse(list(siteList), safe=False, status=status.HTTP_200_OK)
+    # return JsonResponse(list(siteList), safe=False, status=status.HTTP_200_OK)
 
 
 # @api_view(['POST'])
@@ -3439,6 +3440,7 @@ def placesAPICall(lat, lng, city, category, type):
             if not next_page_token:
                 break
 
+
 # def updateLocationInSite(request):
 #     # site = Site.objects.get(id='aef52d85-9979-411b-aa73-e546ccf7281c')
 #     siteList=Site.objects.all()
@@ -3446,8 +3448,9 @@ def placesAPICall(lat, lng, city, category, type):
 #         site.updateLocationInSite()
 #     return JsonResponse({'message': 'Location Updated'})
 openai.api_key = settings.GPT_SECRET_KEY
+
+
 def get_place_description(request):
-    
     """
     Fetches a description of a place using ChatGPT API.
 
@@ -3460,11 +3463,11 @@ def get_place_description(request):
     """
     # miami
     site_list = Site.objects.filter(city_id='d2818443-da0b-4304-9351-11539df28735').all()
-    descriptionList=[]
+    descriptionList = []
     try:
         # Construct the prompt for ChatGPT
         for site in site_list:
-            print("name = ",site.name)
+            print("name = ", site.name)
             prompt = (
                 f"Provide a detailed and engaging description of the place called '{site.name}' "
                 f"located at '{site.vicinity}'. Include notable details if available."
@@ -3487,11 +3490,12 @@ def get_place_description(request):
             #     "name":site.name,
             #     "description":site.description,
             # })
-        return JsonResponse({'message':'Site description saved successfully'})
+        return JsonResponse({'message': 'Site description saved successfully'})
 
     except Exception as e:
         return f"An error occurred while fetching the description: {e}"
-    
+
+
 def newScrapeAPI(request):
     cityList = City.objects.filter(scrape=True).all()
     categoryList = Category.objects.filter(scrape=True).all()
@@ -3517,7 +3521,7 @@ def newScrapeAPI(request):
                                 "locationBias": {
                                     "circle": {
                                         "center": {
-                                            "latitude": lat, 
+                                            "latitude": lat,
                                             "longitude": lng},
                                         "radius": 10000
                                     }
@@ -3541,7 +3545,7 @@ def newScrapeAPI(request):
                                 print("Data = ", data)
                                 if not Site.objects.filter(place_id=data.get('place_id'), category_id=category.id).exists():
                                     print("Hotel does not exists")
-                                    
+
                                     # saveToDb(data, city, category, keyword)
                                     # print('Status code =   ', response.status_code)
                                     # next_page_token = data.get('next_page_token')
@@ -3807,8 +3811,8 @@ def get_coordinates_along_polyline(request):
 
         for category in category_list:
             print("category = ", category)
-            if Site.objects.filter(category_id=category,show=True).exists():
-                data = Site.objects.filter(category_id=category,show=True).annotate(icon_url=F('category__icon_url'))
+            if Site.objects.filter(category_id=category, show=True).exists():
+                data = Site.objects.filter(category_id=category, show=True).annotate(icon_url=F('category__icon_url'))
                 for plan in data:
                     point = Point(plan.longitude, plan.latitude)
                     # print('Hotel point')
@@ -3828,7 +3832,7 @@ def get_coordinates_along_polyline(request):
                             "is_hotel": True
                         })
             else:
-                queryset = Site.objects.filter(category_id=category,show=True).annotate(
+                queryset = Site.objects.filter(category_id=category, show=True).annotate(
                     icon_url=F('category__icon_url')
                 ).values(
                     'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url', 'place_id'
@@ -3871,7 +3875,7 @@ def getSitesNearMe(request):
                 plans.append(plan)
 
     if only_hotels:
-        data = Site.objects.annotate(icon_url=F('category__icon_url'),show=True)
+        data = Site.objects.annotate(icon_url=F('category__icon_url'), show=True)
         for plan in data:
             point = Point(plan.longitude, plan.latitude)
 
@@ -3900,8 +3904,8 @@ def getSitesNearMe(request):
         model_list = [Site]
 
         for category in category_list:
-            if Site.objects.filter(category_id=category,show=True).exists():
-                data = Site.objects.filter(category_id=category,show=True).annotate(icon_url=F('category__icon_url'))
+            if Site.objects.filter(category_id=category, show=True).exists():
+                data = Site.objects.filter(category_id=category, show=True).annotate(icon_url=F('category__icon_url'))
                 for plan in data:
                     point = Point(plan.longitude, plan.latitude)
 
