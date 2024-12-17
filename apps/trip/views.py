@@ -3495,6 +3495,85 @@ def get_place_description(request):
     except Exception as e:
         return f"An error occurred while fetching the description: {e}"
 
+def newAPISave(api_response, city, category, type):
+    data = api_response
+    logger.info("Saved Data Length = " + str(len(data['places'])))
+    print("Saved Data Length = " + str(len(data['places'])))
+
+    # city = City.objects.filter(id=city.id).first()
+    # city=City.objects.filter(id="2089800e-c9b1-439b-a20d-a480ae8d7419").first()
+    # category = Category.objects.filter(id=category.id).first()
+
+    for result in data['places']:
+        # print("Place id = ",result['id'])
+        # print("displayName = ",result['displayName']['text'])
+        # print("latitude = ",result['location']['latitude'])
+        # print("longitude = ",result['location']['longitude'])
+        # print("longitude = ",result['rating'])
+        print("id = ",result.get('id'))
+        print("types = ",result.get('types'))
+        print("iconMaskBaseUri = ",result.get('iconMaskBaseUri'))
+        print("iconBackgroundColor = ",result.get('iconBackgroundColor'))
+        print("displayName = ",result.get('displayName').get('text'))
+        print("formattedAddress = ",result.get('formattedAddress'))
+        print("latitude = ",result.get('location').get('latitude'))
+        print("longitude = ",result.get('location').get('longitude'))
+        print("rating = ",result.get('rating'))
+        print("photos = ",result.get('photos'))
+        print("reviews = ",result.get('reviews'))
+        # nextPageToken
+        # if not Site.objects.filter(place_id=result['id'], category_id=category.id).exists():
+        #     print("Hotel Exists")
+        #     location_data = result['geometry']['location']
+        #     print("location_data = ", location_data['lat'])
+        #     print("location_data = ", location_data['lng'])
+            
+        #     if result.get('user_ratings_total', {}):
+        #         user_ratings_total = result.get('user_ratings_total', {})
+        #     else:
+        #         user_ratings_total = 0
+        #     print("creatig site")
+        #     try:
+        #         hotel = Site.objects.create(
+        #             business_status=result.get('business_status'),
+        #             # geometry=geometry,
+        #             icon=result.get('icon'),
+        #             icon_background_color=result['icon_background_color'],
+        #             icon_mask_base_uri=result['icon_mask_base_uri'],
+        #             name=result['name'],
+        #             open_now=result.get('opening_hours', {}).get('open_now', False),
+        #             place_id=result['place_id'],
+        #             # plus_code=plus_code,location_data['lng']
+        #             latitude=location_data['lat'],
+        #             longitude=location_data['lng'],
+        #             rating=result.get('rating'),
+        #             reference=result['reference'],
+        #             scope=result.get('scope'),
+        #             types=','.join(result['types']),
+        #             city=city,
+        #             keyword=type,
+        #             show=True,
+        #             category=category,
+        #             user_ratings_total=user_ratings_total,
+        #             vicinity=result.get('vicinity', {}) if result.get('vicinity', {}) is not None else 0
+        #         )
+        #     except Exception as e:
+        #         print("exception = ", e)
+        #     print("Site created")
+
+        #     for photo in result.get('photos', []):
+        #         photo_obj = Photo.objects.create(
+        #             height=photo['height'],
+        #             width=photo['width'],
+        #             html_attributions=', '.join(photo['html_attributions']),
+        #             photo_reference=photo['photo_reference']
+        #         )
+        #         hotel.photos.add(photo_obj)
+
+        #     hotel.save()
+        #     print("Hotel ", hotel.id, '-->', hotel.name)
+        # else:
+        #     print("Hotel already exists")
 
 def newScrapeAPI(request):
     cityList = City.objects.filter(scrape=True).all()
@@ -3515,36 +3594,36 @@ def newScrapeAPI(request):
                             print(f"Latitude: {lat}, Longitude: {lng}")
                             api_url = "https://places.googleapis.com/v1/places:searchText"
 
-                            # Define the request payload (body)
+                      
                             payload = {
                                 "textQuery": keyword,
                                 "locationBias": {
                                     "circle": {
                                         "center": {
                                             "latitude": lat,
-                                            "longitude": lng},
+                                            "longitude": lng
+                                            },
                                         "radius": 10000
                                     }
                                 }
                             }
-
-                            # Define the headers
+                            
                             headers = {
-                                "X-Goog-Api-Key": settings.GOOGLE_API_KEY,
-                                "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,                      places.location,places.rating,places.photos,nextPageToken"
+                                "X-Goog-Api-Key": f'{settings.GOOGLE_API_KEY}',
+                                "X-Goog-FieldMask": "places.id,places.types,places.reviews,places.iconMaskBaseUri,places.iconBackgroundColor,places.displayName,places.formattedAddress,places.location,places.rating,places.photos,nextPageToken"
                             }
+                            
 
-                            # url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&key={settings.GOOGLE_API_KEY}&keyword={keyword}&radius=10000"
-
-                            # logger.info("Scraping API Called " + url)
-                            # response = requests.get(url)
+                           
                             response = requests.post(api_url, json=payload, headers=headers)
                             print("Status code = ", response.status_code)
                             if response.status_code == 200:
                                 data = response.json()
-                                print("Data = ", data)
-                                if not Site.objects.filter(place_id=data.get('place_id'), category_id=category.id).exists():
-                                    print("Hotel does not exists")
+                                # print("Data = ", data)
+                                newAPISave(data, city, category, keyword)
+                                
+                                # if not Site.objects.filter(place_id=data.get('place_id'), category_id=category.id).exists():
+                                #     print("Hotel does not exists")
 
                                     # saveToDb(data, city, category, keyword)
                                     # print('Status code =   ', response.status_code)
@@ -3566,8 +3645,8 @@ def newScrapeAPI(request):
                                     #             saveToDb(newData, city, category, keyword)
                                     #     if not next_page_token:
                                     #         break
-                                else:
-                                    print('Hotel exists')
+                                # else:
+                                #     print('Hotel exists')
         else:
             print(city.name, "Does not exist")
 #
