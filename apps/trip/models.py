@@ -437,11 +437,48 @@ class Photo(models.Model):
     width = models.IntegerField()
     html_attributions = models.TextField()
     photo_reference = models.CharField(max_length=255)
+    photo_name = models.CharField(max_length=255,null=True)
+    author_uri = models.CharField(max_length=500, null=True)
+    author_name = models.CharField(max_length=500, null=True)
+    author_photo_uri = models.TextField(null=True)
 
 
+class APICalls(models.Model):
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+    keyword = models.CharField(max_length=50, null=True)
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
+    url = models.CharField(max_length=500, null=True)
+    result_count = models.IntegerField(null=True)
+    request_body = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True,null=True) 
+    updated_at = models.DateTimeField(auto_now=True,null=True)
+    class Meta:
+        db_table = 'trip_api_calls'
 # class PlusCode(models.Model):
 #     compound_code = models.CharField(max_length=250)
 #     global_code = models.CharField(max_length=250)
+
+
+class PlaceReview(models.Model):
+    name = models.CharField(max_length=255)
+    rating = models.PositiveSmallIntegerField()
+    text = models.TextField(null=True)
+    original_text = models.TextField(null=True)
+    author_uri = models.CharField(max_length=500, null=True)
+    author_name = models.CharField(max_length=500, null=True)
+    author_photo_uri = models.TextField(null=True)
+    publish_time = models.DateTimeField()
+    flag_content_uri = models.URLField()
+    google_maps_uri = models.URLField()
+
+    def __str__(self):
+        return f"Review by {self.author_attribution.display_name}"
+
+    class Meta:
+        verbose_name = "Place Review"
+        verbose_name_plural = "Place Reviews"
 
 
 class Site(BaseModel):
@@ -479,13 +516,14 @@ class Site(BaseModel):
     icon_background_color = models.CharField(max_length=10, null=True)
     icon_mask_base_uri = models.URLField(null=True)
     open_now = models.BooleanField(default=False)
-    reference = models.CharField(max_length=50, null=True)
+    reference = models.CharField(max_length=50, null=True)  # todo: Remove this field:  Reference is exactly same as place_id
     scope = models.CharField(max_length=50, null=True)
     facility = models.CharField(max_length=50, null=True)
     types = models.TextField(null=True)  # Will be stored as a comma-separated string
-    keyword = models.CharField(max_length=255,null=True)  # Keyword using which this site is scraped
+    keyword = models.CharField(max_length=255, null=True)  # Keyword using which this site is scraped
     vicinity = models.CharField(max_length=255, null=True)
     photos = models.ManyToManyField(Photo)
+    place_review = models.ManyToManyField(PlaceReview)
     show = models.BooleanField(default=True)
 
     class Meta:

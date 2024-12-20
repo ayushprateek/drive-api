@@ -141,7 +141,7 @@ DATABASES = {
     # localhost
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'drive_dev_rds',
+    #     'NAME': 'new_scrape_db',
     #     'USER': 'postgres',
     #     'PASSWORD': 'Ayush@123',
     #     'HOST': 'localhost',

@@ -2,6 +2,7 @@ from drive_ai import settings
 from django.core.exceptions import ObjectDoesNotExist
 import math
 from shapely.geometry import Point, LineString, box
+from dateutil import parser
 import json
 import time
 from django.db import connection
@@ -643,262 +644,8 @@ def printRoot(request):
 
 def cityScrape(request):
     # print('cityScrape')
-
     City.objects.create(
-        name='West Palm Beach',
-        country='US',
-        latitude=26.780233,
-        longitude=-80.170243,
-        images=['{static/WestPalmBeach.jpg}'],
-        description='West Palm Beach is best known for its palm-lined trees, nightlife, entertainment, cultural attractions, shopping areas, and fantastic fishing spots.',
-        lat_long=[{"latitude": 26.730844, "longitude": -80.189552},
-                  {"latitude": 26.751008, "longitude": -80.187617},
-                  {"latitude": 26.737757, "longitude": -80.168263},
-                  {"latitude": 26.734301, "longitude": -80.145684},
-                  {"latitude": 26.765985, "longitude": -80.166973},
-                  {"latitude": 26.780384, "longitude": -80.204390},
-                  {"latitude": 26.761377, "longitude": -80.136653},
-                  {"latitude": 26.778618, "longitude": -80.168408},
-                  {"latitude": 26.799630, "longitude": -80.178159},
-                  {"latitude": 26.823038, "longitude": -80.190937},
-                  {"latitude": 26.827844, "longitude": -80.194466},
-                  {"latitude": 26.797309, "longitude": -80.151130},
-                  {"latitude": 26.752511, "longitude": -80.082248},
-                  {"latitude": 26.730105, "longitude": -80.081792},
-                  {"latitude": 26.726846, "longitude": -80.059896},
-                  {"latitude": 26.699952, "longitude": -80.060808},
-                  {"latitude": 26.670198, "longitude": -80.058071},
-                  {"latitude": 26.726438, "longitude": -80.078599}],
-        scrape=False
-    )
-    City.objects.create(
-        name='Gainesville',
-        country='US',
-        latitude=29.680578,
-        longitude=-82.342753,
-        images=['{static/Gainesville.jpeg}'],
-        description='Known for its preservation of historic buildings and the beauty of its natural surroundings, Gainesville numerous parks, museums and lakes provide entertainment to thousands of visitors.',
-        lat_long=[{"latitude": 29.765849, "longitude": -82.398028},
-                  {"latitude": 29.759591, "longitude": -82.393565},
-                  {"latitude": 29.766743, "longitude": -82.385325},
-                  {"latitude": 29.752139, "longitude": -82.387385},
-                  {"latitude": 29.737831, "longitude": -82.376399},
-                  {"latitude": 29.729782, "longitude": -82.389445},
-                  {"latitude": 29.715769, "longitude": -82.386012},
-                  {"latitude": 29.719943, "longitude": -82.372279},
-                  {"latitude": 29.727695, "longitude": -82.359233},
-                  {"latitude": 29.727099, "longitude": -82.347216},
-                  {"latitude": 29.690122, "longitude": -82.382922},
-                  {"latitude": 29.698473, "longitude": -82.367472},
-                  {"latitude": 29.685648, "longitude": -82.353739},
-                  {"latitude": 29.671331, "longitude": -82.355799},
-                  {"latitude": 29.657906, "longitude": -82.362666},
-                  {"latitude": 29.663575, "longitude": -82.341036},
-                  {"latitude": 29.667751, "longitude": -82.312541},
-                  {"latitude": 29.661188, "longitude": -82.299151},
-                  {"latitude": 29.690421, "longitude": -82.315974},
-                  {"latitude": 29.677893, "longitude": -82.297434},
-                  {"latitude": 29.681174, "longitude": -82.282328},
-                  {"latitude": 29.687736, "longitude": -82.264476},
-                  {"latitude": 29.700859, "longitude": -82.267222},
-                  {"latitude": 29.697877, "longitude": -82.261729},
-                  {"latitude": 29.689824, "longitude": -82.262416},
-                  {"latitude": 29.684455, "longitude": -82.241130},
-                  {"latitude": 29.683262, "longitude": -82.229800}],
-        scrape=False
-    )
-
-    City.objects.create(
-        name='Orlando',
-        country='US',
-        latitude=28.538336,
-        longitude=-81.379234,
-        images=['static/Orlando.jpeg'],
-        description='Orlando is a city in central Florida, known for its theme parks, including Walt Disney World and Universal Studios.',
-        lat_long=[{"latitude": 28.499245, "longitude": -81.451484},
-                  {"latitude": 28.510485, "longitude": -81.471833},
-                  {"latitude": 28.517127, "longitude": -81.442181},
-                  {"latitude": 28.529387, "longitude": -81.457298},
-                  {"latitude": 28.558992, "longitude": -81.367906},
-                  {"latitude": 28.589891, "longitude": -81.434869},
-                  {"latitude": 28.553011, "longitude": -81.348612},
-                  {"latitude": 28.523099, "longitude": -81.316833},
-                  {"latitude": 28.447285, "longitude": -81.305484},
-                  {"latitude": 28.397377, "longitude": -81.289594},
-                  {"latitude": 28.437305, "longitude": -81.274840},
-                  {"latitude": 28.441297, "longitude": -81.205607}],
-        scrape=False
-    )
-
-    City.objects.create(
-        name='Tampa',
-        country='US',
-        latitude=27.950575,
-        longitude=-82.457178,
-        images=['static/Tampa.jpeg'],
-        description='Tampa is a city on Tampa Bay, along Florida’s Gulf Coast. It is known for its museums and other cultural offerings.',
-        lat_long=[{"latitude": 27.839308, "longitude": -82.495895},
-                  {"latitude": 27.867796, "longitude": -82.525047},
-                  {"latitude": 27.878647, "longitude": -82.498963},
-                  {"latitude": 27.903735, "longitude": -82.519677},
-                  {"latitude": 27.927462, "longitude": -82.508170},
-                  {"latitude": 27.955250, "longitude": -82.521212},
-                  {"latitude": 27.974900, "longitude": -82.530418},
-                  {"latitude": 27.985740, "longitude": -82.488223},
-                  {"latitude": 27.978288, "longitude": -82.443726},
-                  {"latitude": 27.958638, "longitude": -82.404600},
-                  {"latitude": 27.980320, "longitude": -82.432219},
-                  {"latitude": 27.993192, "longitude": -82.460604},
-                  {"latitude": 28.013513, "longitude": -82.472112},
-                  {"latitude": 28.032475, "longitude": -82.439123},
-                  {"latitude": 28.084128, "longitude": -82.397709},
-                  {"latitude": 28.079887, "longitude": -82.399082},
-                  {"latitude": 28.089580, "longitude": -82.368183},
-                  {"latitude": 28.122286, "longitude": -82.402515},
-                  {"latitude": 28.135003, "longitude": -82.381229},
-                  {"latitude": 28.087157, "longitude": -82.395649},
-                  {"latitude": 28.114413, "longitude": -82.391529},
-                  {"latitude": 28.150745, "longitude": -82.381229},
-                  {"latitude": 28.136214, "longitude": -82.318058},
-                  {"latitude": 28.164669, "longitude": -82.307072},
-                  {"latitude": 28.163458, "longitude": -82.283726}],
-        scrape=False
-    )
-
-    City.objects.create(
-        name='Tallahassee',
-        country='US',
-        latitude=30.438255,
-        longitude=-84.280733,
-        images=['static/Tallahassee.jpeg'],
-        description='Tallahassee is the capital of the U.S. state of Florida. It is known for its large number of law firms, lobbying organizations, and trade associations.',
-        lat_long=[{"latitude": 30.357485, "longitude": -84.158683},
-                  {"latitude": 30.357485, "longitude": -84.190269},
-                  {"latitude": 30.372889, "longitude": -84.212242},
-                  {"latitude": 30.384736, "longitude": -84.222541},
-                  {"latitude": 30.409611, "longitude": -84.221168},
-                  {"latitude": 30.385921, "longitude": -84.255500},
-                  {"latitude": 30.423822, "longitude": -84.217048},
-                  {"latitude": 30.411980, "longitude": -84.219108},
-                  {"latitude": 30.437440, "longitude": -84.210868},
-                  {"latitude": 30.443360, "longitude": -84.252067},
-                  {"latitude": 30.421454, "longitude": -84.265800},
-                  {"latitude": 30.408427, "longitude": -84.293266},
-                  {"latitude": 30.425007, "longitude": -84.311805},
-                  {"latitude": 30.458750, "longitude": -84.334465},
-                  {"latitude": 30.473546, "longitude": -84.313865},
-                  {"latitude": 30.482422, "longitude": -84.344764},
-                  {"latitude": 30.484198, "longitude": -84.283653},
-                  {"latitude": 30.465260, "longitude": -84.254127},
-                  {"latitude": 30.480647, "longitude": -84.225975},
-                  {"latitude": 30.510230, "longitude": -84.228721},
-                  {"latitude": 30.529750, "longitude": -84.269920},
-                  {"latitude": 30.567004, "longitude": -84.264427},
-                  {"latitude": 30.507864, "longitude": -84.214988},
-                  {"latitude": 30.514371, "longitude": -84.182029},
-                  {"latitude": 30.514963, "longitude": -84.153190},
-                  {"latitude": 30.492481, "longitude": -84.153877}],
-        scrape=False
-    )
-
-    City.objects.create(
-        name='St. Petersburg',
-        country='US',
-        latitude=27.767600,
-        longitude=-82.640290,
-        images=['static/St_Petersburg.jpeg'],
-        description='St. Petersburg is a city on Florida’s Gulf Coast, part of the Tampa Bay area. It is known for its pleasant weather and cultural attractions.',
-        lat_long=[{"latitude": 27.798646, "longitude": -82.739296},
-                  {"latitude": 27.781637, "longitude": -82.737236},
-                  {"latitude": 27.801683, "longitude": -82.722817},
-                  {"latitude": 27.794394, "longitude": -82.707024},
-                  {"latitude": 27.772524, "longitude": -82.691918},
-                  {"latitude": 27.744574, "longitude": -82.682305},
-                  {"latitude": 27.724518, "longitude": -82.664452},
-                  {"latitude": 27.752473, "longitude": -82.651405},
-                  {"latitude": 27.805934, "longitude": -82.653465},
-                  {"latitude": 27.822332, "longitude": -82.632179},
-                  {"latitude": 27.845406, "longitude": -82.652092},
-                  {"latitude": 27.866046, "longitude": -82.661019},
-                  {"latitude": 27.880614, "longitude": -82.643166},
-                  {"latitude": 27.875758, "longitude": -82.623940}],
-        scrape=False
-    )
-
-    City.objects.create(
-        name='Fort Lauderdale',
-        country='US',
-        latitude=26.122439,
-        longitude=-80.137317,
-        images=['static/Fort_Lauderdale.jpeg'],
-        description='Fort Lauderdale is a city on Florida’s southeastern coast, known for its boating canals and stunning beaches.',
-        lat_long=[{"latitude": 26.094233, "longitude": -80.194323},
-                  {"latitude": 26.119204, "longitude": -80.185740},
-                  {"latitude": 26.109031, "longitude": -80.180247},
-                  {"latitude": 26.110265, "longitude": -80.165828},
-                  {"latitude": 26.118896, "longitude": -80.174411},
-                  {"latitude": 26.131534, "longitude": -80.170978},
-                  {"latitude": 26.148794, "longitude": -80.174067},
-                  {"latitude": 26.153725, "longitude": -80.179217},
-                  {"latitude": 26.147561, "longitude": -80.158961},
-                  {"latitude": 26.143246, "longitude": -80.146602},
-                  {"latitude": 26.143246, "longitude": -80.132182},
-                  {"latitude": 26.147869, "longitude": -80.125316},
-                  {"latitude": 26.135233, "longitude": -80.125316},
-                  {"latitude": 26.123520, "longitude": -80.117419},
-                  {"latitude": 26.106565, "longitude": -80.120166},
-                  {"latitude": 26.098361, "longitude": -80.127254}],
-        scrape=False
-    )
-
-    City.objects.create(
-        name='Hialeah',
-        country='US',
-        latitude=25.857596,
-        longitude=-80.278105,
-        images=['static/Hialeah.jpeg'],
-        description='Hialeah is a city in Miami-Dade County, Florida, and a principal city of the Miami metropolitan area.',
-        lat_long=[{"latitude": 25.921037, "longitude": -80.362458},
-                  {"latitude": 25.909785, "longitude": -80.357777},
-                  {"latitude": 25.899300, "longitude": -80.353966},
-                  {"latitude": 25.889217, "longitude": -80.345672},
-                  {"latitude": 25.893250, "longitude": -80.333343},
-                  {"latitude": 25.881506, "longitude": -80.327783},
-                  {"latitude": 25.873783, "longitude": -80.317826},
-                  {"latitude": 25.884903, "longitude": -80.302720},
-                  {"latitude": 25.861426, "longitude": -80.314393},
-                  {"latitude": 25.864825, "longitude": -80.301690},
-                  {"latitude": 25.868532, "longitude": -80.287614},
-                  {"latitude": 25.832691, "longitude": -80.279374},
-                  {"latitude": 25.849686, "longitude": -80.278001},
-                  {"latitude": 25.829910, "longitude": -80.272164},
-                  {"latitude": 25.820330, "longitude": -80.264954},
-                  {"latitude": 25.835164, "longitude": -80.262208},],
-        scrape=False
-    )
-
-    City.objects.create(
-        name='Port St. Lucie',
-        country='US',
-        latitude=27.273049,
-        longitude=-80.358226,
-        images=['static/Port_St_Lucie.jpeg'],
-        description='Port St. Lucie is a city in Florida, known for its beautiful parks, riverfront, and botanical gardens.',
-        scrape=False
-    )
-
-    City.objects.create(
-        name='Pembroke Pines',
-        country='US',
-        latitude=26.007765,
-        longitude=-80.296256,
-        images=['static/Pembroke_Pines.jpeg'],
-        description='Pembroke Pines is a city in southern Broward County, Florida, and a suburb of Miami.',
-        scrape=False
-    )
-
-    City.objects.create(
-        name='Miami',
+        name='Miami New',
         country='US',
         latitude=25.761670,
         longitude=-80.22534,
@@ -925,47 +672,328 @@ def cityScrape(request):
         scrape=True
     )
 
-    City.objects.create(
-        name='Jacksonville',
-        country='US',
-        latitude=30.387233,
-        longitude=-81.670820,
-        images=['static/Jacksonville.jpeg', 'static/Jacksonville2.jpeg'],
-        description='Jacksonville is the most populous city proper in the U.S. state of Florida, located on the Atlantic coast of northeastern Florida. It is the seat of Duval County, with which the City of Jacksonville consolidated in 1968. It was the largest city by area in the contiguous United States as of 2020',
-        lat_long=[{"latitude": 30.152394, "longitude": -81.470318},
-                  {"latitude": 30.188011, "longitude": -81.464825},
-                  {"latitude": 30.144081, "longitude": -81.567822},
-                  {"latitude": 30.151206, "longitude": -81.626873},
-                  {"latitude": 30.210563, "longitude": -81.602154},
-                  {"latitude": 30.260394, "longitude": -81.628246},
-                  {"latitude": 30.286487, "longitude": -81.596661},
-                  {"latitude": 30.305459, "longitude": -81.547222},
-                  {"latitude": 30.282929, "longitude": -81.934490}],
-        scrape=True
-    )
-    return JsonResponse({'message': 'City fetched and saved successfully'})
+#     City.objects.create(
+#         name='West Palm Beach',
+#         country='US',
+#         latitude=26.780233,
+#         longitude=-80.170243,
+#         images=['{static/WestPalmBeach.jpg}'],
+#         description='West Palm Beach is best known for its palm-lined trees, nightlife, entertainment, cultural attractions, shopping areas, and fantastic fishing spots.',
+#         lat_long=[{"latitude": 26.730844, "longitude": -80.189552},
+#                   {"latitude": 26.751008, "longitude": -80.187617},
+#                   {"latitude": 26.737757, "longitude": -80.168263},
+#                   {"latitude": 26.734301, "longitude": -80.145684},
+#                   {"latitude": 26.765985, "longitude": -80.166973},
+#                   {"latitude": 26.780384, "longitude": -80.204390},
+#                   {"latitude": 26.761377, "longitude": -80.136653},
+#                   {"latitude": 26.778618, "longitude": -80.168408},
+#                   {"latitude": 26.799630, "longitude": -80.178159},
+#                   {"latitude": 26.823038, "longitude": -80.190937},
+#                   {"latitude": 26.827844, "longitude": -80.194466},
+#                   {"latitude": 26.797309, "longitude": -80.151130},
+#                   {"latitude": 26.752511, "longitude": -80.082248},
+#                   {"latitude": 26.730105, "longitude": -80.081792},
+#                   {"latitude": 26.726846, "longitude": -80.059896},
+#                   {"latitude": 26.699952, "longitude": -80.060808},
+#                   {"latitude": 26.670198, "longitude": -80.058071},
+#                   {"latitude": 26.726438, "longitude": -80.078599}],
+#         scrape=False
+#     )
+#     City.objects.create(
+#         name='Gainesville',
+#         country='US',
+#         latitude=29.680578,
+#         longitude=-82.342753,
+#         images=['{static/Gainesville.jpeg}'],
+#         description='Known for its preservation of historic buildings and the beauty of its natural surroundings, Gainesville numerous parks, museums and lakes provide entertainment to thousands of visitors.',
+#         lat_long=[{"latitude": 29.765849, "longitude": -82.398028},
+#                   {"latitude": 29.759591, "longitude": -82.393565},
+#                   {"latitude": 29.766743, "longitude": -82.385325},
+#                   {"latitude": 29.752139, "longitude": -82.387385},
+#                   {"latitude": 29.737831, "longitude": -82.376399},
+#                   {"latitude": 29.729782, "longitude": -82.389445},
+#                   {"latitude": 29.715769, "longitude": -82.386012},
+#                   {"latitude": 29.719943, "longitude": -82.372279},
+#                   {"latitude": 29.727695, "longitude": -82.359233},
+#                   {"latitude": 29.727099, "longitude": -82.347216},
+#                   {"latitude": 29.690122, "longitude": -82.382922},
+#                   {"latitude": 29.698473, "longitude": -82.367472},
+#                   {"latitude": 29.685648, "longitude": -82.353739},
+#                   {"latitude": 29.671331, "longitude": -82.355799},
+#                   {"latitude": 29.657906, "longitude": -82.362666},
+#                   {"latitude": 29.663575, "longitude": -82.341036},
+#                   {"latitude": 29.667751, "longitude": -82.312541},
+#                   {"latitude": 29.661188, "longitude": -82.299151},
+#                   {"latitude": 29.690421, "longitude": -82.315974},
+#                   {"latitude": 29.677893, "longitude": -82.297434},
+#                   {"latitude": 29.681174, "longitude": -82.282328},
+#                   {"latitude": 29.687736, "longitude": -82.264476},
+#                   {"latitude": 29.700859, "longitude": -82.267222},
+#                   {"latitude": 29.697877, "longitude": -82.261729},
+#                   {"latitude": 29.689824, "longitude": -82.262416},
+#                   {"latitude": 29.684455, "longitude": -82.241130},
+#                   {"latitude": 29.683262, "longitude": -82.229800}],
+#         scrape=False
+#     )
+
+#     City.objects.create(
+#         name='Orlando',
+#         country='US',
+#         latitude=28.538336,
+#         longitude=-81.379234,
+#         images=['static/Orlando.jpeg'],
+#         description='Orlando is a city in central Florida, known for its theme parks, including Walt Disney World and Universal Studios.',
+#         lat_long=[{"latitude": 28.499245, "longitude": -81.451484},
+#                   {"latitude": 28.510485, "longitude": -81.471833},
+#                   {"latitude": 28.517127, "longitude": -81.442181},
+#                   {"latitude": 28.529387, "longitude": -81.457298},
+#                   {"latitude": 28.558992, "longitude": -81.367906},
+#                   {"latitude": 28.589891, "longitude": -81.434869},
+#                   {"latitude": 28.553011, "longitude": -81.348612},
+#                   {"latitude": 28.523099, "longitude": -81.316833},
+#                   {"latitude": 28.447285, "longitude": -81.305484},
+#                   {"latitude": 28.397377, "longitude": -81.289594},
+#                   {"latitude": 28.437305, "longitude": -81.274840},
+#                   {"latitude": 28.441297, "longitude": -81.205607}],
+#         scrape=False
+#     )
+
+#     City.objects.create(
+#         name='Tampa',
+#         country='US',
+#         latitude=27.950575,
+#         longitude=-82.457178,
+#         images=['static/Tampa.jpeg'],
+#         description='Tampa is a city on Tampa Bay, along Florida’s Gulf Coast. It is known for its museums and other cultural offerings.',
+#         lat_long=[{"latitude": 27.839308, "longitude": -82.495895},
+#                   {"latitude": 27.867796, "longitude": -82.525047},
+#                   {"latitude": 27.878647, "longitude": -82.498963},
+#                   {"latitude": 27.903735, "longitude": -82.519677},
+#                   {"latitude": 27.927462, "longitude": -82.508170},
+#                   {"latitude": 27.955250, "longitude": -82.521212},
+#                   {"latitude": 27.974900, "longitude": -82.530418},
+#                   {"latitude": 27.985740, "longitude": -82.488223},
+#                   {"latitude": 27.978288, "longitude": -82.443726},
+#                   {"latitude": 27.958638, "longitude": -82.404600},
+#                   {"latitude": 27.980320, "longitude": -82.432219},
+#                   {"latitude": 27.993192, "longitude": -82.460604},
+#                   {"latitude": 28.013513, "longitude": -82.472112},
+#                   {"latitude": 28.032475, "longitude": -82.439123},
+#                   {"latitude": 28.084128, "longitude": -82.397709},
+#                   {"latitude": 28.079887, "longitude": -82.399082},
+#                   {"latitude": 28.089580, "longitude": -82.368183},
+#                   {"latitude": 28.122286, "longitude": -82.402515},
+#                   {"latitude": 28.135003, "longitude": -82.381229},
+#                   {"latitude": 28.087157, "longitude": -82.395649},
+#                   {"latitude": 28.114413, "longitude": -82.391529},
+#                   {"latitude": 28.150745, "longitude": -82.381229},
+#                   {"latitude": 28.136214, "longitude": -82.318058},
+#                   {"latitude": 28.164669, "longitude": -82.307072},
+#                   {"latitude": 28.163458, "longitude": -82.283726}],
+#         scrape=False
+#     )
+
+#     City.objects.create(
+#         name='Tallahassee',
+#         country='US',
+#         latitude=30.438255,
+#         longitude=-84.280733,
+#         images=['static/Tallahassee.jpeg'],
+#         description='Tallahassee is the capital of the U.S. state of Florida. It is known for its large number of law firms, lobbying organizations, and trade associations.',
+#         lat_long=[{"latitude": 30.357485, "longitude": -84.158683},
+#                   {"latitude": 30.357485, "longitude": -84.190269},
+#                   {"latitude": 30.372889, "longitude": -84.212242},
+#                   {"latitude": 30.384736, "longitude": -84.222541},
+#                   {"latitude": 30.409611, "longitude": -84.221168},
+#                   {"latitude": 30.385921, "longitude": -84.255500},
+#                   {"latitude": 30.423822, "longitude": -84.217048},
+#                   {"latitude": 30.411980, "longitude": -84.219108},
+#                   {"latitude": 30.437440, "longitude": -84.210868},
+#                   {"latitude": 30.443360, "longitude": -84.252067},
+#                   {"latitude": 30.421454, "longitude": -84.265800},
+#                   {"latitude": 30.408427, "longitude": -84.293266},
+#                   {"latitude": 30.425007, "longitude": -84.311805},
+#                   {"latitude": 30.458750, "longitude": -84.334465},
+#                   {"latitude": 30.473546, "longitude": -84.313865},
+#                   {"latitude": 30.482422, "longitude": -84.344764},
+#                   {"latitude": 30.484198, "longitude": -84.283653},
+#                   {"latitude": 30.465260, "longitude": -84.254127},
+#                   {"latitude": 30.480647, "longitude": -84.225975},
+#                   {"latitude": 30.510230, "longitude": -84.228721},
+#                   {"latitude": 30.529750, "longitude": -84.269920},
+#                   {"latitude": 30.567004, "longitude": -84.264427},
+#                   {"latitude": 30.507864, "longitude": -84.214988},
+#                   {"latitude": 30.514371, "longitude": -84.182029},
+#                   {"latitude": 30.514963, "longitude": -84.153190},
+#                   {"latitude": 30.492481, "longitude": -84.153877}],
+#         scrape=False
+#     )
+
+#     City.objects.create(
+#         name='St. Petersburg',
+#         country='US',
+#         latitude=27.767600,
+#         longitude=-82.640290,
+#         images=['static/St_Petersburg.jpeg'],
+#         description='St. Petersburg is a city on Florida’s Gulf Coast, part of the Tampa Bay area. It is known for its pleasant weather and cultural attractions.',
+#         lat_long=[{"latitude": 27.798646, "longitude": -82.739296},
+#                   {"latitude": 27.781637, "longitude": -82.737236},
+#                   {"latitude": 27.801683, "longitude": -82.722817},
+#                   {"latitude": 27.794394, "longitude": -82.707024},
+#                   {"latitude": 27.772524, "longitude": -82.691918},
+#                   {"latitude": 27.744574, "longitude": -82.682305},
+#                   {"latitude": 27.724518, "longitude": -82.664452},
+#                   {"latitude": 27.752473, "longitude": -82.651405},
+#                   {"latitude": 27.805934, "longitude": -82.653465},
+#                   {"latitude": 27.822332, "longitude": -82.632179},
+#                   {"latitude": 27.845406, "longitude": -82.652092},
+#                   {"latitude": 27.866046, "longitude": -82.661019},
+#                   {"latitude": 27.880614, "longitude": -82.643166},
+#                   {"latitude": 27.875758, "longitude": -82.623940}],
+#         scrape=False
+#     )
+
+#     City.objects.create(
+#         name='Fort Lauderdale',
+#         country='US',
+#         latitude=26.122439,
+#         longitude=-80.137317,
+#         images=['static/Fort_Lauderdale.jpeg'],
+#         description='Fort Lauderdale is a city on Florida’s southeastern coast, known for its boating canals and stunning beaches.',
+#         lat_long=[{"latitude": 26.094233, "longitude": -80.194323},
+#                   {"latitude": 26.119204, "longitude": -80.185740},
+#                   {"latitude": 26.109031, "longitude": -80.180247},
+#                   {"latitude": 26.110265, "longitude": -80.165828},
+#                   {"latitude": 26.118896, "longitude": -80.174411},
+#                   {"latitude": 26.131534, "longitude": -80.170978},
+#                   {"latitude": 26.148794, "longitude": -80.174067},
+#                   {"latitude": 26.153725, "longitude": -80.179217},
+#                   {"latitude": 26.147561, "longitude": -80.158961},
+#                   {"latitude": 26.143246, "longitude": -80.146602},
+#                   {"latitude": 26.143246, "longitude": -80.132182},
+#                   {"latitude": 26.147869, "longitude": -80.125316},
+#                   {"latitude": 26.135233, "longitude": -80.125316},
+#                   {"latitude": 26.123520, "longitude": -80.117419},
+#                   {"latitude": 26.106565, "longitude": -80.120166},
+#                   {"latitude": 26.098361, "longitude": -80.127254}],
+#         scrape=False
+#     )
+
+#     City.objects.create(
+#         name='Hialeah',
+#         country='US',
+#         latitude=25.857596,
+#         longitude=-80.278105,
+#         images=['static/Hialeah.jpeg'],
+#         description='Hialeah is a city in Miami-Dade County, Florida, and a principal city of the Miami metropolitan area.',
+#         lat_long=[{"latitude": 25.921037, "longitude": -80.362458},
+#                   {"latitude": 25.909785, "longitude": -80.357777},
+#                   {"latitude": 25.899300, "longitude": -80.353966},
+#                   {"latitude": 25.889217, "longitude": -80.345672},
+#                   {"latitude": 25.893250, "longitude": -80.333343},
+#                   {"latitude": 25.881506, "longitude": -80.327783},
+#                   {"latitude": 25.873783, "longitude": -80.317826},
+#                   {"latitude": 25.884903, "longitude": -80.302720},
+#                   {"latitude": 25.861426, "longitude": -80.314393},
+#                   {"latitude": 25.864825, "longitude": -80.301690},
+#                   {"latitude": 25.868532, "longitude": -80.287614},
+#                   {"latitude": 25.832691, "longitude": -80.279374},
+#                   {"latitude": 25.849686, "longitude": -80.278001},
+#                   {"latitude": 25.829910, "longitude": -80.272164},
+#                   {"latitude": 25.820330, "longitude": -80.264954},
+#                   {"latitude": 25.835164, "longitude": -80.262208},],
+#         scrape=False
+#     )
+
+#     City.objects.create(
+#         name='Port St. Lucie',
+#         country='US',
+#         latitude=27.273049,
+#         longitude=-80.358226,
+#         images=['static/Port_St_Lucie.jpeg'],
+#         description='Port St. Lucie is a city in Florida, known for its beautiful parks, riverfront, and botanical gardens.',
+#         scrape=False
+#     )
+
+#     City.objects.create(
+#         name='Pembroke Pines',
+#         country='US',
+#         latitude=26.007765,
+#         longitude=-80.296256,
+#         images=['static/Pembroke_Pines.jpeg'],
+#         description='Pembroke Pines is a city in southern Broward County, Florida, and a suburb of Miami.',
+#         scrape=False
+#     )
+
+#     City.objects.create(
+#         name='Miami',
+#         country='US',
+#         latitude=25.761670,
+#         longitude=-80.22534,
+#         images=['static/Miami.jpeg'],
+#         description='Miami, officially the City of Miami, is a coastal city in the U.S. state of Florida and the seat of Miami-Dade County in South Florida',
+#         lat_long=[
+#             {"latitude": 25.843952, "longitude": -80.187044},
+#             {"latitude": 25.844673, "longitude": -80.199120},
+#             {"latitude": 25.829970, "longitude": -80.190792},
+#             {"latitude": 25.823338, "longitude": -80.222184},
+#             {"latitude": 25.798293, "longitude": -80.216817},
+#             {"latitude": 25.805181, "longitude": -80.247685},
+#             {"latitude": 25.789029, "longitude": -80.248740},
+#             {"latitude": 25.779527, "longitude": -80.258237},
+#             {"latitude": 25.771925, "longitude": -80.279871},
+#             {"latitude": 25.769311, "longitude": -80.302823},
+#             {"latitude": 25.753445, "longitude": -80.248190},
+#             {"latitude": 25.731077, "longitude": -80.248559},
+#             {"latitude": 25.745889, "longitude": -80.236336},
+#             {"latitude": 25.760624, "longitude": -80.220720},
+#             {"latitude": 25.759954, "longitude": -80.209194},
+#             {"latitude": 25.768660, "longitude": -80.201014}
+#         ],
+#         scrape=True
+#     )
+
+#     City.objects.create(
+#         name='Jacksonville',
+#         country='US',
+#         latitude=30.387233,
+#         longitude=-81.670820,
+#         images=['static/Jacksonville.jpeg', 'static/Jacksonville2.jpeg'],
+#         description='Jacksonville is the most populous city proper in the U.S. state of Florida, located on the Atlantic coast of northeastern Florida. It is the seat of Duval County, with which the City of Jacksonville consolidated in 1968. It was the largest city by area in the contiguous United States as of 2020',
+#         lat_long=[{"latitude": 30.152394, "longitude": -81.470318},
+#                   {"latitude": 30.188011, "longitude": -81.464825},
+#                   {"latitude": 30.144081, "longitude": -81.567822},
+#                   {"latitude": 30.151206, "longitude": -81.626873},
+#                   {"latitude": 30.210563, "longitude": -81.602154},
+#                   {"latitude": 30.260394, "longitude": -81.628246},
+#                   {"latitude": 30.286487, "longitude": -81.596661},
+#                   {"latitude": 30.305459, "longitude": -81.547222},
+#                   {"latitude": 30.282929, "longitude": -81.934490}],
+#         scrape=True
+#     )
+#     return JsonResponse({'message': 'City fetched and saved successfully'})
 
 
-def sitesScrape(request):
-    miami = City.objects.filter(id='0e872ebf-e377-41e5-a9d1-36297c2dea6b').first()
-    jacksonville = City.objects.filter(id='8a8da460-2ec4-496e-82de-58f2f1726257').first()
-    Site.objects.create(
-        name='Vizcaya',
-        description='This beautiful estate was built by industrialist James Deering in the early 20th century. It features a stunning Italian Renaissance-style villa',
-        images=['static/Vizcaya.png'],
-        city=miami,
-        latitude=miami.latitude,
-        longitude=miami.longitude,
-    )
-    Site.objects.create(
-        name='Jacksonville',
-        description='This beautiful estate was built by industrialist James Deering in the early 20th century. It features a stunning Italian Renaissance-style villa',
-        images=['static/Jacksonville.jpeg'],
-        city=jacksonville,
-        latitude=miami.latitude,
-        longitude=miami.longitude,
-    )
-    return JsonResponse({'message': 'Site fetched and saved successfully'})
+# def sitesScrape(request):
+#     miami = City.objects.filter(id='0e872ebf-e377-41e5-a9d1-36297c2dea6b').first()
+#     jacksonville = City.objects.filter(id='8a8da460-2ec4-496e-82de-58f2f1726257').first()
+#     Site.objects.create(
+#         name='Vizcaya',
+#         description='This beautiful estate was built by industrialist James Deering in the early 20th century. It features a stunning Italian Renaissance-style villa',
+#         images=['static/Vizcaya.png'],
+#         city=miami,
+#         latitude=miami.latitude,
+#         longitude=miami.longitude,
+#     )
+#     Site.objects.create(
+#         name='Jacksonville',
+#         description='This beautiful estate was built by industrialist James Deering in the early 20th century. It features a stunning Italian Renaissance-style villa',
+#         images=['static/Jacksonville.jpeg'],
+#         city=jacksonville,
+#         latitude=miami.latitude,
+#         longitude=miami.longitude,
+#     )
+    return JsonResponse({'message': 'City created successfully'})
 
 
 # def weird(request):
@@ -3495,85 +3523,104 @@ def get_place_description(request):
     except Exception as e:
         return f"An error occurred while fetching the description: {e}"
 
+
 def newAPISave(api_response, city, category, type):
     data = api_response
-    logger.info("Saved Data Length = " + str(len(data['places'])))
-    print("Saved Data Length = " + str(len(data['places'])))
-
-    # city = City.objects.filter(id=city.id).first()
-    # city=City.objects.filter(id="2089800e-c9b1-439b-a20d-a480ae8d7419").first()
-    # category = Category.objects.filter(id=category.id).first()
+    length = str(len(data['places']))
+    print("Received Data Length = " + length)
+    logger.info("Received Data Length = " + length)
+    
+    count = 0
 
     for result in data['places']:
-        # print("Place id = ",result['id'])
-        # print("displayName = ",result['displayName']['text'])
-        # print("latitude = ",result['location']['latitude'])
-        # print("longitude = ",result['location']['longitude'])
-        # print("longitude = ",result['rating'])
-        print("id = ",result.get('id'))
-        print("types = ",result.get('types'))
-        print("iconMaskBaseUri = ",result.get('iconMaskBaseUri'))
-        print("iconBackgroundColor = ",result.get('iconBackgroundColor'))
-        print("displayName = ",result.get('displayName').get('text'))
-        print("formattedAddress = ",result.get('formattedAddress'))
-        print("latitude = ",result.get('location').get('latitude'))
-        print("longitude = ",result.get('location').get('longitude'))
-        print("rating = ",result.get('rating'))
-        print("photos = ",result.get('photos'))
-        print("reviews = ",result.get('reviews'))
-        # nextPageToken
-        # if not Site.objects.filter(place_id=result['id'], category_id=category.id).exists():
-        #     print("Hotel Exists")
-        #     location_data = result['geometry']['location']
-        #     print("location_data = ", location_data['lat'])
-        #     print("location_data = ", location_data['lng'])
-            
-        #     if result.get('user_ratings_total', {}):
-        #         user_ratings_total = result.get('user_ratings_total', {})
-        #     else:
-        #         user_ratings_total = 0
-        #     print("creatig site")
-        #     try:
-        #         hotel = Site.objects.create(
-        #             business_status=result.get('business_status'),
-        #             # geometry=geometry,
-        #             icon=result.get('icon'),
-        #             icon_background_color=result['icon_background_color'],
-        #             icon_mask_base_uri=result['icon_mask_base_uri'],
-        #             name=result['name'],
-        #             open_now=result.get('opening_hours', {}).get('open_now', False),
-        #             place_id=result['place_id'],
-        #             # plus_code=plus_code,location_data['lng']
-        #             latitude=location_data['lat'],
-        #             longitude=location_data['lng'],
-        #             rating=result.get('rating'),
-        #             reference=result['reference'],
-        #             scope=result.get('scope'),
-        #             types=','.join(result['types']),
-        #             city=city,
-        #             keyword=type,
-        #             show=True,
-        #             category=category,
-        #             user_ratings_total=user_ratings_total,
-        #             vicinity=result.get('vicinity', {}) if result.get('vicinity', {}) is not None else 0
-        #         )
-        #     except Exception as e:
-        #         print("exception = ", e)
-        #     print("Site created")
+        if not Site.objects.filter(place_id=result.get('id'), category_id=category.id).exists():
+            print("Site does not Exist")
 
-        #     for photo in result.get('photos', []):
-        #         photo_obj = Photo.objects.create(
-        #             height=photo['height'],
-        #             width=photo['width'],
-        #             html_attributions=', '.join(photo['html_attributions']),
-        #             photo_reference=photo['photo_reference']
-        #         )
-        #         hotel.photos.add(photo_obj)
+            # location_data = result['geometry']['location']
+            print("location_data = ", result.get('location').get('latitude'))
+            print("location_data = ", result.get('location').get('longitude'))
 
-        #     hotel.save()
-        #     print("Hotel ", hotel.id, '-->', hotel.name)
-        # else:
-        #     print("Hotel already exists")
+            if result.get('userRatingCount', {}):
+                user_ratings_total = result.get('userRatingCount', {})
+            else:
+                user_ratings_total = 0
+            print("creatig site")
+            try:
+                hotel = Site.objects.create(
+                    business_status=result.get('businessStatus'),
+                    # geometry=geometry,
+                    icon=result.get('icon'),
+                    icon_background_color=result.get('iconBackgroundColor'),
+                    icon_mask_base_uri=result.get('iconMaskBaseUri'),
+                    name=result.get('displayName').get('text'),
+                    # open_now=result.get('opening_hours', {}).get('open_now', False),
+                    place_id=result.get('id'),
+                    # plus_code=plus_code,location_data['lng']
+                    latitude=result.get('location').get('latitude'),
+                    longitude=result.get('location').get('longitude'),
+                    rating=result.get('rating'),
+                    # reference=result.get('id'),
+                    # scope=result.get('scope'),
+                    types=','.join(result['types']),
+                    city=city,
+                    keyword=type,
+                    show=True,
+                    category=category,
+                    user_ratings_total=user_ratings_total,
+                    vicinity=result.get('formattedAddress')
+                )
+                count = count + 1
+                print("Site created")
+            except Exception as e:
+                print("Site exception = ", str(e))
+                logger.error("Site exception = ", str(e))
+
+            try:
+                for photo in result.get('photos', []):
+                    if photo:
+                        print("heightPx = ", photo.get('heightPx'))
+                        print("displayName = ", photo.get('authorAttributions')[0].get('displayName'))
+                        photo_obj = Photo.objects.create(
+                            height=photo.get('heightPx'),
+                            width=photo.get('widthPx'),
+                            # html_attributions=', '.join(photo['html_attributions']),
+                            author_name=photo.get('authorAttributions')[0].get('displayName'),
+                            author_uri=photo.get('authorAttributions')[0].get('uri'),
+                            author_photo_uri=photo.get('authorAttributions')[0].get('photoUri'),
+                            photo_name=photo.get('name')
+                        )
+                        hotel.photos.add(photo_obj)
+            except Exception as e:
+                print("Photo exception = ", str(e))
+                logger.error("Photo exception = ", str(e))
+            try:
+                for review in result.get('reviews', []):
+                    if review:
+                        review_obj = PlaceReview.objects.create(
+                            name=review.get('name'),
+                            rating=review.get('rating'),
+                            text=review.get('text').get('text'),
+                            original_text=review.get('originalText').get('text'),
+                            author_name=review.get('authorAttribution').get('displayName'),
+                            author_uri=review.get('authorAttribution').get('uri'),
+                            author_photo_uri=review.get('authorAttribution').get('photoUri'),
+                            publish_time=parser.isoparse(review.get('publishTime')),
+                            flag_content_uri=review.get('flagContentUri'),
+                            google_maps_uri=review.get('googleMapsUri'),
+                        )
+                        hotel.place_review.add(review_obj)
+            except Exception as e:
+                print("Review exception = ", str(e))
+                logger.error("Review exception = "+ str(e))
+
+            hotel.save()
+            print("Site ", hotel.id, '-->', hotel.name)
+        else:
+            print("Site already exists")
+            logger.info("place already exist with place id = " + result.get('id') + " place name " + result.get('displayName').get('text'))
+    print("Total sites saved = " + str(count) + " out of " + length)
+    logger.info("Total sites saved = " + str(count) + " out of " + length)
+
 
 def newScrapeAPI(request):
     cityList = City.objects.filter(scrape=True).all()
@@ -3581,20 +3628,22 @@ def newScrapeAPI(request):
     print("categoryList = ", categoryList)
 
     for city in cityList:
+        logger.info("city name = " + city.name)
         if city.lat_long:
             print(city.name, "Exist")
             for latlang in city.lat_long:
                 print(latlang['latitude'])
                 print(latlang['longitude'])
+                logger.info("lat long = " + str(latlang['latitude']) + "," + str(latlang['longitude']))
                 for category in categoryList:
                     if category.keywords:
                         for keyword in category.keywords:
                             lat = latlang['latitude']
                             lng = latlang['longitude']
+                            logger.info("keyword = " + keyword)
                             print(f"Latitude: {lat}, Longitude: {lng}")
                             api_url = "https://places.googleapis.com/v1/places:searchText"
 
-                      
                             payload = {
                                 "textQuery": keyword,
                                 "locationBias": {
@@ -3602,51 +3651,100 @@ def newScrapeAPI(request):
                                         "center": {
                                             "latitude": lat,
                                             "longitude": lng
-                                            },
+                                        },
                                         "radius": 10000
                                     }
                                 }
                             }
-                            
+
                             headers = {
                                 "X-Goog-Api-Key": f'{settings.GOOGLE_API_KEY}',
                                 "X-Goog-FieldMask": "places.id,places.types,places.reviews,places.iconMaskBaseUri,places.iconBackgroundColor,places.displayName,places.formattedAddress,places.location,places.rating,places.photos,nextPageToken"
                             }
-                            
-
-                           
+                            logger.info("api_url = " + api_url)
+                            logger.info("payload = " + str(payload))
                             response = requests.post(api_url, json=payload, headers=headers)
                             print("Status code = ", response.status_code)
+                            logger.info("Status code = " + str(response.status_code))
                             if response.status_code == 200:
+                                print("Status is 200")
                                 data = response.json()
                                 # print("Data = ", data)
-                                newAPISave(data, city, category, keyword)
-                                
-                                # if not Site.objects.filter(place_id=data.get('place_id'), category_id=category.id).exists():
-                                #     print("Hotel does not exists")
+                                if data and data.get('places'):
+                                    try:
+                                        APICalls.objects.create(
+                                            city=city,
+                                            category=category,
+                                            keyword=keyword,
+                                            latitude=lat,
+                                            longitude=lng,
+                                            url=api_url,
+                                            result_count=len(data['places']),
+                                            request_body=payload,
+                                        )
+                                    except Exception as e:
+                                        print("APICalls exception = ", str(e))
+                                        logger.error("APICalls exception = ", str(e))
+                                    newAPISave(data, city, category, keyword)
 
-                                    # saveToDb(data, city, category, keyword)
-                                    # print('Status code =   ', response.status_code)
-                                    # next_page_token = data.get('next_page_token')
-                                    # print('Next token =   ', next_page_token)
+                                    next_page_token = data.get('nextPageToken')
+                                    print('Next token =   ', next_page_token)
+                                
+                                
                                     # todo: uncomment
-                                    # while next_page_token:
-                                    #     newUrl = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken={next_page_token}&key={settings.GOOGLE_API_KEY}"
-                                    #     print("New url = ", newUrl)
-                                    #     logger.info("Scraping API Called " + newUrl)
-                                    #     res = requests.get(newUrl)
-                                    #     print("Requested url = ", newUrl)
-                                    #     newData = res.json()
-                                    #     print('Next Status code =   ', res.status_code)
-                                    #     next_page_token = newData.get('next_page_token')
-                                    #     print('2nd calling next page urlStatus =   ', res.status_code)
-                                    #     if res.status_code == 200:
-                                    #         if not Site.objects.filter(place_id=newData.get('place_id'), category_id=category.id).exists():
-                                    #             saveToDb(newData, city, category, keyword)
-                                    #     if not next_page_token:
-                                    #         break
-                                # else:
-                                #     print('Hotel exists')
+                                    while next_page_token:
+                                        logger.info('Next token =   ' + next_page_token)
+                                        print('Next token =   ', next_page_token)
+                                        newUrl = "https://places.googleapis.com/v1/places:searchText"
+                                        payload = {
+                                            "textQuery": keyword,
+                                            "pageToken": next_page_token,
+                                            "locationBias": {
+                                                "circle": {
+                                                "center": {
+                                                    "latitude": lat,
+                                                    "longitude": lng
+                                                },
+                                                "radius": 10000
+                                            }
+                                            }
+                                        }
+
+                                        headers = {
+                                            "X-Goog-Api-Key": f'{settings.GOOGLE_API_KEY}',
+                                            "X-Goog-FieldMask": "places.id,places.types,places.reviews,places.iconMaskBaseUri,places.iconBackgroundColor,places.displayName,places.formattedAddress,places.location,places.rating,places.photos,nextPageToken"
+                                        }
+
+                                        logger.info("Next page api_url = " + newUrl)
+                                        logger.info("Next page payload = " + str(payload))
+
+                                        res = requests.post(newUrl, json=payload, headers=headers)
+                                        print("Next page Status code = ", res.status_code)
+                                        logger.info('Next page urlStatus =  ' +str(res.status_code))
+                                        if res.status_code == 200:
+                                            newData = res.json()
+                                            next_page_token = newData.get('nextPageToken')
+                                            print('Next token =   ', next_page_token)
+                                            if newData and newData.get('places'):
+                                                try:
+                                                    APICalls.objects.create(
+                                                        city=city,
+                                                        category=category,
+                                                        keyword=keyword,
+                                                        latitude=lat,
+                                                        longitude=lng,
+                                                        url=api_url,
+                                                        result_count=len(newData['places']),
+                                                        request_body=payload,
+                                                    )
+                                                except Exception as e:
+                                                    print("APICalls exception = ", str(e))
+                                                    logger.error("APICalls exception = ", str(e))
+                                                newAPISave(newData, city, category, keyword)
+                                        if not next_page_token:
+                                            break
+                                    else:
+                                        print('Hotel exists')
         else:
             print(city.name, "Does not exist")
 #
