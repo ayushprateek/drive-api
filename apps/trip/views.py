@@ -2360,6 +2360,7 @@ def getSites(request):
                 'city_id': city_id,
                 'city_name': city.name if city else None,
                 'photo_reference': site_instance.photos.values_list('photo_reference', flat=True).first(),
+                'photo_name': site_instance.photos.values_list('photo_name', flat=True).first(),
             }
             plans_list.append(site)
 
@@ -3490,8 +3491,7 @@ def get_place_description(request):
         str: A description of the place or an error message.
     """
     # miami
-    site_list = Site.objects.filter(city_id='d2818443-da0b-4304-9351-11539df28735').all()
-    descriptionList = []
+    site_list = Site.objects.filter(city_id='2f742167-5e54-4d72-b524-a4fb6875fc83').all()
     try:
         # Construct the prompt for ChatGPT
         for site in site_list:
