@@ -2361,6 +2361,7 @@ def getSites(request):
                 'city_name': city.name if city else None,
                 'photo_reference': site_instance.photos.values_list('photo_reference', flat=True).first(),
                 'photo_name': site_instance.photos.values_list('photo_name', flat=True).first(),
+                'reviews': site_instance.place_review.values(),
             }
             plans_list.append(site)
 
