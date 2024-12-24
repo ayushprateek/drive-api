@@ -30,6 +30,7 @@ urlpatterns = [
     path('get-all-cities/', getCityList, name='create-trip'),
     path('get-trip-via-id/<id>', getTripViaId, name='create-trip'),
     path('delete-plan/<id>', deletePlan, name='create-trip'),
+    path('get-site-via-id/<id>', getSiteViaId, name='create-trip'),
     path('city-search/', SearchCityListAPIView.as_view(), name='city-search'),
     # path('historicalSitesScrape/', sitesScrape, name='city-search'),
     path('get-historical-sites/', getSites, name='create-trip'),

@@ -3530,7 +3530,7 @@ def newAPISave(api_response, city, category, type):
     length = str(len(data['places']))
     print("Received Data Length = " + length)
     logger.info("Received Data Length = " + length)
-    
+
     count = 0
 
     for result in data['places']:
@@ -3612,7 +3612,7 @@ def newAPISave(api_response, city, category, type):
                         hotel.place_review.add(review_obj)
             except Exception as e:
                 print("Review exception = ", str(e))
-                logger.error("Review exception = "+ str(e))
+                logger.error("Review exception = " + str(e))
 
             hotel.save()
             print("Site ", hotel.id, '-->', hotel.name)
@@ -3690,8 +3690,7 @@ def newScrapeAPI(request):
 
                                     next_page_token = data.get('nextPageToken')
                                     print('Next token =   ', next_page_token)
-                                
-                                
+
                                     # todo: uncomment
                                     while next_page_token:
                                         logger.info('Next token =   ' + next_page_token)
@@ -3702,12 +3701,12 @@ def newScrapeAPI(request):
                                             "pageToken": next_page_token,
                                             "locationBias": {
                                                 "circle": {
-                                                "center": {
-                                                    "latitude": lat,
-                                                    "longitude": lng
-                                                },
-                                                "radius": 10000
-                                            }
+                                                    "center": {
+                                                        "latitude": lat,
+                                                        "longitude": lng
+                                                    },
+                                                    "radius": 10000
+                                                }
                                             }
                                         }
 
@@ -3721,7 +3720,7 @@ def newScrapeAPI(request):
 
                                         res = requests.post(newUrl, json=payload, headers=headers)
                                         print("Next page Status code = ", res.status_code)
-                                        logger.info('Next page urlStatus =  ' +str(res.status_code))
+                                        logger.info('Next page urlStatus =  ' + str(res.status_code))
                                         if res.status_code == 200:
                                             newData = res.json()
                                             next_page_token = newData.get('nextPageToken')
@@ -3976,6 +3975,7 @@ def get_coordinates_along_polyline(request):
                     "id": plan.id,
                     "name": plan.name,
                     "description": plan.description,
+                    "facility": plan.facility,
                     "icon_url": plan.icon_url,
                     "place_id": plan.place_id,
                     "images": [plan.place_id],
@@ -3999,6 +3999,7 @@ def get_coordinates_along_polyline(request):
                         plans.append({
                             "id": plan.id,
                             "place_id": plan.place_id,
+                            "facility": plan.facility,
                             "name": plan.name,
                             "description": plan.description,
                             "icon_url": plan.icon_url,
@@ -4022,6 +4023,43 @@ def get_coordinates_along_polyline(request):
     print('Marker list', plans_list)
 
     return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def getSiteViaId(request, id=None):
+    try:
+        site_instance = Site.objects.filter(id=id, show=True).annotate(icon_url=F('category__icon_url')).first()
+        if site_instance:
+            return JsonResponse({'id': site_instance.id,
+                                 'name': site_instance.name,
+                                 'description': site_instance.description,
+                                 'place_id': site_instance.place_id,
+                                 'rating': site_instance.rating,
+                                 'user_ratings_total': site_instance.user_ratings_total,
+                                 'latitude': site_instance.latitude,
+                                 'longitude': site_instance.longitude,
+                                 'icon_url': site_instance.category.icon_url if site_instance.category else None,
+                                 'city_id': site_instance.city.id,
+                                 'city_name': site_instance.city.name if site_instance.city else None,
+                                 'photo_reference': list(
+                                     site_instance.photos.filter(photo_reference__isnull=False).exclude(
+                                         photo_reference='').values_list('photo_reference', flat=True)
+                                 ),
+                                 'photo_name': list(
+                                     site_instance.photos.filter(photo_name__isnull=False).exclude(
+                                         photo_name='').values_list('photo_name', flat=True)
+                                 ),
+                                 'facility': site_instance.facility,
+                                 'amenities': site_instance.amenities,
+                                 'service_amenities': site_instance.service_amenities,
+                                 'contact_info': site_instance.contact_info,
+                                 'discount_url': site_instance.discount_url,
+                                 'reviews': list(site_instance.place_review.values())
+                                 }, safe=False, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse({}, safe=False, status=status.HTTP_200_OK)
+    except Exception as ex:
+        return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -4053,12 +4091,12 @@ def getSitesNearMe(request):
                 plans.append(plan)
 
     if only_hotels:
-        print("only_hotels = ",only_hotels)
+        print("only_hotels = ", only_hotels)
         data = Site.objects.filter(show=True).annotate(icon_url=F('category__icon_url'))
         print("Data fetched")
         for plan in data:
             point = Point(plan.longitude, plan.latitude)
-            print("Location = ",plan.longitude, plan.latitude)
+            print("Location = ", plan.longitude, plan.latitude)
 
             condition = haversine(lat1=lat1, lon1=lon1, lat2=plan.latitude, lon2=plan.longitude) < radius
 
