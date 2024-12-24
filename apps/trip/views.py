@@ -4071,6 +4071,7 @@ def getSitesNearMe(request):
             if condition:
                 plans.append({
                     "id": plan.id,
+                    "place_id": plan.place_id,
                     "name": plan.name,
                     "description": plan.description,
                     "icon_url": plan.icon_url,
@@ -4093,6 +4094,7 @@ def getSitesNearMe(request):
                     if haversine(lat1=lat1, lon1=lon1, lat2=plan.latitude, lon2=plan.longitude) < radius and bounding_box.contains(point):
                         plans.append({
                             "id": plan.id,
+                            "place_id": plan.place_id,
                             "name": plan.name,
                             "description": plan.description,
                             "icon_url": plan.icon_url,
