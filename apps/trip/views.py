@@ -4053,9 +4053,12 @@ def getSitesNearMe(request):
                 plans.append(plan)
 
     if only_hotels:
-        data = Site.objects.annotate(icon_url=F('category__icon_url'), show=True)
+        print("only_hotels = ",only_hotels)
+        data = Site.objects.filter(show=True).annotate(icon_url=F('category__icon_url'))
+        print("Data fetched")
         for plan in data:
             point = Point(plan.longitude, plan.latitude)
+            print("Location = ",plan.longitude, plan.latitude)
 
             condition = haversine(lat1=lat1, lon1=lon1, lat2=plan.latitude, lon2=plan.longitude) < radius
 
