@@ -68,5 +68,6 @@ urlpatterns = [
     path('get-ad/', getAd, name='add-user'),
     path('get-place-description/', get_place_description, name='add-user'),
     path('new-scrape-api/', newScrapeAPI, name='add-user'),
+    path('new-scrape-amenities/', newAmenitiesScrapeAPI, name='add-user'),
     # path('update-location-in-site/', updateLocationInSite, name='add-user'),
 ]

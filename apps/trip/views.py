@@ -1251,13 +1251,13 @@ def getItineraryViaPlan(request):
                     'id', 'name',
                     'description', 'images',
                     'city_id',
-                    'place_id','facility'
+                    'place_id', 'facility'
                 ).annotate(city_name=F('city__name')).values(
                     'id', 'name',
                     'description', 'images',
                     'city_id',
                     'city_name',
-                    'place_id','facility'
+                    'place_id', 'facility'
                 )
                 imageList = []
                 userList = ItinerarySite.objects.filter(plan_id=plan_id, site_id=itinerarySiteData['site_id']).all()\
@@ -1281,7 +1281,6 @@ def getItineraryViaPlan(request):
                     dates.add(plan['date'])
                     siteList.append(plan)
 
-    
     plans_list.append({"Site": list(siteList)})
     result = []
 
@@ -2450,14 +2449,14 @@ def getLikedSitesViaPlan(request):
                     'id', 'name',
                     'description', 'images',
                     'city_id',
-                    'place_id','facility'
-                    
+                    'place_id', 'facility'
+
                 ).annotate(city_name=F('city__name')).values(
                     'id', 'name',
                     'description', 'images',
                     'city_id',
                     'city_name',
-                    'place_id','facility'
+                    'place_id', 'facility'
                 )
                 imageList = []
                 userList = UserLikesSite.objects.filter(plan_id=plan_id, site_id=userLikesSiteData['site_id']).all()\
@@ -2480,7 +2479,6 @@ def getLikedSitesViaPlan(request):
                     plan['users'] = list(imageList)
                     siteList.append(plan)
 
-    
     plans_list.append({"Site": list(siteList)})
     return JsonResponse(json.dumps(
         {
@@ -3003,6 +3001,39 @@ def newAPISave(api_response, city, category, type):
     logger.info("Total sites saved = " + str(count) + " out of " + length)
 
 
+def newAmenitiesScrapeAPI(request):
+    # 1. Fetch all the sites for Miami New
+    # 2. For each site's placeId call the API
+    # 3. Save the response in amenities column
+    # 4. Save the site
+    siteList = Site.objects.filter(city_id='2f742167-5e54-4d72-b524-a4fb6875fc83').all()
+    print("Total sites = ",len(siteList))
+    try:
+        for site in siteList:
+            print("Site = ",site.name)
+            api_url = f"https://places.googleapis.com/v1/places/{site.place_id}?key={settings.GOOGLE_API_KEY}"
+
+            headers = {
+                "X-Goog-FieldMask": "allowsDogs,curbsidePickup,delivery,dineIn,evChargeOptions,fuelOptions,goodForChildren,goodForGroups,goodForWatchingSports,liveMusic,menuForChildren,parkingOptions,paymentOptions,outdoorSeating,reservable,restroom,servesBeer,servesBreakfast,servesBrunch,servesCocktails,servesCoffee,servesDessert,servesDinner,servesLunch,servesVegetarianFood,servesWine,takeout"
+            }
+
+            response = requests.get(api_url, headers=headers)
+            print("Status code = ", response.status_code)
+            if response.status_code == 200:
+                site.amenities = {}
+                data = response.json()
+                site.amenities = data
+                site.save()
+            # return JsonResponse({
+            #     'place id': site.place_id,
+            #     'amenities': data,
+            # })
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return JsonResponse({'message': 'Amenities scrapped successfully'})
+
+
 def newScrapeAPI(request):
     cityList = City.objects.filter(scrape=True).all()
     categoryList = Category.objects.filter(scrape=True).all()
@@ -3355,6 +3386,7 @@ def get_coordinates_along_polyline(request):
                     "id": plan.id,
                     "name": plan.name,
                     "description": plan.description,
+                    "amenities": plan.amenities,
                     "facility": plan.facility,
                     "icon_url": plan.icon_url,
                     "place_id": plan.place_id,
@@ -3379,6 +3411,7 @@ def get_coordinates_along_polyline(request):
                         plans.append({
                             "id": plan.id,
                             "place_id": plan.place_id,
+                            "amenities": plan.amenities,
                             "facility": plan.facility,
                             "name": plan.name,
                             "description": plan.description,
