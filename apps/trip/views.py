@@ -3642,6 +3642,9 @@ def get_coordinates_along_polyline(request):
                     "latitude": plan.latitude,
                     "longitude": plan.longitude,
                     "rating": plan.rating,
+                    "city_anchor": plan.city_anchor,
+                    "slug": plan.slug,
+                    "property_id": plan.property_id,
                     "user_ratings_total": plan.user_ratings_total,
                     "is_hotel": True
                 })
@@ -3668,6 +3671,9 @@ def get_coordinates_along_polyline(request):
                             "latitude": plan.latitude,
                             "longitude": plan.longitude,
                             "rating": plan.rating,
+                            "city_anchor": plan.city_anchor,
+                            "slug": plan.slug,
+                            "property_id": plan.property_id,
                             "user_ratings_total": plan.user_ratings_total,
                             "is_hotel": True
                         })
@@ -3779,6 +3785,9 @@ def getSitesNearMe(request):
                     "images": [plan.place_id],
                     "latitude": plan.latitude,
                     "longitude": plan.longitude,
+                    "city_anchor": plan.city_anchor,
+                    "slug": plan.slug,
+                    "property_id": plan.property_id,
                     "rating": plan.rating,
                     "user_ratings_total": plan.user_ratings_total,
                 })
@@ -3805,6 +3814,9 @@ def getSitesNearMe(request):
                             "latitude": plan.latitude,
                             "longitude": plan.longitude,
                             "rating": plan.rating,
+                            "city_anchor": plan.city_anchor,
+                            "slug": plan.slug,
+                            "property_id": plan.property_id,
                             "user_ratings_total": plan.user_ratings_total,
                         })
             else:
