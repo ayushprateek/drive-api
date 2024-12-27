@@ -2038,6 +2038,8 @@ def getAd(request):
         category = Category.objects.filter(id=catgeory_id).first()
         site_instance = Site.objects.filter(ad_status=1, category=category, show=True).order_by('?').first()
         if site_instance:
+            print("Site id")
+            print("Site id = ", site_instance.id)
             site = {
                 'id': site_instance.id,
                 'name': site_instance.name,
@@ -2049,8 +2051,11 @@ def getAd(request):
                 'user_ratings_total': site_instance.user_ratings_total,
                 'latitude': site_instance.latitude,
                 'longitude': site_instance.longitude,
+                'city_anchor': site_instance.city_anchor,
+                'slug': site_instance.slug,
+                'property_id': site_instance.property_id,
                 'icon_url': site_instance.category.icon_url if site_instance.category else None,
-                'city_id': site_instance.city.id,
+                'city_id': site_instance.city.id if site_instance.city else None,
                 'city_name': site_instance.city.name if site_instance.city else None,
                 'photo_reference': site_instance.photos.values_list('photo_reference', flat=True).first(),
             }
