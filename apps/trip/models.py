@@ -487,6 +487,7 @@ class Site(BaseModel):
     policies, reviews, geographical data, images, and other related metadata.
     """
     place_id = models.CharField(max_length=500, null=True)  # Removed unique=True
+    property_id = models.CharField(max_length=50, null=True)
     ad_status = models.IntegerField(default=0)  # Removed unique=True
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     name = models.TextField(null=True)
@@ -524,6 +525,10 @@ class Site(BaseModel):
     vicinity = models.CharField(max_length=255, null=True)
     photos = models.ManyToManyField(Photo)
     place_review = models.ManyToManyField(PlaceReview)
+    rate_pretty = models.CharField(max_length=50, null=True)
+    rate_type = models.CharField(max_length=50, null=True)
+    slug = models.CharField(max_length=255, null=True)
+    city_anchor = models.CharField(max_length=255, null=True)
     show = models.BooleanField(default=True)
 
     class Meta:

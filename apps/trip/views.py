@@ -2925,6 +2925,36 @@ def newAPISave(api_response, city, category, type):
                 user_ratings_total = 0
             print("creatig site")
             try:
+                amenities = {
+                    "allowsDogs": result.get('allowsDogs'),
+                    "curbsidePickup": result.get('curbsidePickup'),
+                    "delivery": result.get('delivery'),
+                    "dineIn": result.get('dineIn'),
+                    "evChargeOptions": result.get('evChargeOptions'),
+                    "fuelOptions": result.get('fuelOptions'),
+                    "goodForChildren": result.get('goodForChildren'),
+                    "goodForGroups": result.get('goodForGroups'),
+                    "goodForWatchingSports": result.get('goodForWatchingSports'),
+                    "liveMusic": result.get('liveMusic'),
+                    "menuForChildren": result.get('menuForChildren'),
+                    "parkingOptions": result.get('parkingOptions'),
+                    "paymentOptions": result.get('paymentOptions'),
+                    "outdoorSeating": result.get('outdoorSeating'),
+                    "reservable": result.get('reservable'),
+                    "restroom": result.get('restroom'),
+                    "servesBeer": result.get('servesBeer'),
+                    "servesBreakfast": result.get('servesBreakfast'),
+                    "servesBrunch": result.get('servesBrunch'),
+                    "servesCocktails": result.get('servesCocktails'),
+                    "servesCoffee": result.get('servesCoffee'),
+                    "servesDessert": result.get('servesDessert'),
+                    "servesDinner": result.get('servesDinner'),
+                    "servesLunch": result.get('servesLunch'),
+                    "servesVegetarianFood": result.get('servesVegetarianFood'),
+                    "servesWine": result.get('servesWine'),
+                    "takeout": result.get('takeout'),
+                }
+                amenities = {key: value for key, value in amenities.items() if value is not None}
                 hotel = Site.objects.create(
                     business_status=result.get('businessStatus'),
                     # geometry=geometry,
@@ -2942,6 +2972,7 @@ def newAPISave(api_response, city, category, type):
                     # scope=result.get('scope'),
                     types=','.join(result['types']),
                     city=city,
+                    amenities=amenities,
                     keyword=type,
                     show=True,
                     category=category,
@@ -3007,10 +3038,10 @@ def newAmenitiesScrapeAPI(request):
     # 3. Save the response in amenities column
     # 4. Save the site
     siteList = Site.objects.filter(city_id='2f742167-5e54-4d72-b524-a4fb6875fc83').all()
-    print("Total sites = ",len(siteList))
+    print("Total sites = ", len(siteList))
     try:
         for site in siteList:
-            print("Site = ",site.name)
+            print("Site = ", site.name)
             api_url = f"https://places.googleapis.com/v1/places/{site.place_id}?key={settings.GOOGLE_API_KEY}"
 
             headers = {
@@ -3032,6 +3063,222 @@ def newAmenitiesScrapeAPI(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return JsonResponse({'message': 'Amenities scrapped successfully'})
+
+
+def getHotelCouponToken():
+    token = ''
+    url = 'https://www.floridatraveldeals.us/api/token/'
+    payload = {
+        "username": "td_user@",
+        "password": "Adm1nD3ssang312"
+    }
+    response = requests.post(url, json=payload)
+    print("Status code = ", response.status_code)
+    logger.info("Status code = " + str(response.status_code))
+    if response.status_code == 200:
+        data = response.json()
+        token = data['access']
+    return token
+
+
+def newScrapeClientData(request):
+    try:
+        hotelCategory = Category.objects.filter(id='7327f81a-5e95-447c-9bbb-e5a6b898cd3b').first()
+        print("Catehory id")
+        print("Catehory id", hotelCategory.id)
+
+        # 1. Fetch clien's data and store it in a list called hotelList (done)
+        # 2. Iterate in the loop for each hotel
+        # if(property_id is not present our db) {
+        #
+        #     STEP 1 : Pass the name,latitude and longitude to the searchText API to get the data (Use all the expected keywords)
+        #
+        #     if( place_id is present in our db) {
+        #         STEP 1 : update property_id, rate_pretty, rate_type and slug
+        #     }
+        #     else
+        #     {
+        #         STEP 2 : create a new record with property_id, rate_pretty, rate_type and slug
+        #     }
+        # } else {
+        #     STEP : only update the rate
+        # }
+
+        bearer_token = getHotelCouponToken()
+        url = 'https://www.floridatraveldeals.us/api/data/'
+        headers = {
+            "Authorization": f"Bearer {bearer_token}",
+            "Content-Type": "application/json"
+        }
+        response = requests.get(url, headers=headers)
+        print("Status code = ", response.status_code)
+        if response.status_code == 200:
+            hotelList = response.json()
+            for hotel in hotelList:
+                print(hotel['name'], hotel['property_id'])
+                if not Site.objects.filter(property_id=hotel['property_id']).exists():
+                    print("New data --> Does not exists")
+                    api_url = "https://places.googleapis.com/v1/places:searchText"
+
+                    payload = {
+                        "textQuery": hotel['name'],
+                        "locationBias": {
+                            "circle": {
+                                "center": {
+                                    "latitude": hotel['latitude'],
+                                    "longitude": hotel['longitude']
+                                },
+                                "radius": 500
+                            }
+                        }
+                    }
+
+                    headers = {
+                        "X-Goog-Api-Key": f'{settings.GOOGLE_API_KEY}',
+                        "X-Goog-FieldMask": "places.id,places.displayName,places.types,places.primaryType,places.primaryTypeDisplayName,places.nationalPhoneNumber,places.internationalPhoneNumber,places.formattedAddress,places.shortFormattedAddress,places.addressComponents,places.plusCode,places.location,places.viewport,places.rating,places.googleMapsUri,places.websiteUri,places.reviews,places.regularOpeningHours,places.photos,places.adrFormatAddress,places.businessStatus,places.priceLevel,places.attributions,places.iconMaskBaseUri,places.iconBackgroundColor,places.currentOpeningHours,places.currentSecondaryOpeningHours,places.regularSecondaryOpeningHours,places.editorialSummary,places.paymentOptions,places.parkingOptions,places.subDestinations,places.fuelOptions,places.evChargeOptions,places.generativeSummary,places.areaSummary,places.containingPlaces,places.addressDescriptor,places.googleMapsLinks,places.priceRange,places.utcOffsetMinutes,places.userRatingCount,places.takeout,places.delivery,places.dineIn,places.curbsidePickup,places.reservable,places.servesBreakfast,places.servesLunch,places.servesDinner,places.servesBeer,places.servesWine,places.servesBrunch,places.servesVegetarianFood,places.outdoorSeating,places.liveMusic,places.menuForChildren,places.servesCocktails,places.servesDessert,places.servesCoffee,places.goodForChildren,places.allowsDogs,places.restroom,places.goodForGroups,places.goodForWatchingSports,places.accessibilityOptions,places.pureServiceAreaBusiness,nextPageToken"
+                    }
+                    logger.info("api_url = " + api_url)
+                    logger.info("payload = " + str(payload))
+                    res = requests.post(api_url, json=payload, headers=headers)
+                    print("Status code = ", res.status_code)
+                    logger.info("Status code = " + str(res.status_code))
+                    count = 0
+                    if res.status_code == 200:
+                        responseResult = res.json()
+                        if responseResult and responseResult['places']:
+                            result = responseResult['places'][0]
+                            if not Site.objects.filter(place_id=result.get('id'), category_id=hotelCategory.id).exists():
+                                print("Site does not Exist")
+                                # location_data = result['geometry']['location']
+                                print("location_data = ", result.get('location').get('latitude'))
+                                print("location_data = ", result.get('location').get('longitude'))
+
+                                if result.get('userRatingCount', {}):
+                                    user_ratings_total = result.get('userRatingCount', {})
+                                else:
+                                    user_ratings_total = 0
+                                print("creatig site")
+                                try:
+                                    amenities = {
+                                        "allowsDogs": result.get('allowsDogs'),
+                                        "curbsidePickup": result.get('curbsidePickup'),
+                                        "delivery": result.get('delivery'),
+                                        "dineIn": result.get('dineIn'),
+                                        "evChargeOptions": result.get('evChargeOptions'),
+                                        "fuelOptions": result.get('fuelOptions'),
+                                        "goodForChildren": result.get('goodForChildren'),
+                                        "goodForGroups": result.get('goodForGroups'),
+                                        "goodForWatchingSports": result.get('goodForWatchingSports'),
+                                        "liveMusic": result.get('liveMusic'),
+                                        "menuForChildren": result.get('menuForChildren'),
+                                        "parkingOptions": result.get('parkingOptions'),
+                                        "paymentOptions": result.get('paymentOptions'),
+                                        "outdoorSeating": result.get('outdoorSeating'),
+                                        "reservable": result.get('reservable'),
+                                        "restroom": result.get('restroom'),
+                                        "servesBeer": result.get('servesBeer'),
+                                        "servesBreakfast": result.get('servesBreakfast'),
+                                        "servesBrunch": result.get('servesBrunch'),
+                                        "servesCocktails": result.get('servesCocktails'),
+                                        "servesCoffee": result.get('servesCoffee'),
+                                        "servesDessert": result.get('servesDessert'),
+                                        "servesDinner": result.get('servesDinner'),
+                                        "servesLunch": result.get('servesLunch'),
+                                        "servesVegetarianFood": result.get('servesVegetarianFood'),
+                                        "servesWine": result.get('servesWine'),
+                                        "takeout": result.get('takeout'),
+                                    }
+                                    amenities = {key: value for key, value in amenities.items() if value is not None}
+                                    newSite = Site.objects.create(
+                                        business_status=result.get('businessStatus'),
+                                        icon=result.get('icon'),
+                                        icon_background_color=result.get('iconBackgroundColor'),
+                                        icon_mask_base_uri=result.get('iconMaskBaseUri'),
+                                        name=result.get('displayName').get('text'),
+                                        place_id=result.get('id'),
+                                        latitude=result.get('location').get('latitude'),
+                                        longitude=result.get('location').get('longitude'),
+                                        rating=result.get('rating'),
+                                        types=','.join(result['types']),
+                                        city=None,
+                                        keyword='hotel_coupons',
+                                        amenities=amenities,
+                                        show=True,
+                                        category=hotelCategory,
+                                        user_ratings_total=user_ratings_total,
+                                        vicinity=result.get('formattedAddress'),
+                                        property_id=hotel.get('property_id'),
+                                        rate_pretty=hotel.get('rate_pretty'),
+                                        rate_type=hotel.get('rate_type'),
+                                        slug=hotel.get('slug'),
+                                        city_anchor=hotel.get('city_anchor'),
+                                    )
+                                    count = count + 1
+                                    print("Site created")
+                                except Exception as e:
+                                    print("Site exception = ", str(e))
+                                    logger.error("Site exception = ", str(e))
+
+                                try:
+                                    for photo in result.get('photos', []):
+                                        if photo:
+                                            print("heightPx = ", photo.get('heightPx'))
+                                            print("displayName = ", photo.get('authorAttributions')[0].get('displayName'))
+                                            photo_obj = Photo.objects.create(
+                                                height=photo.get('heightPx'),
+                                                width=photo.get('widthPx'),
+                                                author_name=photo.get('authorAttributions')[0].get('displayName'),
+                                                author_uri=photo.get('authorAttributions')[0].get('uri'),
+                                                author_photo_uri=photo.get('authorAttributions')[0].get('photoUri'),
+                                                photo_name=photo.get('name')
+                                            )
+                                            newSite.photos.add(photo_obj)
+                                except Exception as e:
+                                    print("Photo exception = ", str(e))
+                                    logger.error("Photo exception = ", str(e))
+                                try:
+                                    for review in result.get('reviews', []):
+                                        if review:
+                                            review_obj = PlaceReview.objects.create(
+                                                name=review.get('name'),
+                                                rating=review.get('rating'),
+                                                text=review.get('text').get('text'),
+                                                original_text=review.get('originalText').get('text'),
+                                                author_name=review.get('authorAttribution').get('displayName'),
+                                                author_uri=review.get('authorAttribution').get('uri'),
+                                                author_photo_uri=review.get('authorAttribution').get('photoUri'),
+                                                publish_time=parser.isoparse(review.get('publishTime')),
+                                                flag_content_uri=review.get('flagContentUri'),
+                                                google_maps_uri=review.get('googleMapsUri'),
+                                            )
+                                            newSite.place_review.add(review_obj)
+                                except Exception as e:
+                                    print("Review exception = ", str(e))
+                                    logger.error("Review exception = " + str(e))
+
+                                newSite.save()
+                                print("Site ", newSite.id, '-->', newSite.name)
+                            else:
+                                print("Site exists")
+                                savedSite = Site.objects.filter(place_id=result.get('id')).first()
+                                savedSite.property_id = hotel['property_id']
+                                savedSite.city_anchor = hotel['city_anchor']
+                                savedSite.rate_pretty = hotel['rate_pretty']
+                                savedSite.rate_type = hotel['rate_type']
+                                savedSite.slug = hotel['slug']
+                                savedSite.save()
+                else:
+                    print("Property exists")
+                    savedSite = Site.objects.filter(property_id=hotel['property_id']).first()
+                    savedSite.rate_pretty = hotel['rate_pretty']
+                    savedSite.city_anchor = hotel['city_anchor']
+                    savedSite.rate_type = hotel['rate_type']
+                    savedSite.slug = hotel['slug']
+                    savedSite.save()
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return JsonResponse({'message': "Client's data scrapped successfully"})
 
 
 def newScrapeAPI(request):
@@ -3071,7 +3318,7 @@ def newScrapeAPI(request):
 
                             headers = {
                                 "X-Goog-Api-Key": f'{settings.GOOGLE_API_KEY}',
-                                "X-Goog-FieldMask": "places.id,places.types,places.reviews,places.iconMaskBaseUri,places.iconBackgroundColor,places.displayName,places.formattedAddress,places.location,places.rating,places.photos,nextPageToken"
+                                "X-Goog-FieldMask": "places.id,places.displayName,places.types,places.primaryType,places.primaryTypeDisplayName,places.nationalPhoneNumber,places.internationalPhoneNumber,places.formattedAddress,places.shortFormattedAddress,places.addressComponents,places.plusCode,places.location,places.viewport,places.rating,places.googleMapsUri,places.websiteUri,places.reviews,places.regularOpeningHours,places.photos,places.adrFormatAddress,places.businessStatus,places.priceLevel,places.attributions,places.iconMaskBaseUri,places.iconBackgroundColor,places.currentOpeningHours,places.currentSecondaryOpeningHours,places.regularSecondaryOpeningHours,places.editorialSummary,places.paymentOptions,places.parkingOptions,places.subDestinations,places.fuelOptions,places.evChargeOptions,places.generativeSummary,places.areaSummary,places.containingPlaces,places.addressDescriptor,places.googleMapsLinks,places.priceRange,places.utcOffsetMinutes,places.userRatingCount,places.takeout,places.delivery,places.dineIn,places.curbsidePickup,places.reservable,places.servesBreakfast,places.servesLunch,places.servesDinner,places.servesBeer,places.servesWine,places.servesBrunch,places.servesVegetarianFood,places.outdoorSeating,places.liveMusic,places.menuForChildren,places.servesCocktails,places.servesDessert,places.servesCoffee,places.goodForChildren,places.allowsDogs,places.restroom,places.goodForGroups,places.goodForWatchingSports,places.accessibilityOptions,places.pureServiceAreaBusiness,nextPageToken"
                             }
                             logger.info("api_url = " + api_url)
                             logger.info("payload = " + str(payload))
@@ -3123,7 +3370,7 @@ def newScrapeAPI(request):
 
                                         headers = {
                                             "X-Goog-Api-Key": f'{settings.GOOGLE_API_KEY}',
-                                            "X-Goog-FieldMask": "places.id,places.types,places.reviews,places.iconMaskBaseUri,places.iconBackgroundColor,places.displayName,places.formattedAddress,places.location,places.rating,places.photos,nextPageToken"
+                                            "X-Goog-FieldMask": "places.id,places.displayName,places.types,places.primaryType,places.primaryTypeDisplayName,places.nationalPhoneNumber,places.internationalPhoneNumber,places.formattedAddress,places.shortFormattedAddress,places.addressComponents,places.plusCode,places.location,places.viewport,places.rating,places.googleMapsUri,places.websiteUri,places.reviews,places.regularOpeningHours,places.photos,places.adrFormatAddress,places.businessStatus,places.priceLevel,places.attributions,places.iconMaskBaseUri,places.iconBackgroundColor,places.currentOpeningHours,places.currentSecondaryOpeningHours,places.regularSecondaryOpeningHours,places.editorialSummary,places.paymentOptions,places.parkingOptions,places.subDestinations,places.fuelOptions,places.evChargeOptions,places.generativeSummary,places.areaSummary,places.containingPlaces,places.addressDescriptor,places.googleMapsLinks,places.priceRange,places.utcOffsetMinutes,places.userRatingCount,places.takeout,places.delivery,places.dineIn,places.curbsidePickup,places.reservable,places.servesBreakfast,places.servesLunch,places.servesDinner,places.servesBeer,places.servesWine,places.servesBrunch,places.servesVegetarianFood,places.outdoorSeating,places.liveMusic,places.menuForChildren,places.servesCocktails,places.servesDessert,places.servesCoffee,places.goodForChildren,places.allowsDogs,places.restroom,places.goodForGroups,places.goodForWatchingSports,places.accessibilityOptions,places.pureServiceAreaBusiness,nextPageToken"
                                         }
 
                                         logger.info("Next page api_url = " + newUrl)
