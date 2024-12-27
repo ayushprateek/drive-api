@@ -2045,6 +2045,7 @@ def getAd(request):
                 'description': site_instance.description,
                 'place_id': site_instance.place_id,
                 'rating': site_instance.rating,
+                'amenities': site_instance.amenities,
                 'user_ratings_total': site_instance.user_ratings_total,
                 'latitude': site_instance.latitude,
                 'longitude': site_instance.longitude,
