@@ -1249,11 +1249,19 @@ def getItineraryViaPlan(request):
                     fetch = fetch.filter(category_id__in=selectedCategory)
                 plans = fetch.all().values(
                     'id', 'name',
+                    'amenities',
+                    'city_anchor',
+                    'slug',
+                    'property_id',
                     'description', 'images',
                     'city_id',
                     'place_id', 'facility'
                 ).annotate(city_name=F('city__name')).values(
                     'id', 'name',
+                    'amenities',
+                    'city_anchor',
+                    'slug',
+                    'property_id',
                     'description', 'images',
                     'city_id',
                     'city_name',
@@ -2453,12 +2461,20 @@ def getLikedSitesViaPlan(request):
                     fetch = fetch.filter(category_id__in=selectedCategory)
                 plans = fetch.all().values(
                     'id', 'name',
+                    'amenities',
+                    'city_anchor',
+                    'slug',
+                    'property_id',
                     'description', 'images',
                     'city_id',
                     'place_id', 'facility'
 
                 ).annotate(city_name=F('city__name')).values(
                     'id', 'name',
+                    'amenities',
+                    'city_anchor',
+                    'slug',
+                    'property_id',
                     'description', 'images',
                     'city_id',
                     'city_name',
