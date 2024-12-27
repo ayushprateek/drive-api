@@ -3772,6 +3772,7 @@ def getSitesNearMe(request):
                     "id": plan.id,
                     "place_id": plan.place_id,
                     "facility": plan.facility,
+                    "amenities": plan.amenities,
                     "name": plan.name,
                     "description": plan.description,
                     "icon_url": plan.icon_url,
@@ -3795,6 +3796,7 @@ def getSitesNearMe(request):
                         plans.append({
                             "id": plan.id,
                             "place_id": plan.place_id,
+                            "amenities": plan.amenities,
                             "facility": plan.facility,
                             "name": plan.name,
                             "description": plan.description,
