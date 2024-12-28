@@ -2,6 +2,8 @@ from drive_ai import settings
 from django.core.exceptions import ObjectDoesNotExist
 import math
 from shapely.geometry import Point, LineString, box
+from django.core.paginator import Paginator
+
 from dateutil import parser
 import json
 import time
@@ -3772,10 +3774,10 @@ def getSiteViaId(request, id=None):
 def getSitesNearMe(request):
     category_list = request.data['categories']
     only_hotels = request.data['only_hotels']
-    print("only_hotels = ", only_hotels)
+    # print("only_hotels = ", only_hotels)
 
     format = request.data['format']
-    print("format = ", format)
+    # print("format = ", format)
 
     lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
 
@@ -3797,12 +3799,12 @@ def getSitesNearMe(request):
                 plans.append(plan)
 
     if only_hotels:
-        print("only_hotels = ", only_hotels)
+        # print("only_hotels = ", only_hotels)
         data = Site.objects.filter(show=True).annotate(icon_url=F('category__icon_url'))
-        print("Data fetched")
+        # print("Data fetched")
         for plan in data:
             point = Point(plan.longitude, plan.latitude)
-            print("Location = ", plan.longitude, plan.latitude)
+            # print("Location = ", plan.longitude, plan.latitude)
 
             condition = haversine(lat1=lat1, lon1=lon1, lat2=plan.latitude, lon2=plan.longitude) < radius
 
@@ -3867,10 +3869,25 @@ def getSitesNearMe(request):
                     )
                     process_data(queryset)
 
-    plans_list = {"markers": list(plans)}
-    print('Marker list', plans_list)
+    # Implementing Pagination
+    page = int(request.data.get('page', 1))
+    per_page = int(request.data.get('per_page', 10))  # Default items per page
+    paginator = Paginator(plans, per_page)
 
-    return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
+    try:
+        paginated_plans = paginator.page(page)
+    except Exception as e:
+        return JsonResponse({'error': 'Invalid page number'}, status=status.HTTP_400_BAD_REQUEST)
+
+    response_data = {
+        "markers": list(paginated_plans),
+        "total_count": paginator.count,
+        "total_pages": paginator.num_pages,
+        "current_page": page,
+        "per_page": per_page,
+    }
+
+    return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
 
 
 def handle_scraping(row, city_name, city_obj):
