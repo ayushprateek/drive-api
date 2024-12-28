@@ -1255,7 +1255,8 @@ def getItineraryViaPlan(request):
                     'property_id',
                     'description', 'images',
                     'city_id',
-                    'place_id', 'facility'
+                    'place_id', 'facility',
+                    'vicinity'
                 ).annotate(city_name=F('city__name')).values(
                     'id', 'name',
                     'amenities',
@@ -1265,7 +1266,8 @@ def getItineraryViaPlan(request):
                     'description', 'images',
                     'city_id',
                     'city_name',
-                    'place_id', 'facility'
+                    'place_id', 'facility',
+                    'vicinity'
                 )
                 imageList = []
                 userList = ItinerarySite.objects.filter(plan_id=plan_id, site_id=itinerarySiteData['site_id']).all()\
@@ -2467,7 +2469,8 @@ def getLikedSitesViaPlan(request):
                     'property_id',
                     'description', 'images',
                     'city_id',
-                    'place_id', 'facility'
+                    'place_id', 'facility',
+                    'vicinity'
 
                 ).annotate(city_name=F('city__name')).values(
                     'id', 'name',
@@ -2478,7 +2481,8 @@ def getLikedSitesViaPlan(request):
                     'description', 'images',
                     'city_id',
                     'city_name',
-                    'place_id', 'facility'
+                    'place_id', 'facility',
+                    'vicinity'
                 )
                 imageList = []
                 userList = UserLikesSite.objects.filter(plan_id=plan_id, site_id=userLikesSiteData['site_id']).all()\
