@@ -139,7 +139,8 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             return {
                 "message": ApplicationMessages.USER_CREATED,
                 "access_token": user.tokens()['access'],
-                "refresh_token": user.tokens()['refresh']
+                "refresh_token": user.tokens()['refresh'],
+                "user_id": user.id
             }
 
         else:
