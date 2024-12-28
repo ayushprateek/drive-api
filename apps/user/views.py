@@ -283,7 +283,6 @@ class UserSignUpAPIView(generics.GenericAPIView):
             verification_instance = self.model.get_instance({
                 "verification_code": data.get("verification_code"),
                 "is_used": False, })
-            print("CCCCC")
             # Check for code expiry
             if timezone.now() > verification_instance.expiry_time:
                 verification_instance.is_used = True

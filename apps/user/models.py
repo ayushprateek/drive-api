@@ -155,6 +155,7 @@ class User(AbstractBaseUser, BaseModel):
     meta_data = models.JSONField(default=dict)
     dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=16, blank=True, null=True, choices=GENDER_CHOICE)
+    receive_newsletter = models.BooleanField(default=False)
 
     objects = MyUserManager()
     USERNAME_FIELD = "email"

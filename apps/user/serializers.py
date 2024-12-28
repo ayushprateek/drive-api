@@ -104,7 +104,8 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             "phone",
             "first_name",
             "last_name",
-            "profile_pic"
+            "profile_pic",
+            "receive_newsletter"
         )
 
     def validate(self, attrs):
@@ -130,6 +131,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """User Sign Up"""
+        print('Signup validated_data = ',validated_data)
         if validated_data.get('email'):
             password = validated_data.pop("password", None)
             user = user_models.User.create_instance(validated_data)
