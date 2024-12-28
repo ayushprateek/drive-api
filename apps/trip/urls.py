@@ -70,5 +70,6 @@ urlpatterns = [
     path('new-scrape-api/', newScrapeAPI, name='add-user'),
     path('new-scrape-amenities/', newAmenitiesScrapeAPI, name='add-user'),
     path('new-scrape-client-data/', newScrapeClientData, name='add-user'),
+    path('get-photo-via-site/<id>', getPhotoViaSite, name='add-user'),
     # path('update-location-in-site/', updateLocationInSite, name='add-user'),
 ]

@@ -3718,6 +3718,20 @@ def get_coordinates_along_polyline(request):
 
 
 @api_view(['GET'])
+def getPhotoViaSite(request, id=None):
+    try:
+        if not Site.objects.filter(id=id).exists():
+            return JsonResponse({'error': 'Site does not exist'}, safe=False, status=status.HTTP_404_NOT_FOUND)
+        
+        site = Site.objects.get(id=id)  # Use get() for clarity
+        photos = site.photos.all()  # Access the related photos using the manager
+        photos_list = list(photos.values())  # Serialize the photos queryset
+        
+        return JsonResponse(photos_list, safe=False, status=status.HTTP_200_OK)
+    except Exception as ex:
+        return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
 def getSiteViaId(request, id=None):
     try:
         site_instance = Site.objects.filter(id=id, show=True).annotate(icon_url=F('category__icon_url')).first()
@@ -3751,7 +3765,7 @@ def getSiteViaId(request, id=None):
         else:
             return JsonResponse({}, safe=False, status=status.HTTP_200_OK)
     except Exception as ex:
-        return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_200_OK)
+        return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
