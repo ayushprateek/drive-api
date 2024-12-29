@@ -1919,7 +1919,7 @@ def getTripPlan(request):
         return JsonResponse([], safe=False, status=status.HTTP_200_OK)
 
     # Retrieve all PlanUser objects for the given user_id
-    planUserList = PlanUser.objects.filter(user_id=data['user_id'])
+    planUserList = PlanUser.objects.filter(user_id=data['user_id']).order_by('-created_at')
 
     plans_list = []
     for planUser in planUserList:
