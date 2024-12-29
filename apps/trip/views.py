@@ -1925,7 +1925,7 @@ def getTripPlan(request):
     for planUser in planUserList:
         # Correctly access plan_id attribute
         plans = list(Plan.objects.filter(id=planUser.plan_id).select_related('city').values(
-            'id', 'name', 'city__id', 'city__name', 'city__images'
+            'id', 'name','end_date', 'start_date', 'city__id', 'city__name', 'city__images'
         ))
 
         # Each plan is a dictionary, append each to plans_list
