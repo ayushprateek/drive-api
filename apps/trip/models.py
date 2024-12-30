@@ -386,8 +386,8 @@ class Plan(models.Model):
         db_table = '"plan"'
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
-    start_date = models.DateTimeField(null=True)
-    end_date = models.DateTimeField(null=True)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)
     # user = models.ForeignKey(user,on_delete=models.CASCADE,null=True)
     created_at = models.DateTimeField(null=False)
