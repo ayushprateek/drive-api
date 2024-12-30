@@ -1,6 +1,7 @@
 from drive_ai import settings
 from django.core.exceptions import ObjectDoesNotExist
 import math
+from django.db.models import Value, BooleanField
 from shapely.geometry import Point, LineString, box
 from django.core.paginator import Paginator
 
@@ -1909,33 +1910,75 @@ def addUserToPlan(request):
     else:
         return JsonResponse({'message': 'User already added'}, safe=False, status=400)
 
+@api_view(['POST'])
+def getItineraryPlanViaSite(request):
+    data = json.loads(request.body)
+    user_id = data.get('user_id')
+    site_id = data.get('site_id')
+
+    # Check if PlanUser with given user_id exists
+    planUserList = PlanUser.objects.filter(user_id=user_id).order_by('-created_at')
+
+    if not planUserList.exists():
+        return JsonResponse([], safe=False, status=status.HTTP_200_OK)
+
+    # Pre-fetch the itinerary for the user (if exists) to minimize repeated queries
+    itinerary = Itinerary.objects.filter(user_id=user_id).first()
+    liked_site_ids = []
+    if itinerary and site_id:
+        liked_site_ids = list(itinerary.sites_itinerary.through.objects.filter(
+            itinerary=itinerary,
+            plan_id__in=planUserList.values_list('plan_id', flat=True)
+        ).values('site_id', 'plan_id'))
+
+    # Combine all plan data with a single query
+    plans_list = []
+    plans = Plan.objects.filter(id__in=planUserList.values_list('plan_id', flat=True)).select_related('city').annotate(
+        liked=Value(False, output_field=BooleanField())
+    ).values(
+        'id', 'name', 'end_date', 'start_date', 'city__id', 'city__name', 'city__images', 'liked'
+    )
+    print("site_id = ", site_id)
+    print("liked_site_ids = ", liked_site_ids)
+    for plan in plans:
+        if any(str(item['site_id']) == str(site_id) and str(item['plan_id']) == str(plan['id']) for item in liked_site_ids):
+            plan['liked'] = True
+        # Update city fields
+        plan['city_name'] = plan.pop('city__name')
+        plan['city_images'] = plan.pop('city__images')
+        plan['city_id'] = plan.pop('city__id')
+
+        plans_list.append(plan)
+
+    return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def getTripPlan(request):
     data = json.loads(request.body)
+    user_id = data.get('user_id')
 
     # Check if PlanUser with given user_id exists
-    if not PlanUser.objects.filter(user_id=data['user_id']).exists():
+    planUserList = PlanUser.objects.filter(user_id=user_id).order_by('-created_at')
+
+    if not planUserList.exists():
         return JsonResponse([], safe=False, status=status.HTTP_200_OK)
 
     # Retrieve all PlanUser objects for the given user_id
     planUserList = PlanUser.objects.filter(user_id=data['user_id']).order_by('-created_at')
 
+    plans = Plan.objects.filter(id__in=planUserList.values_list('plan_id', flat=True)).select_related('city').annotate(
+        liked=Value(False, output_field=BooleanField())
+    ).values(
+        'id', 'name', 'end_date', 'start_date', 'city__id', 'city__name', 'city__images', 'liked'
+    )
+
     plans_list = []
-    for planUser in planUserList:
-        # Correctly access plan_id attribute
-        plans = list(Plan.objects.filter(id=planUser.plan_id).select_related('city').values(
-            'id', 'name','end_date', 'start_date', 'city__id', 'city__name', 'city__images'
-        ))
-
-        # Each plan is a dictionary, append each to plans_list
-        plans_list.extend(plans)
-
     # Flatten the list of dictionaries
-    for plan in plans_list:
+    for plan in plans:
         plan['city_name'] = plan.pop('city__name')
         plan['city_images'] = plan.pop('city__images')
         plan['city_id'] = plan.pop('city__id')
+        plans_list.append(plan)
 
     return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
 
