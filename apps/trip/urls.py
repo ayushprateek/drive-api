@@ -28,6 +28,7 @@ urlpatterns = [
     path('create-trip/', createTripPlan, name='create-trip'),
     path('get-trip/', getTripPlan, name='create-trip'),
     path('get-itinerary-plan-via-site/', getItineraryPlanViaSite, name='create-trip'),
+    path('get-liked-plan-via-site/', getLikedPlanViaSite, name='create-trip'),
     path('get-all-cities/', getCityList, name='create-trip'),
     path('get-trip-via-id/<id>', getTripViaId, name='create-trip'),
     path('delete-plan/<id>', deletePlan, name='create-trip'),

@@ -1910,6 +1910,43 @@ def addUserToPlan(request):
     else:
         return JsonResponse({'message': 'User already added'}, safe=False, status=400)
 
+
+@api_view(['POST'])
+def getLikedPlanViaSite(request):
+    try:
+        data = json.loads(request.body)
+        user_id = data.get('user_id')
+        site_id = data.get('site_id')
+
+        # Check if PlanUser with given user_id exists
+        userLikes = PlanUser.objects.filter(user_id=user_id).order_by('-created_at')
+
+        if not userLikes:
+            return JsonResponse([], safe=False, status=status.HTTP_200_OK)
+
+        liked_site_ids = UserLikesSite.objects.filter(plan_id__in=userLikes.values_list('plan_id')).values('plan_id', 'site_id')
+
+        plans_list = []
+        plans = Plan.objects.filter(id__in=userLikes.values_list('plan_id', flat=True)).select_related('city').annotate(
+            liked=Value(False, output_field=BooleanField())
+        ).values(
+            'id', 'name', 'end_date', 'start_date', 'city__id', 'city__name', 'city__images', 'liked'
+        )
+        for plan in plans:
+            if any(str(item['site_id']) == str(site_id) and str(item['plan_id']) == str(plan['id']) for item in liked_site_ids):
+                plan['liked'] = True
+            # Update city fields
+            plan['city_name'] = plan.pop('city__name')
+            plan['city_images'] = plan.pop('city__images')
+            plan['city_id'] = plan.pop('city__id')
+
+            plans_list.append(plan)
+
+        return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
+    except Exception as e:
+        return JsonResponse({"Error": str(e)})
+
+
 @api_view(['POST'])
 def getItineraryPlanViaSite(request):
     data = json.loads(request.body)
@@ -1938,8 +1975,6 @@ def getItineraryPlanViaSite(request):
     ).values(
         'id', 'name', 'end_date', 'start_date', 'city__id', 'city__name', 'city__images', 'liked'
     )
-    print("site_id = ", site_id)
-    print("liked_site_ids = ", liked_site_ids)
     for plan in plans:
         if any(str(item['site_id']) == str(site_id) and str(item['plan_id']) == str(plan['id']) for item in liked_site_ids):
             plan['liked'] = True
@@ -1951,6 +1986,7 @@ def getItineraryPlanViaSite(request):
         plans_list.append(plan)
 
     return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 def getTripPlan(request):
@@ -3759,7 +3795,7 @@ def get_coordinates_along_polyline(request):
 
     # plans_list = {"markers": list(plans)}
     # print('Marker list', plans_list)
-    
+
     # Implementing Pagination
     page = int(request.data.get('page', 1))
     per_page = int(request.data.get('per_page', 10))  # Default items per page
@@ -3786,15 +3822,16 @@ def getPhotoViaSite(request, id=None):
     try:
         if not Site.objects.filter(id=id).exists():
             return JsonResponse({'error': 'Site does not exist'}, safe=False, status=status.HTTP_404_NOT_FOUND)
-        
+
         site = Site.objects.get(id=id)  # Use get() for clarity
         photos = site.photos.all()  # Access the related photos using the manager
         photos_list = list(photos.values())  # Serialize the photos queryset
-        
+
         return JsonResponse(photos_list, safe=False, status=status.HTTP_200_OK)
     except Exception as ex:
         return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+
 @api_view(['GET'])
 def getSiteViaId(request, id=None):
     try:
