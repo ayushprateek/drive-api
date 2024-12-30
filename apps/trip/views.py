@@ -2022,6 +2022,7 @@ def getSites(request):
                 # 'latitude': getattr(site_instance.geometry.location, 'lat', None),
                 # 'longitude': getattr(site_instance.geometry.location, 'lng', None),
                 'latitude': site_instance.latitude,
+                'vicinity': site_instance.vicinity,
                 'longitude': site_instance.longitude,
                 'icon_url': category.icon_url if category else None,
                 'city_id': city_id,
