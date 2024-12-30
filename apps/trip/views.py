@@ -1058,12 +1058,11 @@ def cityScrape(request):
 @api_view(['POST'])
 def saveToItinerary(request):
     try:
-        
+
         data = json.loads(request.body)
         userdata = User.objects.filter(id=data['user_id']).first()
         planIds = data['plan_id']
-        date = data['date']
-        formatted_date = hh.strptime(date, "%Y-%m-%dT%H:%M:%S.%f").date()
+
         print("Exists = ", Itinerary.objects.filter(user_id=data['user_id']).exists())
 
         if Itinerary.objects.filter(user_id=data['user_id']).exists():
@@ -1073,23 +1072,24 @@ def saveToItinerary(request):
                 ItinerarySite.objects.filter(site_id=data['place_id'], itinerary=itinerary).delete()
         else:
             itinerary = Itinerary.objects.create(user=userdata)
+        if planIds:
+            date = data['date']
+            formatted_date = hh.strptime(date, "%Y-%m-%dT%H:%M:%S.%f").date()
+            for planId in planIds:
+                planModel = Plan.objects.filter(id=planId).first()
+                if Site.objects.filter(id=data['place_id'], show=True).exists():
 
-        for planId in planIds:
-            planModel = Plan.objects.filter(id=planId).first()
-            if Site.objects.filter(id=data['place_id'], show=True).exists():
+                    site = Site.objects.get(id=data['place_id'])
 
-                site = Site.objects.get(id=data['place_id'])
-
-                ItinerarySite.objects.create(
-                    itinerary=itinerary,
-                    site=site,
-                    plan=planModel,
-                    date=formatted_date
-                )
+                    ItinerarySite.objects.create(
+                        itinerary=itinerary,
+                        site=site,
+                        plan=planModel,
+                        date=formatted_date
+                    )
         return JsonResponse({'message': 'Added'})
     except Exception as e:
         return JsonResponse({"Error": str(e)})
-    
 
 
 @api_view(['POST'])
