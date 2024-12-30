@@ -1805,11 +1805,13 @@ def createTripPlan(request):
     # print(data)
     city = City.objects.filter(id=data['city_id']).first()
     user = User.objects.filter(id=data['user_id']).first()
+    start_date = hh.strptime(data['start_date'], "%Y-%m-%dT%H:%M:%S.%f").date()
+    end_date = hh.strptime(data['end_date'], "%Y-%m-%dT%H:%M:%S.%f").date()
     plan = Plan(
         name=data['name'],
         description=data['description'],
-        start_date=data['start_date'],
-        end_date=data['end_date'],
+        start_date=start_date,
+        end_date=end_date,
         city=city,
 
         created_at=date.today().strftime('%Y-%m-%d %H:%M:%S')
