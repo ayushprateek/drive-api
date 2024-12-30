@@ -1,4 +1,5 @@
 from drive_ai import settings
+from datetime import datetime as hh
 from django.core.exceptions import ObjectDoesNotExist
 import math
 from django.db.models import Value, BooleanField
@@ -1056,93 +1057,39 @@ def cityScrape(request):
 
 @api_view(['POST'])
 def saveToItinerary(request):
-    data = json.loads(request.body)
-    userdata = User.objects.filter(id=data['user_id']).first()
-    planIds = data['plan_id']
-    date = data['date']
-    print("Exists = ", Itinerary.objects.filter(user_id=data['user_id']).exists())
+    try:
+        
+        data = json.loads(request.body)
+        userdata = User.objects.filter(id=data['user_id']).first()
+        planIds = data['plan_id']
+        date = data['date']
+        formatted_date = hh.strptime(date, "%Y-%m-%dT%H:%M:%S.%f").date()
+        print("Exists = ", Itinerary.objects.filter(user_id=data['user_id']).exists())
 
-    if Itinerary.objects.filter(user_id=data['user_id']).exists():
-        itinerary = Itinerary.objects.filter(user_id=data['user_id']).first()
+        if Itinerary.objects.filter(user_id=data['user_id']).exists():
+            itinerary = Itinerary.objects.filter(user_id=data['user_id']).first()
 
-        if ItinerarySite.objects.filter(site_id=data['place_id'], itinerary=itinerary).exists():
-            ItinerarySite.objects.filter(site_id=data['place_id'], itinerary=itinerary).delete()
-        # if ItineraryHotel.objects.filter(hotel_id=data['place_id'], itinerary=itinerary).exists():
-        #     ItineraryHotel.objects.filter(hotel_id=data['place_id'], itinerary=itinerary).delete()
-        # if ItineraryExtremeSport.objects.filter(extremesport_id=data['place_id'], itinerary=itinerary).exists():
-        #     ItineraryExtremeSport.objects.filter(extremesport_id=data['place_id'], itinerary=itinerary).delete()
-        # if ItineraryEvent.objects.filter(event_id=data['place_id'], itinerary=itinerary).exists():
-        #     ItineraryEvent.objects.filter(event_id=data['place_id'], itinerary=itinerary).delete()
-        # if ItineraryWeirdAndWacky.objects.filter(weirdandwacky_id=data['place_id'], itinerary=itinerary).exists():
-        #     ItineraryWeirdAndWacky.objects.filter(weirdandwacky_id=data['place_id'], itinerary=itinerary).delete()
-        # if ItineraryPark.objects.filter(park_id=data['place_id'], itinerary=itinerary).exists():
-        #     ItineraryPark.objects.filter(park_id=data['place_id'], itinerary=itinerary).delete()
-        # if ItineraryAttraction.objects.filter(attraction_id=data['place_id'], itinerary=itinerary).exists():
-        #     ItineraryAttraction.objects.filter(attraction_id=data['place_id'], itinerary=itinerary).delete()
-    else:
-        itinerary = Itinerary.objects.create(user=userdata)
+            if ItinerarySite.objects.filter(site_id=data['place_id'], itinerary=itinerary).exists():
+                ItinerarySite.objects.filter(site_id=data['place_id'], itinerary=itinerary).delete()
+        else:
+            itinerary = Itinerary.objects.create(user=userdata)
 
-    for planId in planIds:
-        planModel = Plan.objects.filter(id=planId).first()
-        if Site.objects.filter(id=data['place_id'], show=True).exists():
+        for planId in planIds:
+            planModel = Plan.objects.filter(id=planId).first()
+            if Site.objects.filter(id=data['place_id'], show=True).exists():
 
-            site = Site.objects.get(id=data['place_id'])
+                site = Site.objects.get(id=data['place_id'])
 
-            ItinerarySite.objects.create(
-                itinerary=itinerary,
-                site=site,
-                plan=planModel,
-                date=date
-            )
-        # if Hotel.objects.filter(id=data['place_id']).exists():
-        #     hotel = Hotel.objects.get(id=data['place_id'])
-        #     ItineraryHotel.objects.create(
-        #         itinerary=itinerary,
-        #         hotel=hotel,
-        #         plan=planModel,
-        #         date=date
-        #     )
-        # if ExtremeSport.objects.filter(id=data['place_id']).exists():
-        #     extremesport = ExtremeSport.objects.get(id=data['place_id'])
-        #     ItineraryExtremeSport.objects.create(
-        #         itinerary=itinerary,
-        #         extremesport=extremesport,
-        #         plan=planModel,
-        #         date=date
-        #     )
-        # if Event.objects.filter(id=data['place_id']).exists():
-        #     event = Event.objects.get(id=data['place_id'])
-        #     ItineraryEvent.objects.create(
-        #         itinerary=itinerary,
-        #         event=event,
-        #         plan=planModel,
-        #         date=date
-        #     )
-        # if WeirdAndWacky.objects.filter(id=data['place_id']).exists():
-        #     weirdandwacky = WeirdAndWacky.objects.get(id=data['place_id'])
-        #     ItineraryWeirdAndWacky.objects.create(
-        #         itinerary=itinerary,
-        #         weirdandwacky=weirdandwacky,
-        #         plan=planModel,
-        #         date=date
-        #     )
-        # if Park.objects.filter(id=data['place_id']).exists():
-        #     park = Park.objects.get(id=data['place_id'])
-        #     ItineraryPark.objects.create(
-        #         itinerary=itinerary,
-        #         park=park,
-        #         plan=planModel,
-        #         date=date
-        #     )
-        # if Attraction.objects.filter(id=data['place_id']).exists():
-        #     attraction = Attraction.objects.get(id=data['place_id'])
-        #     ItineraryAttraction.objects.create(
-        #         itinerary=itinerary,
-        #         attraction=attraction,
-        #         plan=planModel,
-        #         date=date
-        #     )
-    return JsonResponse({'message': 'Added'})
+                ItinerarySite.objects.create(
+                    itinerary=itinerary,
+                    site=site,
+                    plan=planModel,
+                    date=formatted_date
+                )
+        return JsonResponse({'message': 'Added'})
+    except Exception as e:
+        return JsonResponse({"Error": str(e)})
+    
 
 
 @api_view(['POST'])
