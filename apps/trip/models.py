@@ -661,7 +661,7 @@ class ItinerarySite(models.Model):
     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True)
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
-    date = models.DateTimeField(null=True)
+    date = models.DateField(null=True)
 
 
 # class ItineraryEvent(models.Model):
