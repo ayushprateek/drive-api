@@ -3767,6 +3767,30 @@ def get_coordinates_along_polyline(request):
 
 
 @api_view(['GET'])
+def setDiscountUrl(request, id=None):
+    try:
+        print("Called")
+        env = environ.Env()
+        environ.Env.read_env(env_file=ROOT_DIR('.env'))
+        category_id = env('AD_CATEGORY_ID')
+        print("Hi")
+        siteList = Site.objects.filter(
+            city_anchor__isnull=False, slug__isnull=False, property_id__isnull=False,
+            category_id=category_id
+        )
+        print("Length = ",len(siteList))
+        for site in siteList:
+            url=f'https://www.floridatraveldeals.us/hotels/florida/{site.city_anchor}/{site.slug}/{site.property_id}'
+            url=url.replace(' ','-')
+            site.discount_url = url
+            site.save()
+    except Exception as ex:
+        return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return JsonResponse({'error': "discount url saved successfuly"}, safe=False, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
 def getPhotoViaSite(request, id=None):
     try:
         if not Site.objects.filter(id=id).exists():
