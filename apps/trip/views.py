@@ -3787,6 +3787,117 @@ def get_coordinates_along_polyline(request):
     else:
         plans_list = {"markers": list(plans)}
         return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
+    
+@api_view(['POST'])
+def get_coordinates_along_polyline_without(request):
+    category_list = request.data['categories']
+    only_hotels = request.data['only_hotels']
+    use_pagination = request.data.get('use_pagination')
+    print("use_pagination = ",use_pagination)
+    format = request.data['format']
+
+    lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
+    lat2, lon2 = float(request.data['lat2']), float(request.data['lon2'])
+    south_lat, west_lon = float(request.data['south_lat']), float(request.data['west_lon'])
+    north_lat, east_lon = float(request.data['north_lat']), float(request.data['east_lon'])
+    threshold_distance = float(request.data['threshold_distance'])
+
+    # Create a bounding box using shapely
+    bounding_box = box(west_lon, south_lat, east_lon, north_lat)
+
+    # Get polyline data from Google API
+    url = f"https://maps.googleapis.com/maps/api/directions/json?origin={lat1},{lon1}&destination={lat2},{lon2}&key={settings.GOOGLE_API_KEY}"
+    response = requests.get(url)
+    decoded_points = []
+    print("response.status_code = ", response.status_code)
+    if response.status_code == 200:
+        data = response.json()
+        decoded_points = decode_poly(data['routes'][0]['overview_polyline']['points'])
+        print("overview_polyline = ", decoded_points)
+
+    plans = []
+
+    def process_data(queryset):
+        for plan in queryset:
+            point = Point(plan['longitude'], plan['latitude'])
+            if is_distance_one(float(plan['latitude']), float(plan['longitude']), decoded_points, threshold_distance) and bounding_box.contains(point):
+                plans.append(plan)
+
+    if only_hotels:
+        data = Site.objects.filter(show=True,discount_url__isnull=False).annotate(icon_url=F('category__icon_url'))
+        for plan in data:
+            point = Point(plan.longitude, plan.latitude)
+            condition = is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance)
+
+            if format == 'map':
+                condition = is_distance_one(plan.latitude, plan.longitude,
+                                            decoded_points, threshold_distance) and bounding_box.contains(point)
+            else:
+                condition = is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance)
+
+            if condition:
+                plans.append({
+                    "id": plan.id,
+                    "name": plan.name,
+                    "description": plan.description,
+                    "amenities": plan.amenities,
+                    "facility": plan.facility,
+                    "icon_url": plan.icon_url,
+                    "place_id": plan.place_id,
+                    "images": [plan.place_id],
+                    "latitude": plan.latitude,
+                    "longitude": plan.longitude,
+                    "rating": plan.rating,
+                    "city_anchor": plan.city_anchor,
+                    "discount_url": plan.discount_url,
+                    "slug": plan.slug,
+                    "property_id": plan.property_id,
+                    "user_ratings_total": plan.user_ratings_total,
+                    "is_hotel": True
+                })
+    else:
+
+        for category in category_list:
+            print("category = ", category)
+            if Site.objects.filter(category_id=category, show=True).exists():
+                data = Site.objects.filter(category_id=category, show=True).annotate(icon_url=F('category__icon_url'))
+                for plan in data:
+                    point = Point(plan.longitude, plan.latitude)
+                    # print('Hotel point')
+
+                    if is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance) and bounding_box.contains(point):
+                        plans.append({
+                            "id": plan.id,
+                            "place_id": plan.place_id,
+                            "amenities": plan.amenities,
+                            "facility": plan.facility,
+                            "name": plan.name,
+                            "description": plan.description,
+                            "icon_url": plan.icon_url,
+                            "images": [plan.place_id],
+                            "latitude": plan.latitude,
+                            "longitude": plan.longitude,
+                            "rating": plan.rating,
+                            "city_anchor": plan.city_anchor,
+                            "discount_url": plan.discount_url,
+                            "slug": plan.slug,
+                            "property_id": plan.property_id,
+                            "user_ratings_total": plan.user_ratings_total,
+                            "is_hotel": True
+                        })
+            else:
+                queryset = Site.objects.filter(category_id=category, show=True).annotate(
+                    icon_url=F('category__icon_url')
+                ).values(
+                    'id', 'name', 'description', 'images', 'latitude', 'longitude', 'icon_url', 'place_id'
+                )
+                print("queryset = ", queryset)
+                process_data(queryset)
+
+    # plans_list = {"markers": list(plans)}
+    # print('Marker list', plans_list)
+    plans_list = {"markers": list(plans)}
+    return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
