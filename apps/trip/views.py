@@ -3908,15 +3908,18 @@ def setDiscountUrl(request, id=None):
         environ.Env.read_env(env_file=ROOT_DIR('.env'))
         category_id = env('AD_CATEGORY_ID')
         print("Hi")
+        city=City.objects.filter(id='2f742167-5e54-4d72-b524-a4fb6875fc83').first()
         siteList = Site.objects.filter(
             city_anchor__isnull=False, slug__isnull=False, property_id__isnull=False,
-            category_id=category_id
+            category_id=category_id,city_anchor='miami'
         )
         print("Length = ",len(siteList))
         for site in siteList:
             url=f'https://www.floridatraveldeals.us/hotels/florida/{site.city_anchor}/{site.slug}/{site.property_id}'
             url=url.replace(' ','-')
             site.discount_url = url
+            site.city=city
+            
             site.save()
     except Exception as ex:
         return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
