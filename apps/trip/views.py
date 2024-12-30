@@ -2030,11 +2030,20 @@ def getSites(request):
 
         category_id = data['category_id']
         city_id = data['city_id']
+        env = environ.Env()
+        environ.Env.read_env(env_file=ROOT_DIR('.env'))
+        hotel_id = env('AD_CATEGORY_ID')
         category = Category.objects.filter(id=category_id).first()
+        
         city = City.objects.filter(id=city_id).first()
 
+
+        if category_id==hotel_id:
+            sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True,discount_url__isnull=False)
+        else:
+             sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True)
         # Fetch the filtered Site objects
-        sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True)
+       
 
         # Apply pagination
         paginator = CustomPagination()
@@ -2049,6 +2058,7 @@ def getSites(request):
                 'place_id': site_instance.place_id,
                 'rating': site_instance.rating,
                 'user_ratings_total': site_instance.user_ratings_total,
+                'discount_url': site_instance.discount_url,
                 # 'latitude': getattr(site_instance.geometry.location, 'lat', None),
                 # 'longitude': getattr(site_instance.geometry.location, 'lng', None),
                 'latitude': site_instance.latitude,
