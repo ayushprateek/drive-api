@@ -3659,6 +3659,8 @@ def decode_poly(encoded):
 def get_coordinates_along_polyline(request):
     category_list = request.data['categories']
     only_hotels = request.data['only_hotels']
+    use_pagination = request.data.get('use_pagination')
+    print("use_pagination = ",use_pagination)
     format = request.data['format']
 
     lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
@@ -3762,25 +3764,29 @@ def get_coordinates_along_polyline(request):
     # plans_list = {"markers": list(plans)}
     # print('Marker list', plans_list)
 
-    # Implementing Pagination
-    page = int(request.data.get('page', 1))
-    per_page = int(request.data.get('per_page', 10))  # Default items per page
-    paginator = Paginator(plans, per_page)
+    if use_pagination:
+        # Implementing Pagination
+        page = int(request.data.get('page', 1))
+        per_page = int(request.data.get('per_page', 10))  # Default items per page
+        paginator = Paginator(plans, per_page)
 
-    try:
-        paginated_plans = paginator.page(page)
-    except Exception as e:
-        return JsonResponse({'error': 'Invalid page number'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            paginated_plans = paginator.page(page)
+        except Exception as e:
+            return JsonResponse({'error': 'Invalid page number'}, status=status.HTTP_400_BAD_REQUEST)
 
-    response_data = {
-        "markers": list(paginated_plans),
-        "total_count": paginator.count,
-        "total_pages": paginator.num_pages,
-        "current_page": page,
-        "per_page": per_page,
-    }
+        response_data = {
+            "markers": list(paginated_plans),
+            "total_count": paginator.count,
+            "total_pages": paginator.num_pages,
+            "current_page": page,
+            "per_page": per_page,
+        }
 
-    return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
+        return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
+    else:
+        plans_list = {"markers": list(plans)}
+        return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
