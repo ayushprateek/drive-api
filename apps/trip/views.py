@@ -172,26 +172,33 @@ def getAllRestaurantBrand(request):
 
 @api_view(['POST'])
 def addTrip(request):
-    # print('Called')
-    # category1 = Category.objects.filter(id='159fd81e-a253-4c97-af45-655b1fad6fef').first()
-    # TripCategory.objects.create(
-    #     category=category1
-    # )
-    results = Category.objects.all()
-    for row in results:
-        # if not PlanCategory.objects.filter(category_id=row.id).exists():
-        #     PlanCategory.objects.create(
-        #         category=row
-        #     )
-        if not TripCategory.objects.filter(category_id=row.id).exists():
-            TripCategory.objects.create(
-                category=row
-            )
+    category = Category.objects.filter(id='8e2489a6-97f6-4b8a-ae8d-6e5a8b2c020a').first()
 
-    # delete from trip_plancategory where category_id not in()
+    Category.objects.create(
+        name='Music',
+        image_url='static/Music.png',
+        icon_url='static/Music.png',
+        parent=category,
 
-    # delete from trip_tripcategory where category_id not in('7590e882-4ae7-499f-b54a-419d2f613297','8590275f-3736-4c73-8abc-1e29c5b55a9c','70787b00-c78b-4a47-a86b-d9f24f879729','03b2e91e-3275-42fd-aa32-403e8d2252d7','d7a03343-b08e-46c4-96c2-444566714796','9dce7a13-1ace-408c-85e8-895cd933bd22','7327f81a-5e95-447c-9bbb-e5a6b898cd3b','82ef73f3-7b68-4531-a158-ea4fa6afa051','26387b2b-b709-4011-a0de-cbd166d4625e')
-
+    )
+    Category.objects.create(
+        name='Festivals',
+        image_url='static/Festivals.jpeg',
+        icon_url='static/Festivals.jpeg',
+        parent=category,
+    )
+    Category.objects.create(
+        name='Sports',
+        image_url='static/Sports.jpeg',
+        icon_url='static/Sports.jpeg',
+        parent=category,
+    )
+    Category.objects.create(
+        name='All Events',
+        image_url='static/AllEvents.jpeg',
+        icon_url='static/AllEvents.jpeg',
+        parent=category,
+    )
     # Category.objects.create(
     # name='Attractions',
     # image_url='static/AttractionsIcon.svg',
@@ -2034,16 +2041,14 @@ def getSites(request):
         environ.Env.read_env(env_file=ROOT_DIR('.env'))
         hotel_id = env('AD_CATEGORY_ID')
         category = Category.objects.filter(id=category_id).first()
-        
+
         city = City.objects.filter(id=city_id).first()
 
-
-        if category_id==hotel_id:
-            sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True,discount_url__isnull=False)
+        if category_id == hotel_id:
+            sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True, discount_url__isnull=False)
         else:
-             sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True)
+            sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True)
         # Fetch the filtered Site objects
-       
 
         # Apply pagination
         paginator = CustomPagination()
@@ -2070,6 +2075,37 @@ def getSites(request):
                 'photo_reference': site_instance.photos.values_list('photo_reference', flat=True).first(),
                 'photo_name': site_instance.photos.values_list('photo_name', flat=True).first(),
                 'reviews': site_instance.place_review.values(),
+            }
+            plans_list.append(site)
+
+        return paginator.get_paginated_response(plans_list)
+
+    except ObjectDoesNotExist:
+        return Response({"error": "Data not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def getSubCategories(request, id):
+    try:
+
+        category = Category.objects.filter(parent_id=id).all()
+        # Fetch the filtered Site objects
+
+        # Apply pagination
+        paginator = CustomPagination()
+        paginated_sites = paginator.paginate_queryset(category, request)
+        
+
+        plans_list = []
+        for site_instance in paginated_sites:
+            site = {
+                "id": site_instance.id,
+                "name": site_instance.name,
+                "icon_url": site_instance.icon_url,
+                "image_url": site_instance.image_url,
+                "route": site_instance.route
             }
             plans_list.append(site)
 
@@ -3660,7 +3696,7 @@ def get_coordinates_along_polyline(request):
     category_list = request.data['categories']
     only_hotels = request.data['only_hotels']
     use_pagination = request.data.get('use_pagination')
-    print("use_pagination = ",use_pagination)
+    print("use_pagination = ", use_pagination)
     format = request.data['format']
 
     lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
@@ -3691,7 +3727,7 @@ def get_coordinates_along_polyline(request):
                 plans.append(plan)
 
     if only_hotels:
-        data = Site.objects.filter(show=True,discount_url__isnull=False).annotate(icon_url=F('category__icon_url'))
+        data = Site.objects.filter(show=True, discount_url__isnull=False).annotate(icon_url=F('category__icon_url'))
         for plan in data:
             point = Point(plan.longitude, plan.latitude)
             condition = is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance)
@@ -3787,13 +3823,14 @@ def get_coordinates_along_polyline(request):
     else:
         plans_list = {"markers": list(plans)}
         return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
-    
+
+
 @api_view(['POST'])
 def get_coordinates_along_polyline_without(request):
     category_list = request.data['categories']
     only_hotels = request.data['only_hotels']
     use_pagination = request.data.get('use_pagination')
-    print("use_pagination = ",use_pagination)
+    print("use_pagination = ", use_pagination)
     format = request.data['format']
 
     lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
@@ -3908,18 +3945,18 @@ def setDiscountUrl(request, id=None):
         environ.Env.read_env(env_file=ROOT_DIR('.env'))
         category_id = env('AD_CATEGORY_ID')
         print("Hi")
-        city=City.objects.filter(id='2f742167-5e54-4d72-b524-a4fb6875fc83').first()
+        city = City.objects.filter(id='2f742167-5e54-4d72-b524-a4fb6875fc83').first()
         siteList = Site.objects.filter(
             city_anchor__isnull=False, slug__isnull=False, property_id__isnull=False,
-            category_id=category_id,city_anchor='miami'
+            category_id=category_id, city_anchor='miami'
         )
-        print("Length = ",len(siteList))
+        print("Length = ", len(siteList))
         for site in siteList:
-            url=f'https://www.floridatraveldeals.us/hotels/florida/{site.city_anchor}/{site.slug}/{site.property_id}'
-            url=url.replace(' ','-')
+            url = f'https://www.floridatraveldeals.us/hotels/florida/{site.city_anchor}/{site.slug}/{site.property_id}'
+            url = url.replace(' ', '-')
             site.discount_url = url
-            site.city=city
-            
+            site.city = city
+
             site.save()
     except Exception as ex:
         return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -4009,7 +4046,7 @@ def getSitesNearMe(request):
 
     if only_hotels:
         # print("only_hotels = ", only_hotels)
-        data = Site.objects.filter(show=True,discount_url__isnull=False).annotate(icon_url=F('category__icon_url'))
+        data = Site.objects.filter(show=True, discount_url__isnull=False).annotate(icon_url=F('category__icon_url'))
         # print("Data fetched")
         for plan in data:
             point = Point(plan.longitude, plan.latitude)
@@ -4500,7 +4537,7 @@ class CategoryListAPIView(generics.ListCreateAPIView):
             models
         """
         queryset = PlanCategory.objects.select_related('category').values(
-            'category__id', 'category__name', 'category__icon_url', 'category__image_url','category__route'
+            'category__id', 'category__name', 'category__icon_url', 'category__image_url', 'category__route'
         ).annotate(
             id=F('category__id'),
             name=F('category__name'),

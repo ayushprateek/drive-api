@@ -75,5 +75,6 @@ urlpatterns = [
     path('new-scrape-client-data/', newScrapeClientData, name='add-user'),
     path('get-photo-via-site/<id>', getPhotoViaSite, name='add-user'),
     path('set-discounturl/', setDiscountUrl, name='add-user'),
+    path('set-sub-categories/<id>', getSubCategories, name='add-user'),
     # path('update-location-in-site/', updateLocationInSite, name='add-user'),
 ]

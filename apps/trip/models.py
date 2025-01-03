@@ -25,6 +25,13 @@ class Category(BaseModel):
     keywords = ArrayField(models.TextField(null=True), default=list)
     scrape = models.BooleanField(default=False)
     route = models.URLField(max_length=255, blank=True, null=True)
+    parent = models.ForeignKey(
+        'self',  
+        on_delete=models.CASCADE,  
+        blank=True,
+        null=True,
+        related_name='sub_category'
+    )
 
     class Meta:
         verbose_name = "Category"
