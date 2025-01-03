@@ -93,7 +93,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = trip_models.Category
-        fields = ("id", "name", "image_url", "icon_url")
+        fields = ("id", "name", "image_url", "icon_url","route")
 
 
 class CommonSerializer(serializers.Serializer):

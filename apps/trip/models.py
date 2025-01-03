@@ -24,6 +24,7 @@ class Category(BaseModel):
     image_url = models.URLField(max_length=255, blank=True, null=True)
     keywords = ArrayField(models.TextField(null=True), default=list)
     scrape = models.BooleanField(default=False)
+    route = models.URLField(max_length=255, blank=True, null=True)
 
     class Meta:
         verbose_name = "Category"

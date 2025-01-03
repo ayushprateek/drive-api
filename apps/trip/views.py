@@ -4500,12 +4500,13 @@ class CategoryListAPIView(generics.ListCreateAPIView):
             models
         """
         queryset = PlanCategory.objects.select_related('category').values(
-            'category__id', 'category__name', 'category__icon_url', 'category__image_url'
+            'category__id', 'category__name', 'category__icon_url', 'category__image_url','category__route'
         ).annotate(
             id=F('category__id'),
             name=F('category__name'),
             icon_url=F('category__icon_url'),
-            image_url=F('category__image_url')
+            image_url=F('category__image_url'),
+            route=F('category__route'),
         )
 
         return queryset
