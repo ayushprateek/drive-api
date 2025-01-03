@@ -446,6 +446,7 @@ class Photo(models.Model):
     html_attributions = models.TextField()
     photo_reference = models.CharField(max_length=255)
     photo_name = models.CharField(max_length=255,null=True)
+    url = models.CharField(max_length=255,null=True)
     author_uri = models.CharField(max_length=500, null=True)
     author_name = models.CharField(max_length=500, null=True)
     author_photo_uri = models.TextField(null=True)
@@ -538,6 +539,7 @@ class Site(BaseModel):
     slug = models.CharField(max_length=255, null=True)
     city_anchor = models.CharField(max_length=255, null=True)
     show = models.BooleanField(default=True)
+    event_start_date = models.DateTimeField(null=True) 
 
     class Meta:
         verbose_name = "Site"
