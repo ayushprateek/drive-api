@@ -3181,7 +3181,7 @@ def newAmenitiesScrapeAPI(request):
 
             response = requests.get(api_url, headers=headers)
             print("Status code = ", response.status_code)
-            logger.info("Name = " +  site.name+" Status code = "+str(response.status_code))
+            logger.info("Name = " + site.name + " Status code = " + str(response.status_code))
             if response.status_code == 200:
                 data = response.json()
                 # print("nationalPhoneNumber = ", data.get('nationalPhoneNumber'))
@@ -3208,7 +3208,7 @@ def newAmenitiesScrapeAPI(request):
             # })
 
     except Exception as e:
-        logger.info("Error = " +  str(e))
+        logger.info("Error = " + str(e))
         return JsonResponse({'error': str(e)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return JsonResponse({'message': 'Amenities scrapped successfully'})
 
@@ -3894,7 +3894,11 @@ def get_coordinates_along_polyline(request):
                     "slug": plan.slug,
                     "property_id": plan.property_id,
                     "user_ratings_total": plan.user_ratings_total,
-                    "is_hotel": True
+                    "is_hotel": True,
+                    "contact_info": plan.contact_info,
+                    "website": plan.website,
+                    "regular_opening_hours": plan.regular_opening_hours,
+                    "regular_secondary_opening_hours": plan.regular_secondary_opening_hours,
                 })
     else:
 
@@ -3924,7 +3928,11 @@ def get_coordinates_along_polyline(request):
                             "slug": plan.slug,
                             "property_id": plan.property_id,
                             "user_ratings_total": plan.user_ratings_total,
-                            "is_hotel": True
+                            "is_hotel": True,
+                            "contact_info": plan.contact_info,
+                            "website": plan.website,
+                            "regular_opening_hours": plan.regular_opening_hours,
+                            "regular_secondary_opening_hours": plan.regular_secondary_opening_hours,
                         })
             else:
                 queryset = Site.objects.filter(category_id=category, show=True).annotate(
@@ -4028,6 +4036,10 @@ def get_coordinates_along_polyline_without(request):
                     "slug": plan.slug,
                     "property_id": plan.property_id,
                     "user_ratings_total": plan.user_ratings_total,
+                    "contact_info": plan.contact_info,
+                    "website": plan.website,
+                    "regular_opening_hours": plan.regular_opening_hours,
+                    "regular_secondary_opening_hours": plan.regular_secondary_opening_hours,
                     "is_hotel": True
                 })
     else:
@@ -4058,7 +4070,11 @@ def get_coordinates_along_polyline_without(request):
                             "slug": plan.slug,
                             "property_id": plan.property_id,
                             "user_ratings_total": plan.user_ratings_total,
-                            "is_hotel": True
+                            "is_hotel": True,
+                            "contact_info": plan.contact_info,
+                            "website": plan.website,
+                            "regular_opening_hours": plan.regular_opening_hours,
+                            "regular_secondary_opening_hours": plan.regular_secondary_opening_hours,
                         })
             else:
                 queryset = Site.objects.filter(category_id=category, show=True).annotate(
@@ -4216,6 +4232,10 @@ def getSitesNearMe(request):
                     "property_id": plan.property_id,
                     "rating": plan.rating,
                     "user_ratings_total": plan.user_ratings_total,
+                    "contact_info": plan.contact_info,
+                    "website": plan.website,
+                    "regular_opening_hours": plan.regular_opening_hours,
+                    "regular_secondary_opening_hours": plan.regular_secondary_opening_hours,
                 })
     else:
         # model_list = [WeirdAndWacky, Attraction, Park, Event, Site, ExtremeSport]
@@ -4245,6 +4265,10 @@ def getSitesNearMe(request):
                             "slug": plan.slug,
                             "property_id": plan.property_id,
                             "user_ratings_total": plan.user_ratings_total,
+                            "contact_info": plan.contact_info,
+                            "website": plan.website,
+                            "regular_opening_hours": plan.regular_opening_hours,
+                            "regular_secondary_opening_hours": plan.regular_secondary_opening_hours,
                         })
             else:
                 for model in model_list:
