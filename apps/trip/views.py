@@ -2528,6 +2528,7 @@ def getLikedSitesViaPlan(request):
     plan_id = data['plan_id']
     selectedCity = data['selected_cities']
     selectedCategory = data['selected_categories']
+    dates = set()
 
     plans_list = []
     siteList = []
@@ -2553,7 +2554,8 @@ def getLikedSitesViaPlan(request):
                     'description', 'images',
                     'city_id',
                     'place_id', 'facility',
-                    'vicinity'
+                    'vicinity',
+                    'category__name'
 
                 ).annotate(city_name=F('city__name')).values(
                     'id', 'name',
@@ -2566,7 +2568,8 @@ def getLikedSitesViaPlan(request):
                     'city_id',
                     'city_name',
                     'place_id', 'facility',
-                    'vicinity'
+                    'vicinity',
+                    'category__name'
                 )
                 imageList = []
                 userList = UserLikesSite.objects.filter(plan_id=plan_id, site_id=userLikesSiteData['site_id']).all()\
@@ -2587,17 +2590,31 @@ def getLikedSitesViaPlan(request):
                 for plan in plans:
                     plan['user_count'] = len(userLikesSite)
                     plan['users'] = list(imageList)
+                    dates.add(plan['category__name'])
                     siteList.append(plan)
-
     plans_list.append({"Site": list(siteList)})
-    return JsonResponse(json.dumps(
-        {
-            "Site": list(siteList),
-        },
-        default=str
-    ), safe=False, status=status.HTTP_200_OK)
+    result = []
 
-    # return JsonResponse(list(siteList), safe=False, status=status.HTTP_200_OK)
+    for date in dates:
+        print('Unique categories = ', date)
+        res = []
+        for site in siteList:
+            if site['category__name'] == date:
+                res.append(site)
+
+        result.append({
+            "category": date,
+            "value": list(res)
+        })
+    
+    # return JsonResponse(json.dumps(
+    #     {
+    #         "Site": list(siteList),
+    #     },
+    #     default=str
+    # ), safe=False, status=status.HTTP_200_OK)
+
+    return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
 
 # @api_view(['POST'])
