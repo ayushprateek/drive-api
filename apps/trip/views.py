@@ -2098,7 +2098,6 @@ def getSubCategories(request, id):
         # Apply pagination
         paginator = CustomPagination()
         paginated_sites = paginator.paginate_queryset(category, request)
-        
 
         plans_list = []
         for site_instance in paginated_sites:
@@ -2606,7 +2605,7 @@ def getLikedSitesViaPlan(request):
             "category": date,
             "value": list(res)
         })
-    
+
     # return JsonResponse(json.dumps(
     #     {
     #         "Site": list(siteList),
@@ -3164,23 +3163,44 @@ def newAmenitiesScrapeAPI(request):
     # 2. For each site's placeId call the API
     # 3. Save the response in amenities column
     # 4. Save the site
-    siteList = Site.objects.filter(city_id='2f742167-5e54-4d72-b524-a4fb6875fc83').all()
-    print("Total sites = ", len(siteList))
+
+    # FieldMask="allowsDogs,curbsidePickup,delivery,dineIn,evChargeOptions,fuelOptions,goodForChildren,goodForGroups,goodForWatchingSports,liveMusic,menuForChildren,parkingOptions,paymentOptions,outdoorSeating,reservable,restroom,servesBeer,servesBreakfast,servesBrunch,servesCocktails,servesCoffee,servesDessert,servesDinner,servesLunch,servesVegetarianFood,servesWine,takeout"
+    FieldMask = "currentOpeningHours,currentSecondaryOpeningHours,internationalPhoneNumber,nationalPhoneNumber,priceLevel,priceRange,rating,regularOpeningHours,regularSecondaryOpeningHours,userRatingCount,websiteUri"
     try:
+        siteList = Site.objects.filter(city_id='2f742167-5e54-4d72-b524-a4fb6875fc83').all()
+        # siteList = Site.objects.filter(place_id='ChIJf3tHtMK20YgRwAz2bI9DMT0').all()
+        logger.info("Total sites = " + str(len(siteList)))
+        print("Total sites = ", len(siteList))
         for site in siteList:
             print("Site = ", site.name)
             api_url = f"https://places.googleapis.com/v1/places/{site.place_id}?key={settings.GOOGLE_API_KEY}"
 
             headers = {
-                "X-Goog-FieldMask": "allowsDogs,curbsidePickup,delivery,dineIn,evChargeOptions,fuelOptions,goodForChildren,goodForGroups,goodForWatchingSports,liveMusic,menuForChildren,parkingOptions,paymentOptions,outdoorSeating,reservable,restroom,servesBeer,servesBreakfast,servesBrunch,servesCocktails,servesCoffee,servesDessert,servesDinner,servesLunch,servesVegetarianFood,servesWine,takeout"
+                "X-Goog-FieldMask": "currentOpeningHours,currentSecondaryOpeningHours,internationalPhoneNumber,nationalPhoneNumber,priceLevel,priceRange,rating,regularOpeningHours,regularSecondaryOpeningHours,userRatingCount,websiteUri"
             }
 
             response = requests.get(api_url, headers=headers)
             print("Status code = ", response.status_code)
+            logger.info("Name = " +  site.name+" Status code = "+str(response.status_code))
             if response.status_code == 200:
-                site.amenities = {}
                 data = response.json()
-                site.amenities = data
+                # print("nationalPhoneNumber = ", data.get('nationalPhoneNumber'))
+                # print("internationalPhoneNumber = ", data.get('internationalPhoneNumber'))
+                # print("websiteUri = ", data.get('websiteUri'))
+                # print("regularOpeningHours = ", data.get('regularOpeningHours'))
+                # print("regularSecondaryOpeningHours = ", data.get('regularSecondaryOpeningHours'))
+                contact_info = {
+                    "nationalPhoneNumber": data.get('nationalPhoneNumber'),
+                    "internationalPhoneNumber": data.get('internationalPhoneNumber')
+
+                }
+                contact_info = {key: value for key, value in contact_info.items() if value is not None}
+                site.contact_info = contact_info
+                site.website = data.get('websiteUri')
+                if data.get('regularOpeningHours'):
+                    site.regular_opening_hours = data.get('regularOpeningHours')
+                if data.get('regularSecondaryOpeningHours'):
+                    site.regular_secondary_opening_hours = data.get('regularSecondaryOpeningHours')
                 site.save()
             # return JsonResponse({
             #     'place id': site.place_id,
@@ -3188,6 +3208,7 @@ def newAmenitiesScrapeAPI(request):
             # })
 
     except Exception as e:
+        logger.info("Error = " +  str(e))
         return JsonResponse({'error': str(e)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return JsonResponse({'message': 'Amenities scrapped successfully'})
 
@@ -3536,14 +3557,15 @@ def newScrapeAPI(request):
 
     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
 
+
 def newScrapeEventsAPI(request):
     cityList = City.objects.filter(scrape=True).all()
     categoryList = Category.objects.filter(scrape=True).all()
     for city in cityList:
         for category in categoryList:
             for keyword in category.keywords:
-                print('keyword = ',keyword)
-                url = f'https://app.ticketmaster.com/discovery/v2/events.json?apikey=6vTme1q6AyurMz91g0269ptxxj10S6Oe&city=miami&classificationName=[{keyword}]' 
+                print('keyword = ', keyword)
+                url = f'https://app.ticketmaster.com/discovery/v2/events.json?apikey=6vTme1q6AyurMz91g0269ptxxj10S6Oe&city=miami&classificationName=[{keyword}]'
                 res = requests.get(url=url)
                 # print("Status code = ", res.status_code)
                 # logger.info('Next page urlStatus =  ' + str(res.status_code))
@@ -3551,54 +3573,55 @@ def newScrapeEventsAPI(request):
                     data = res.json()
                     # print("Length = ",len(data['_embedded']['events']))
                     if data.get('_embedded') and data.get('_embedded').get('events'):
-                        eventList=data.get('_embedded').get('events')
+                        eventList = data.get('_embedded').get('events')
                         for event in eventList:
-                            print("place_id = ",event.get('id'))
-                            print("name = ",event.get('name'))
-                            
-                            print("category = ",category.name)
-                            vanue=event.get('_embedded').get('venues')[0]
-                            print("Lat = ",Decimal(vanue.get('location').get('latitude')))
-                            print("Lon = ",Decimal(vanue.get('location').get('latitude')))
+                            print("place_id = ", event.get('id'))
+                            print("name = ", event.get('name'))
+
+                            print("category = ", category.name)
+                            vanue = event.get('_embedded').get('venues')[0]
+                            print("Lat = ", Decimal(vanue.get('location').get('latitude')))
+                            print("Lon = ", Decimal(vanue.get('location').get('latitude')))
                             # print("Venue = ",vanue)
-                            address=vanue.get('name')+" "+vanue.get('address').get('line1')+vanue.get('city').get('name')+vanue.get('state').get('name')+vanue.get('country').get('name')+vanue.get('postalCode')
-                            print("Address = ",address)
-                            date=event.get('dates').get('start').get('dateTime')
+                            address = vanue.get('name') + " " + vanue.get('address').get('line1') + vanue.get('city').get('name') + \
+                                vanue.get('state').get('name') + vanue.get('country').get('name') + vanue.get('postalCode')
+                            print("Address = ", address)
+                            date = event.get('dates').get('start').get('dateTime')
                             if date:
                                 print("Parsing date")
-                                formatted_date=parser.isoparse(date)
-                                print("Date = ",parser.isoparse(date))
+                                formatted_date = parser.isoparse(date)
+                                print("Date = ", parser.isoparse(date))
                                 print("Parsing date")
                             # formatted_date = hh.strptime(date, "%Y-%m-%dT%H:%M:%S.%f").date()
-                            # event_start_date= 
+                            # event_start_date=
                             # print("date = ",str(formatted_date))
                             if not Site.objects.filter(place_id=event.get('id'), category_id=category.id).exists():
                                 print('does not exist')
                                 try:
                                     hotel = Site.objects.create(
-                                            # business_status=result.get('businessStatus'),
-                                            # geometry=geometry,
-                                            # icon=result.get('icon'),
-                                            # icon_background_color=result.get('iconBackgroundColor'),
-                                            # icon_mask_base_uri=result.get('iconMaskBaseUri'),
-                                            name=event.get('name'),
-                                            # open_now=result.get('opening_hours', {}).get('open_now', False),
-                                            place_id=event.get('id'),
-                                            # plus_code=plus_code,location_data['lng']
-                                            latitude=event.get('_embedded').get('venues')[0].get('location').get('latitude'),
-                                            longitude=event.get('_embedded').get('venues')[0].get('location').get('latitude'),
-                                            # rating=result.get('rating'),
-                                            # reference=result.get('id'),
-                                            # scope=result.get('scope'),
-                                            # types=','.join(result['types']),
-                                            city=city,
-                                            # amenities=amenities,
-                                            event_start_date=formatted_date,
-                                            keyword=keyword,
-                                            show=True,
-                                            category=category,
-                                            # user_ratings_total=user_ratings_total,
-                                            vicinity=address)
+                                        # business_status=result.get('businessStatus'),
+                                        # geometry=geometry,
+                                        # icon=result.get('icon'),
+                                        # icon_background_color=result.get('iconBackgroundColor'),
+                                        # icon_mask_base_uri=result.get('iconMaskBaseUri'),
+                                        name=event.get('name'),
+                                        # open_now=result.get('opening_hours', {}).get('open_now', False),
+                                        place_id=event.get('id'),
+                                        # plus_code=plus_code,location_data['lng']
+                                        latitude=event.get('_embedded').get('venues')[0].get('location').get('latitude'),
+                                        longitude=event.get('_embedded').get('venues')[0].get('location').get('latitude'),
+                                        # rating=result.get('rating'),
+                                        # reference=result.get('id'),
+                                        # scope=result.get('scope'),
+                                        # types=','.join(result['types']),
+                                        city=city,
+                                        # amenities=amenities,
+                                        event_start_date=formatted_date,
+                                        keyword=keyword,
+                                        show=True,
+                                        category=category,
+                                        # user_ratings_total=user_ratings_total,
+                                        vicinity=address)
                                 except Exception as e:
                                     print("Site exception = ", str(e))
                                     logger.error("Photo exception = ", str(e))
@@ -3629,10 +3652,9 @@ def newScrapeEventsAPI(request):
                                 hotel.save()
                             else:
                                 print("Exists")
-                        
-                    
 
     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
+
 
 def saveHotel(request):
     cityList = City.objects.filter(scrape=True).all()

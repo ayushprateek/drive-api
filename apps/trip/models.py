@@ -540,6 +540,9 @@ class Site(BaseModel):
     city_anchor = models.CharField(max_length=255, null=True)
     show = models.BooleanField(default=True)
     event_start_date = models.DateTimeField(null=True) 
+    website = models.URLField(max_length=255, blank=True, null=True)
+    regular_opening_hours = models.JSONField(default=dict)
+    regular_secondary_opening_hours = models.JSONField(default=dict)
 
     class Meta:
         verbose_name = "Site"
