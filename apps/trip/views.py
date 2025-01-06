@@ -2048,6 +2048,17 @@ def getSites(request):
 
         if category_id == hotel_id:
             sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True, discount_url__isnull=False).order_by('-created_at')
+        elif category_id == "6d4f34d3-e2ab-4590-89fa-a0f5bd2e9769":
+            category_ids = [
+    'c4fa73f2-10b8-440e-8d0c-479e0c28ef8a',
+    '11d429d1-d5c4-4e40-ba05-205ab4803e4e',
+    '598fc90b-1968-408f-ad50-ed9f4cadc33d',
+]
+            sites = Site.objects.filter(
+    city_id=city_id,
+    category_id__in=category_ids,  # Use __in to match any of the specified category_ids
+    show=True
+).order_by('-created_at')
         else:
             sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True).order_by('-created_at')
         # Fetch the filtered Site objects
