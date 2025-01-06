@@ -446,10 +446,10 @@ class Photo(models.Model):
     html_attributions = models.TextField()
     photo_reference = models.CharField(max_length=255)
     photo_name = models.CharField(max_length=255,null=True)
-    url = models.CharField(max_length=255,null=True)
-    author_uri = models.CharField(max_length=500, null=True)
+    url = models.URLField(null=True, blank=True)
+    author_uri = models.URLField(null=True, blank=True)
     author_name = models.CharField(max_length=500, null=True)
-    author_photo_uri = models.TextField(null=True)
+    author_photo_uri =models.URLField(null=True, blank=True)
 
 
 class APICalls(models.Model):
@@ -540,6 +540,7 @@ class Site(BaseModel):
     city_anchor = models.CharField(max_length=255, null=True)
     show = models.BooleanField(default=True)
     event_start_date = models.DateTimeField(null=True) 
+    event_end_date = models.DateTimeField(null=True) 
     website = models.URLField(max_length=255, blank=True, null=True)
     regular_opening_hours = models.JSONField(default=dict)
     regular_secondary_opening_hours = models.JSONField(default=dict)

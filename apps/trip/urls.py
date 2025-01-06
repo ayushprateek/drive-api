@@ -77,5 +77,6 @@ urlpatterns = [
     path('set-discounturl/', setDiscountUrl, name='add-user'),
     path('set-sub-categories/<id>', getSubCategories, name='add-user'),
     path('scrape-events-api/', newScrapeEventsAPI, name='add-user'),
+    path('scrape-yelp-api/', scrapeYelpEvents, name='add-user'),
     # path('update-location-in-site/', updateLocationInSite, name='add-user'),
 ]

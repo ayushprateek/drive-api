@@ -1,4 +1,5 @@
 from drive_ai import settings
+import os
 from decimal import Decimal
 from datetime import datetime as hh
 from django.core.exceptions import ObjectDoesNotExist
@@ -76,7 +77,7 @@ logger = logging.getLogger('django.request')
 
 
 class CustomPagination(PageNumberPagination):
-    page_size = 10  # Set the number of items per page
+    page_size = 20  # Set the number of items per page
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -2046,9 +2047,9 @@ def getSites(request):
         city = City.objects.filter(id=city_id).first()
 
         if category_id == hotel_id:
-            sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True, discount_url__isnull=False)
+            sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True, discount_url__isnull=False).order_by('-created_at')
         else:
-            sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True)
+            sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True).order_by('-created_at')
         # Fetch the filtered Site objects
 
         # Apply pagination
@@ -3556,6 +3557,134 @@ def newScrapeAPI(request):
 #
 
     return JsonResponse({'message': 'Hotels fetched and saved successfully'})
+
+
+def scrapeYelpEvents(request):
+    try:
+        print("")
+        cityList = City.objects.filter(scrape=True).all()
+        city = cityList[0]
+        # Select file from ..Yelp/miami.json
+        file_path = os.path.join("Yelp", "miami.json")  # Adjust path as per your folder
+
+        # Read and parse the JSON file
+        with open(file_path, "r") as file:
+            data = json.load(file)
+        if data and data.get('events'):
+            eventList = data.get('events')
+            eventList = eventList
+            for event in eventList:
+                if not Site.objects.filter(place_id=event.get('id')).exists():
+                    print(f"Event Name: {event.get('name')}")
+                    # print(f"Attending Count: {event.get('attending_count')}")
+                    print(f"Category: {event.get('category')}")
+                    # print(f"Cost: {event.get('cost')}")
+                    # print(f"Cost Max: {event.get('cost_max')}")
+                    print(f"Description: {event.get('description')}")
+                    print(f"Event Site URL: {event.get('event_site_url')}")
+                    print(f"Event ID: {event.get('id')}")
+                    print(f"Image URL: {event.get('image_url')}")
+                    # print(f"Interested Count: {event.get('interested_count')}")
+                    # print(f"Is Canceled: {event.get('is_canceled')}")
+                    # print(f"Is Free: {event.get('is_free')}")
+                    # print(f"Is Official: {event.get('is_official')}")
+                    print(f"Latitude: {event.get('latitude')}")
+                    print(f"Longitude: {event.get('longitude')}")
+                    # print(f"Tickets URL: {event.get('tickets_url')}")
+                    print(f"Time Start: {event.get('time_start')}")
+                    print(f"Time End: {event.get('time_end')}")
+                    # Print location details
+                    location = event.get('location', {})
+                    print(f"Location Address1: {location.get('address1')}")
+                    print(f"Location Address2: {location.get('address2')}")
+                    print(f"Location Address3: {location.get('address3')}")
+                    print(f"City: {location.get('city')}")
+                    print(f"Zip Code: {location.get('zip_code')}")
+                    print(f"Country: {location.get('country')}")
+                    print(f"State: {location.get('state')}")
+                    print(f"Display Address: {', '.join(location.get('display_address', []))}")
+                    print(f"Cross Streets: {location.get('cross_streets')}")
+                    address = ', '.join(location.get('display_address', []))
+                    print("\n" + "=" * 50 + "\n")
+                    category = None
+                    if event.get('category') == "sports-active-life":
+                        category = Category.objects.filter(id='598fc90b-1968-408f-ad50-ed9f4cadc33d').first()  # sports
+                    if event.get('category') == "music":
+                        category = Category.objects.filter(id='c4fa73f2-10b8-440e-8d0c-479e0c28ef8a').first()  # music
+                    if event.get('category') == "festivals-fairs":
+                        category = Category.objects.filter(id='11d429d1-d5c4-4e40-ba05-205ab4803e4e').first()  # festivals
+                    if category:
+                        try:
+                            formatted_start_time = None
+                            formatted_end_time = None
+                            start_time = event.get('time_start')
+                            if start_time:
+                                print("Parsing date")
+                                formatted_start_time = parser.isoparse(start_time)
+
+                            end_time = event.get('time_end')
+                            if end_time:
+                                print("Parsing date")
+                                formatted_end_time = parser.isoparse(end_time)
+
+                            hotel = Site.objects.create(
+
+                                # business_status=result.get('businessStatus'),
+                                # geometry=geometry,
+                                # icon=result.get('icon'),
+                                # icon_background_color=result.get('iconBackgroundColor'),
+                                # icon_mask_base_uri=result.get('iconMaskBaseUri'),
+                                name=event.get('name'),
+                                description=event.get('description'),
+                                # open_now=result.get('opening_hours', {}).get('open_now', False),
+                                place_id=event.get('id'),
+                                # plus_code=plus_code,location_data['lng']
+                                latitude=event.get('latitude'),
+                                longitude=event.get('longitude'),
+                                # rating=result.get('rating'),
+                                # reference=result.get('id'),
+                                # scope=result.get('scope'),
+                                # types=','.join(result['types']),
+                                city=city,
+                                # amenities=amenities,
+                                event_start_date=formatted_start_time,
+                                event_end_date=formatted_end_time,
+                                # keyword=keyword,
+                                show=True,
+                                category=category,
+                                website=event.get('event_site_url'),
+                                # user_ratings_total=user_ratings_total,
+                                vicinity=address)
+                        except Exception as e:
+                            print("Site exception = ", str(e))
+                            logger.error("Photo exception = ", str(e))
+                            return JsonResponse({'error': str(e)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                        try:
+                            # print("heightPx = ", photo.get('heightPx'))
+                            # print("displayName = ", photo.get('authorAttributions')[0].get('displayName'))
+                            photo_obj = Photo.objects.create(
+                                height=0,
+                                width=0,
+                                url=event.get('image_url'),
+                                # author_name=photo.get('authorAttributions')[0].get('displayName'),
+                                # author_uri=photo.get('authorAttributions')[0].get('uri'),
+                                # author_photo_uri=photo.get('authorAttributions')[0].get('photoUri'),
+                                # photo_name=photo.get('name')
+                            )
+                            hotel.photos.add(photo_obj)
+                        except Exception as e:
+                            print("Photo exception = ", str(e))
+                            logger.error("Photo exception = ", str(e))
+                            # return JsonResponse({'error': str(e)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                        hotel.save()
+                else:
+                    print("Name = ", event.get('name'), " Already exist")
+
+        # Print the content of the JSON file
+        # print(json.dumps(data, indent=4))
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return JsonResponse({'message': 'Yelp fetched and saved successfully'})
 
 
 def newScrapeEventsAPI(request):
