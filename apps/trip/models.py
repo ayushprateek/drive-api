@@ -12,7 +12,14 @@ from apps.trip.services.fetch_image import scrap_images
 from apps.user.models import BaseModel, Media, User as user
 from common.cloud_service import upload_file_to_aws_s3
 
+class Keyword(models.Model):
+    class Meta:
+        db_table = '"keyword"'
+    keyword = models.TextField(null=False)
+    image_url = models.URLField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
 class Category(BaseModel):
     """
     A "Category" model in Django typically represents a grouping or classification used
@@ -23,6 +30,7 @@ class Category(BaseModel):
     icon_url = models.URLField(max_length=255, blank=True, null=True)
     image_url = models.URLField(max_length=255, blank=True, null=True)
     keywords = ArrayField(models.TextField(null=True), default=list)
+    keywords_relation = models.ManyToManyField(Keyword, related_name="categories")
     scrape = models.BooleanField(default=False)
     route = models.URLField(max_length=255, blank=True, null=True)
     parent = models.ForeignKey(

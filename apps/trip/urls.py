@@ -78,5 +78,6 @@ urlpatterns = [
     path('set-sub-categories/<id>', getSubCategories, name='add-user'),
     path('scrape-events-api/', newScrapeEventsAPI, name='add-user'),
     path('scrape-yelp-api/', scrapeYelpEvents, name='add-user'),
+    path('migrate-keywords-to-model/', migrate_keywords_to_model, name='add-user'),
     # path('update-location-in-site/', updateLocationInSite, name='add-user'),
 ]

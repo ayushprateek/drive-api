@@ -2008,7 +2008,28 @@ def deletePlan(request, id=None):
 
     return JsonResponse({'message': 'Trip plan delete successfully'})
 
+def migrate_keywords_to_model(request):
+    """
+    This function transfers keywords from the 'keywords' ArrayField in the Category model
+    to the new Keyword model and associates them back with the categories.
+    """
+    try:
+        print("Called")
+        for category in Category.objects.all():
+            if category.keywords:
+                for keyword_text in category.keywords:
+                    # Check if the keyword already exists
+                    keyword, created = Keyword.objects.get_or_create(keyword=keyword_text)
+                    # Associate the keyword with the category
+                    category.keywords_relation.add(keyword)
 
+            # Clear the old ArrayField (optional, based on your use case)
+            category.keywords.clear()
+        print("Keywords migration completed.")
+    except Exception as e:
+        print(str(e))
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 @api_view(['GET'])
 def getTripViaId(request, id=None):
 
