@@ -2027,34 +2027,34 @@ def getSites(request):
         data = request.data  # Using request.data for parsing JSON data
 
         # Validate that 'category_id' and 'city_id' are present in the data
-        if 'category_id' not in data or 'city_id' not in data:
-            return Response({"error": "Missing 'category_id' or 'city_id' in request body"}, status=status.HTTP_400_BAD_REQUEST)
+        if 'keyword' not in data or 'city_id' not in data:
+            return Response({"error": "Missing 'keyword' or 'city_id' in request body"}, status=status.HTTP_400_BAD_REQUEST)
 
         user_id = data['user_id']
-        category_id = data['category_id']
+       
+        keyword = data['keyword']
         city_id = data['city_id']
-        env = environ.Env()
-        environ.Env.read_env(env_file=ROOT_DIR('.env'))
-        hotel_id = env('AD_CATEGORY_ID')
-        category = Category.objects.filter(id=category_id).first()
+        # env = environ.Env()
+        # environ.Env.read_env(env_file=ROOT_DIR('.env'))
+        hotelKeywordList=['hotel','motel','lodging']
 
-        city = City.objects.filter(id=city_id).first()
-
-        if category_id == hotel_id:
-            sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True, discount_url__isnull=False).order_by('-created_at')
-        elif category_id == "6d4f34d3-e2ab-4590-89fa-a0f5bd2e9769":
-            category_ids = [
-    'c4fa73f2-10b8-440e-8d0c-479e0c28ef8a',
-    '11d429d1-d5c4-4e40-ba05-205ab4803e4e',
-    '598fc90b-1968-408f-ad50-ed9f4cadc33d',
-]
-            sites = Site.objects.filter(
-    city_id=city_id,
-    category_id__in=category_ids,  # Use __in to match any of the specified category_ids
-    show=True
-).order_by('-created_at')
+        if keyword in hotelKeywordList:
+            sites = Site.objects.filter(city_id=city_id, show=True,
+                                        keyword=keyword,
+                                        discount_url__isnull=False).order_by('-created_at')
+        #todo:
+        # elif category_id == "6d4f34d3-e2ab-4590-89fa-a0f5bd2e9769":
+        #     category_ids = [
+        #                 'c4fa73f2-10b8-440e-8d0c-479e0c28ef8a',
+        #                 '11d429d1-d5c4-4e40-ba05-205ab4803e4e',
+        #                 '598fc90b-1968-408f-ad50-ed9f4cadc33d']
+        #     sites = Site.objects.filter(
+        #             city_id=city_id,
+        #             category_id__in=category_ids,  # Use __in to match any of the specified category_ids
+        #             show=True
+        #             ).order_by('-created_at')
         else:
-            sites = Site.objects.filter(city_id=city_id, category_id=category_id, show=True).order_by('-created_at')
+            sites = Site.objects.filter(city_id=city_id, keyword=keyword, show=True).order_by('-created_at')
         # Fetch the filtered Site objects
 
         # Apply pagination
@@ -2070,6 +2070,7 @@ def getSites(request):
                 'contact_info': site_instance.contact_info,
                 # 'place_id': site_instance.place_id,
                 'rating': site_instance.rating,
+                'keyword': site_instance.keyword,
                 # 'user_ratings_total': site_instance.user_ratings_total,
                 # 'discount_url': site_instance.discount_url,
                 'website': site_instance.website,
