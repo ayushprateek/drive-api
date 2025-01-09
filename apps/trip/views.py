@@ -2102,31 +2102,38 @@ def getSites(request):
 @api_view(['GET'])
 def getSubCategories(request, id):
     try:
-
-        category = Category.objects.filter(parent_id=id).all()
-        # Fetch the filtered Site objects
-
-        # Apply pagination
+        # Fetch the category by ID
+        category = Category.objects.get(id=id)
+        
+        # Retrieve related keywords using the many-to-many relation
+        related_keywords = category.keywords_relation.all()
+        
+        # Log keyword names (optional)
+        for keyword in related_keywords:
+            print(keyword.keyword)
+        
+        # Paginate the related keywords
         paginator = CustomPagination()
-        paginated_sites = paginator.paginate_queryset(category, request)
+        paginated_keywords = paginator.paginate_queryset(related_keywords, request)
 
-        plans_list = []
-        for site_instance in paginated_sites:
-            site = {
-                "id": site_instance.id,
-                "name": site_instance.name,
-                "icon_url": site_instance.icon_url,
-                "image_url": site_instance.image_url,
-                "route": site_instance.route
+        # Prepare the response data
+        keywords_list = []
+        for keyword_instance in paginated_keywords:
+            keyword_data = {
+                "id": keyword_instance.id,  # Keyword ID
+                "keyword": keyword_instance.keyword,  # Keyword text
+                "image_url": keyword_instance.image_url,  # Image URL
             }
-            plans_list.append(site)
+            keywords_list.append(keyword_data)
 
-        return paginator.get_paginated_response(plans_list)
+        # Return paginated response
+        return paginator.get_paginated_response(keywords_list)
 
-    except ObjectDoesNotExist:
-        return Response({"error": "Data not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Category.DoesNotExist:  # Use the specific model's DoesNotExist exception
+        return Response({"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 @api_view(['GET'])
