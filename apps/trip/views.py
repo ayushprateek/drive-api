@@ -1614,8 +1614,13 @@ def likePlace(request):
     #         plan=planModel
     #     )
     #     return JsonResponse({'message': 'User Liked Attraction'})
+def isLiked(userId,siteId):
+    if UserLikes.objects.filter(user_id=userId).exists():
+        user_likes = UserLikes.objects.filter(user_id=userId).first()
+        if user_likes and user_likes.liked_sites_new.filter(id=siteId).exists():
 
-
+            return True
+    return False
 @api_view(['POST'])
 def isPlaceLiked(request):
     data = json.loads(request.body)
@@ -1626,39 +1631,6 @@ def isPlaceLiked(request):
 
             return JsonResponse({'message': 'User Liked Site',
                                  'liked': True})
-
-        # if user_likes and user_likes.liked_hotels_new.filter(id=data['like_id']).exists():
-        #     # hotel = Hotel.objects.get(id=data['like_id'])
-        #     # user_likes.liked_hotels.add(hotel)
-        #     return JsonResponse({'message': 'User Liked Hotel',
-        #                          'liked': True})
-
-        # if user_likes and user_likes.liked_extremesports_new.filter(id=data['like_id']).exists():
-        #     # extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
-        #     # user_likes.liked_extremesports.add(extreme_sport)
-        #     return JsonResponse({'message': 'User Liked Extreme Sport',
-        #                          'liked': True})
-
-        # if user_likes and user_likes.liked_events_new.filter(id=data['like_id']).exists():
-        #     # event = Event.objects.get(id=data['like_id'])
-        #     # user_likes.liked_events.add(event)
-        #     return JsonResponse({'message': 'User Liked Event',
-        #                          'liked': True})
-
-        # if user_likes and user_likes.liked_wierdandwacky_new.filter(id=data['like_id']).exists():
-        #     return JsonResponse({'message': 'User Liked Weird And Wacky',
-        #                          'liked': True})
-
-        # if user_likes and user_likes.liked_parks_new.filter(id=data['like_id']).exists():
-        #     # park = Park.objects.get(id=data['like_id'])
-        #     # user_likes.liked_parks.add(park)
-        #     return JsonResponse({'message': 'User Liked Park', 'liked': True})
-
-        # if user_likes and user_likes.liked_attractions_new.filter(id=data['like_id']).exists():
-        #     # attraction = Attraction.objects.get(id=data['like_id'])
-        #     # user_likes.liked_attractions.add(attraction)
-        #     return JsonResponse({'message': 'User Liked Attraction', 'liked': True})
-
         return JsonResponse({
             'message': 'User Did not like',
             'liked': False})
@@ -2058,6 +2030,7 @@ def getSites(request):
         if 'category_id' not in data or 'city_id' not in data:
             return Response({"error": "Missing 'category_id' or 'city_id' in request body"}, status=status.HTTP_400_BAD_REQUEST)
 
+        user_id = data['user_id']
         category_id = data['category_id']
         city_id = data['city_id']
         env = environ.Env()
@@ -2104,6 +2077,8 @@ def getSites(request):
                 # 'longitude': getattr(site_instance.geometry.location, 'lng', None),
                 # 'latitude': site_instance.latitude,
                 'vicinity': site_instance.vicinity,
+                #todo:
+                'liked': isLiked(user_id,site_instance.id),
                 # 'longitude': site_instance.longitude,
                 # 'icon_url': category.icon_url if category else None,
                 # 'city_id': city_id,
