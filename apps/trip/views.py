@@ -3983,6 +3983,7 @@ def decode_poly(encoded):
 
 @api_view(['POST'])
 def get_coordinates_along_polyline(request):
+    user_id = request.data['user_id']
     category_list = request.data['categories']
     only_hotels = request.data['only_hotels']
     use_pagination = request.data.get('use_pagination')
@@ -4033,24 +4034,20 @@ def get_coordinates_along_polyline(request):
                     "id": plan.id,
                     "name": plan.name,
                     "description": plan.description,
-                    "amenities": plan.amenities,
-                    "facility": plan.facility,
+                    'liked': isLiked(user_id, plan.id),
+                    'vicinity': plan.vicinity,
                     "icon_url": plan.icon_url,
-                    "place_id": plan.place_id,
-                    "images": [plan.place_id],
                     "latitude": plan.latitude,
                     "longitude": plan.longitude,
                     "rating": plan.rating,
-                    "city_anchor": plan.city_anchor,
                     "discount_url": plan.discount_url,
-                    "slug": plan.slug,
-                    "property_id": plan.property_id,
+                    'photo_reference': plan.photos.values_list('photo_reference', flat=True).first(),
+                    'photo_name': plan.photos.values_list('photo_name', flat=True).first(),
+                    'url': plan.photos.values_list('url', flat=True).first(),
+                    'review_count': len(plan.place_review.values()),
                     "user_ratings_total": plan.user_ratings_total,
-                    "is_hotel": True,
                     "contact_info": plan.contact_info,
-                    "website": plan.website,
-                    "regular_opening_hours": plan.regular_opening_hours,
-                    "regular_secondary_opening_hours": plan.regular_secondary_opening_hours,
+                    "website": plan.website
                 })
     else:
 
@@ -4065,26 +4062,22 @@ def get_coordinates_along_polyline(request):
                     if is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance) and bounding_box.contains(point):
                         plans.append({
                             "id": plan.id,
-                            "place_id": plan.place_id,
-                            "amenities": plan.amenities,
-                            "facility": plan.facility,
-                            "name": plan.name,
-                            "description": plan.description,
-                            "icon_url": plan.icon_url,
-                            "images": [plan.place_id],
-                            "latitude": plan.latitude,
-                            "longitude": plan.longitude,
-                            "rating": plan.rating,
-                            "city_anchor": plan.city_anchor,
-                            "discount_url": plan.discount_url,
-                            "slug": plan.slug,
-                            "property_id": plan.property_id,
-                            "user_ratings_total": plan.user_ratings_total,
-                            "is_hotel": True,
-                            "contact_info": plan.contact_info,
-                            "website": plan.website,
-                            "regular_opening_hours": plan.regular_opening_hours,
-                            "regular_secondary_opening_hours": plan.regular_secondary_opening_hours,
+                    "name": plan.name,
+                    "description": plan.description,
+                    'liked': isLiked(user_id, plan.id),
+                    'vicinity': plan.vicinity,
+                    "icon_url": plan.icon_url,
+                    "latitude": plan.latitude,
+                    "longitude": plan.longitude,
+                    "rating": plan.rating,
+                    "discount_url": plan.discount_url,
+                    'photo_reference': plan.photos.values_list('photo_reference', flat=True).first(),
+                    'photo_name': plan.photos.values_list('photo_name', flat=True).first(),
+                    'url': plan.photos.values_list('url', flat=True).first(),
+                    'review_count': len(plan.place_review.values()),
+                    "user_ratings_total": plan.user_ratings_total,
+                    "contact_info": plan.contact_info,
+                    "website": plan.website
                         })
             else:
                 queryset = Site.objects.filter(category_id=category, show=True).annotate(
@@ -4292,8 +4285,8 @@ def getSiteViaId(request):
         if 'site_id' not in data or 'user_id' not in data:
             return Response({"error": "Missing 'site_id' or 'user_id' in request body"}, status=status.HTTP_400_BAD_REQUEST)
 
-        id=data['site_id']
-        user_id=data['user_id']
+        id = data['site_id']
+        user_id = data['user_id']
         site_instance = Site.objects.filter(id=id, show=True).annotate(icon_url=F('category__icon_url')).first()
         if site_instance:
             if site_instance.city:
