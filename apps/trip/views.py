@@ -1992,9 +1992,10 @@ def migrate_keywords_to_model(request):
     """
     try:
         print("Called")
-        for category in Category.objects.all():
+        for category in Category.objects.filter(scrape=True).all():
             if category.keywords:
                 for keyword_text in category.keywords:
+                    print(keyword_text)
                     # Check if the keyword already exists
                     keyword, created = Keyword.objects.get_or_create(keyword=keyword_text)
                     # Associate the keyword with the category
