@@ -1614,13 +1614,17 @@ def likePlace(request):
     #         plan=planModel
     #     )
     #     return JsonResponse({'message': 'User Liked Attraction'})
-def isLiked(userId,siteId):
+
+
+def isLiked(userId, siteId):
     if UserLikes.objects.filter(user_id=userId).exists():
         user_likes = UserLikes.objects.filter(user_id=userId).first()
         if user_likes and user_likes.liked_sites_new.filter(id=siteId).exists():
 
             return True
     return False
+
+
 @api_view(['POST'])
 def isPlaceLiked(request):
     data = json.loads(request.body)
@@ -1980,6 +1984,7 @@ def deletePlan(request, id=None):
 
     return JsonResponse({'message': 'Trip plan delete successfully'})
 
+
 def migrate_keywords_to_model(request):
     """
     This function transfers keywords from the 'keywords' ArrayField in the Category model
@@ -2001,7 +2006,8 @@ def migrate_keywords_to_model(request):
     except Exception as e:
         print(str(e))
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+
 @api_view(['GET'])
 def getTripViaId(request, id=None):
 
@@ -2031,18 +2037,18 @@ def getSites(request):
             return Response({"error": "Missing 'keyword' or 'city_id' in request body"}, status=status.HTTP_400_BAD_REQUEST)
 
         user_id = data['user_id']
-       
+
         keyword = data['keyword']
         city_id = data['city_id']
         # env = environ.Env()
         # environ.Env.read_env(env_file=ROOT_DIR('.env'))
-        hotelKeywordList=['hotel','motel','lodging']
+        hotelKeywordList = ['hotel', 'motel', 'lodging']
 
         if keyword in hotelKeywordList:
             sites = Site.objects.filter(city_id=city_id, show=True,
                                         keyword=keyword,
                                         discount_url__isnull=False).order_by('-created_at')
-        #todo:
+        # todo:
         # elif category_id == "6d4f34d3-e2ab-4590-89fa-a0f5bd2e9769":
         #     category_ids = [
         #                 'c4fa73f2-10b8-440e-8d0c-479e0c28ef8a',
@@ -2078,8 +2084,8 @@ def getSites(request):
                 # 'longitude': getattr(site_instance.geometry.location, 'lng', None),
                 # 'latitude': site_instance.latitude,
                 'vicinity': site_instance.vicinity,
-                #todo:
-                'liked': isLiked(user_id,site_instance.id),
+                # todo:
+                'liked': isLiked(user_id, site_instance.id),
                 # 'longitude': site_instance.longitude,
                 # 'icon_url': category.icon_url if category else None,
                 # 'city_id': city_id,
@@ -2105,14 +2111,14 @@ def getSubCategories(request, id):
     try:
         # Fetch the category by ID
         category = Category.objects.get(id=id)
-        
+
         # Retrieve related keywords using the many-to-many relation
         related_keywords = category.keywords_relation.all()
-        
+
         # Log keyword names (optional)
         for keyword in related_keywords:
             print(keyword.keyword)
-        
+
         # Paginate the related keywords
         paginator = CustomPagination()
         paginated_keywords = paginator.paginate_queryset(related_keywords, request)
@@ -2134,7 +2140,6 @@ def getSubCategories(request, id):
         return Response({"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 
 @api_view(['GET'])
@@ -4280,39 +4285,56 @@ def getPhotoViaSite(request, id=None):
         return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@api_view(['GET'])
-def getSiteViaId(request, id=None):
+@api_view(['POST'])
+def getSiteViaId(request):
     try:
+        data = request.data
+        if 'site_id' not in data or 'user_id' not in data:
+            return Response({"error": "Missing 'site_id' or 'user_id' in request body"}, status=status.HTTP_400_BAD_REQUEST)
+
+        id=data['site_id']
+        user_id=data['user_id']
         site_instance = Site.objects.filter(id=id, show=True).annotate(icon_url=F('category__icon_url')).first()
         if site_instance:
-            return JsonResponse({'id': site_instance.id,
-                                 'name': site_instance.name,
-                                 'description': site_instance.description,
-                                 'place_id': site_instance.place_id,
-                                 'rating': site_instance.rating,
-                                 'user_ratings_total': site_instance.user_ratings_total,
-                                 'latitude': site_instance.latitude,
-                                 'longitude': site_instance.longitude,
-                                 'icon_url': site_instance.category.icon_url if site_instance.category else None,
-                                 'city_id': site_instance.city.id,
-                                 'city_name': site_instance.city.name if site_instance.city else None,
-                                 'photo_reference': list(
-                                     site_instance.photos.filter(photo_reference__isnull=False).exclude(
-                                         photo_reference='').values_list('photo_reference', flat=True)
-                                 ),
-                                 'photo_name': list(
-                                     site_instance.photos.filter(photo_name__isnull=False).exclude(
-                                         photo_name='').values_list('photo_name', flat=True)
-                                 ),
-                                 'facility': site_instance.facility,
-                                 'amenities': site_instance.amenities,
-                                 'service_amenities': site_instance.service_amenities,
-                                 'contact_info': site_instance.contact_info,
-                                 'discount_url': site_instance.discount_url,
-                                 'reviews': list(site_instance.place_review.values())
-                                 }, safe=False, status=status.HTTP_200_OK)
+            if site_instance.city:
+                return JsonResponse({'id': site_instance.id,
+                                     'name': site_instance.name,
+                                     'description': site_instance.description,
+                                     'place_id': site_instance.place_id,
+                                     'rating': site_instance.rating,
+                                     'user_ratings_total': site_instance.user_ratings_total,
+                                     'latitude': site_instance.latitude,
+                                     'longitude': site_instance.longitude,
+                                     'icon_url': site_instance.category.icon_url if site_instance.category else None,
+                                     'city_id': site_instance.city.id,
+                                     'city_name': site_instance.city.name if site_instance.city else None,
+                                     'photo_reference': list(
+                                         site_instance.photos.filter(photo_reference__isnull=False).exclude(
+                                             photo_reference='').values_list('photo_reference', flat=True)
+                                     ),
+                                     'photo_name': list(
+                                         site_instance.photos.filter(photo_name__isnull=False).exclude(
+                                             photo_name='').values_list('photo_name', flat=True)
+                                     ),
+                                     'url': list(
+                                         site_instance.photos.filter(url__isnull=False).exclude(
+                                             url='').values_list('url', flat=True)
+                                     ),
+                                     'facility': site_instance.facility,
+                                     'amenities': site_instance.amenities,
+                                     'service_amenities': site_instance.service_amenities,
+                                     'contact_info': site_instance.contact_info,
+                                     'discount_url': site_instance.discount_url,
+                                     'liked': isLiked(user_id, site_instance.id),
+                                     'website': site_instance.website,
+                                     "regular_opening_hours": site_instance.regular_opening_hours,
+                                     "regular_secondary_opening_hours": site_instance.regular_secondary_opening_hours,
+                                     'reviews': list(site_instance.place_review.values())
+                                     }, safe=False, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse({"error": "City does not exist"}, safe=False, status=status.HTTP_200_OK)
         else:
-            return JsonResponse({}, safe=False, status=status.HTTP_200_OK)
+            return JsonResponse({"error": "Site does not exist"}, safe=False, status=status.HTTP_200_OK)
     except Exception as ex:
         return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
