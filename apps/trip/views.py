@@ -2073,6 +2073,7 @@ def getSites(request):
                 'id': site_instance.id,
                 'name': site_instance.name,
                 'description': site_instance.description,
+                'discount_url': site_instance.discount_url,
                 'contact_info': site_instance.contact_info,
                 # 'place_id': site_instance.place_id,
                 'rating': site_instance.rating,
