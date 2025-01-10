@@ -4324,6 +4324,7 @@ def getSiteViaId(request):
                                      'amenities': site_instance.amenities,
                                      'service_amenities': site_instance.service_amenities,
                                      'contact_info': site_instance.contact_info,
+                                     'vicinity': site_instance.vicinity,
                                      'discount_url': site_instance.discount_url,
                                      'liked': isLiked(user_id, site_instance.id),
                                      'website': site_instance.website,
