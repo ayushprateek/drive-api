@@ -4289,44 +4289,42 @@ def getSiteViaId(request):
         user_id = data['user_id']
         site_instance = Site.objects.filter(id=id, show=True).annotate(icon_url=F('category__icon_url')).first()
         if site_instance:
-            if site_instance.city:
-                return JsonResponse({'id': site_instance.id,
-                                     'name': site_instance.name,
-                                     'description': site_instance.description,
-                                     'place_id': site_instance.place_id,
-                                     'rating': site_instance.rating,
-                                     'user_ratings_total': site_instance.user_ratings_total,
-                                     'latitude': site_instance.latitude,
-                                     'longitude': site_instance.longitude,
-                                     'icon_url': site_instance.category.icon_url if site_instance.category else None,
-                                     'city_id': site_instance.city.id,
-                                     'city_name': site_instance.city.name if site_instance.city else None,
-                                     'photo_reference': list(
-                                         site_instance.photos.filter(photo_reference__isnull=False).exclude(
-                                             photo_reference='').values_list('photo_reference', flat=True)
-                                     ),
-                                     'photo_name': list(
-                                         site_instance.photos.filter(photo_name__isnull=False).exclude(
-                                             photo_name='').values_list('photo_name', flat=True)
-                                     ),
-                                     'url': list(
-                                         site_instance.photos.filter(url__isnull=False).exclude(
-                                             url='').values_list('url', flat=True)
-                                     ),
-                                     'facility': site_instance.facility,
-                                     'amenities': site_instance.amenities,
-                                     'service_amenities': site_instance.service_amenities,
-                                     'contact_info': site_instance.contact_info,
-                                     'vicinity': site_instance.vicinity,
-                                     'discount_url': site_instance.discount_url,
-                                     'liked': isLiked(user_id, site_instance.id),
-                                     'website': site_instance.website,
-                                     "regular_opening_hours": site_instance.regular_opening_hours,
-                                     "regular_secondary_opening_hours": site_instance.regular_secondary_opening_hours,
-                                     'reviews': list(site_instance.place_review.values())
-                                     }, safe=False, status=status.HTTP_200_OK)
-            else:
-                return JsonResponse({"error": "City does not exist"}, safe=False, status=status.HTTP_200_OK)
+            return JsonResponse({'id': site_instance.id,
+                                'name': site_instance.name,
+                                'description': site_instance.description,
+                                'place_id': site_instance.place_id,
+                                'rating': site_instance.rating,
+                                'user_ratings_total': site_instance.user_ratings_total,
+                                'latitude': site_instance.latitude,
+                                'longitude': site_instance.longitude,
+                                'icon_url': site_instance.category.icon_url if site_instance.category else None,
+                                #   'city_id': site_instance.city.id,
+                                #   'city_name': site_instance.city.name if site_instance.city else None,
+                                'photo_reference': list(
+                                    site_instance.photos.filter(photo_reference__isnull=False).exclude(
+                                        photo_reference='').values_list('photo_reference', flat=True)
+                                ),
+                                'photo_name': list(
+                                    site_instance.photos.filter(photo_name__isnull=False).exclude(
+                                        photo_name='').values_list('photo_name', flat=True)
+                                ),
+                                'url': list(
+                                    site_instance.photos.filter(url__isnull=False).exclude(
+                                        url='').values_list('url', flat=True)
+                                ),
+                                'facility': site_instance.facility,
+                                'amenities': site_instance.amenities,
+                                'service_amenities': site_instance.service_amenities,
+                                'contact_info': site_instance.contact_info,
+                                'vicinity': site_instance.vicinity,
+                                'discount_url': site_instance.discount_url,
+                                'liked': isLiked(user_id, site_instance.id),
+                                'website': site_instance.website,
+                                "regular_opening_hours": site_instance.regular_opening_hours,
+                                "regular_secondary_opening_hours": site_instance.regular_secondary_opening_hours,
+                                'reviews': list(site_instance.place_review.values())
+                                }, safe=False, status=status.HTTP_200_OK)
+           
         else:
             return JsonResponse({"error": "Site does not exist"}, safe=False, status=status.HTTP_200_OK)
     except Exception as ex:
