@@ -2569,33 +2569,6 @@ def getLikedSitesViaPlan(request):
                     fetch = Site.objects.filter(id=userLikesSiteData['site_id'], show=True)
                 if selectedCategory:
                     fetch = fetch.filter(category_id__in=selectedCategory)
-                plans = fetch.all().values(
-                    'id', 'name',
-                    'amenities',
-                    'city_anchor',
-                    'discount_url',
-                    'slug',
-                    'property_id',
-                    'description', 'images',
-                    'city_id',
-                    'place_id', 'facility',
-                    'vicinity',
-                    'category__name'
-
-                ).annotate(city_name=F('city__name')).values(
-                    'id', 'name',
-                    'amenities',
-                    'city_anchor',
-                    'discount_url',
-                    'slug',
-                    'property_id',
-                    'description', 'images',
-                    'city_id',
-                    'city_name',
-                    'place_id', 'facility',
-                    'vicinity',
-                    'category__name'
-                )
                 imageList = []
                 userList = UserLikesSite.objects.filter(plan_id=plan_id, site_id=userLikesSiteData['site_id']).all()\
                     .values('site_id', 'id', 'userlikes_id')\
@@ -2610,13 +2583,34 @@ def getLikedSitesViaPlan(request):
                             "profile_pic_id": pic['profile_pic_id'],
                             "profile_picture": pic['profile_picture'],
                         })
-                # #print('profile_pic = ',profile_pic)
 
-                for plan in plans:
-                    plan['user_count'] = len(userLikesSite)
-                    plan['users'] = list(imageList)
-                    dates.add(plan['category__name'])
-                    siteList.append(plan)
+                for plan in fetch:
+                    photo_reference = plan.photos.values_list('photo_reference', flat=True).first()
+                    photo_name = plan.photos.values_list('photo_name', flat=True).first()
+                    url = plan.photos.values_list('url', flat=True).first()
+                    m = {
+                        'id': plan.id,
+                        'name': plan.name,
+                        'amenities': plan.amenities,
+                        'city_anchor': plan.city_anchor,
+                        'discount_url': plan.discount_url,
+                        'slug': plan.slug,
+                        'property_id': plan.property_id,
+                        'description': plan.description,
+                        'images': plan.images,
+                        'city_id': plan.city.id,
+                        'place_id': plan.place_id,
+                        'facility': plan.facility,
+                        'vicinity': plan.vicinity,
+                        'category__name': plan.category.name,
+                        'photo_reference': photo_reference,
+                        'photo_name': photo_name,
+                        'url': url,
+                        'user_count': len(userLikesSite),
+                        'users': list(imageList),
+                    }
+                    dates.add(plan.category.name)
+                    siteList.append(m)
     plans_list.append({"Site": list(siteList)})
     result = []
 
@@ -4064,22 +4058,22 @@ def get_coordinates_along_polyline(request):
                     if is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance) and bounding_box.contains(point):
                         plans.append({
                             "id": plan.id,
-                    "name": plan.name,
-                    "description": plan.description,
-                    'liked': isLiked(user_id, plan.id),
-                    'vicinity': plan.vicinity,
-                    "icon_url": plan.icon_url,
-                    "latitude": plan.latitude,
-                    "longitude": plan.longitude,
-                    "rating": plan.rating,
-                    "discount_url": plan.discount_url,
-                    'photo_reference': plan.photos.values_list('photo_reference', flat=True).first(),
-                    'photo_name': plan.photos.values_list('photo_name', flat=True).first(),
-                    'url': plan.photos.values_list('url', flat=True).first(),
-                    'review_count': len(plan.place_review.values()),
-                    "user_ratings_total": plan.user_ratings_total,
-                    "contact_info": plan.contact_info,
-                    "website": plan.website
+                            "name": plan.name,
+                            "description": plan.description,
+                            'liked': isLiked(user_id, plan.id),
+                            'vicinity': plan.vicinity,
+                            "icon_url": plan.icon_url,
+                            "latitude": plan.latitude,
+                            "longitude": plan.longitude,
+                            "rating": plan.rating,
+                            "discount_url": plan.discount_url,
+                            'photo_reference': plan.photos.values_list('photo_reference', flat=True).first(),
+                            'photo_name': plan.photos.values_list('photo_name', flat=True).first(),
+                            'url': plan.photos.values_list('url', flat=True).first(),
+                            'review_count': len(plan.place_review.values()),
+                            "user_ratings_total": plan.user_ratings_total,
+                            "contact_info": plan.contact_info,
+                            "website": plan.website
                         })
             else:
                 queryset = Site.objects.filter(category_id=category, show=True).annotate(
@@ -4293,40 +4287,40 @@ def getSiteViaId(request):
         if site_instance:
             return JsonResponse({'id': site_instance.id,
                                 'name': site_instance.name,
-                                'description': site_instance.description,
-                                'place_id': site_instance.place_id,
-                                'rating': site_instance.rating,
-                                'user_ratings_total': site_instance.user_ratings_total,
-                                'latitude': site_instance.latitude,
-                                'longitude': site_instance.longitude,
-                                'icon_url': site_instance.category.icon_url if site_instance.category else None,
-                                #   'city_id': site_instance.city.id,
-                                #   'city_name': site_instance.city.name if site_instance.city else None,
-                                'photo_reference': list(
-                                    site_instance.photos.filter(photo_reference__isnull=False).exclude(
-                                        photo_reference='').values_list('photo_reference', flat=True)
-                                ),
-                                'photo_name': list(
-                                    site_instance.photos.filter(photo_name__isnull=False).exclude(
-                                        photo_name='').values_list('photo_name', flat=True)
-                                ),
-                                'url': list(
-                                    site_instance.photos.filter(url__isnull=False).exclude(
-                                        url='').values_list('url', flat=True)
-                                ),
-                                'facility': site_instance.facility,
-                                'amenities': site_instance.amenities,
-                                'service_amenities': site_instance.service_amenities,
-                                'contact_info': site_instance.contact_info,
-                                'vicinity': site_instance.vicinity,
-                                'discount_url': site_instance.discount_url,
-                                'liked': isLiked(user_id, site_instance.id),
-                                'website': site_instance.website,
-                                "regular_opening_hours": site_instance.regular_opening_hours,
-                                "regular_secondary_opening_hours": site_instance.regular_secondary_opening_hours,
-                                'reviews': list(site_instance.place_review.values())
-                                }, safe=False, status=status.HTTP_200_OK)
-           
+                                 'description': site_instance.description,
+                                 'place_id': site_instance.place_id,
+                                 'rating': site_instance.rating,
+                                 'user_ratings_total': site_instance.user_ratings_total,
+                                 'latitude': site_instance.latitude,
+                                 'longitude': site_instance.longitude,
+                                 'icon_url': site_instance.category.icon_url if site_instance.category else None,
+                                 #   'city_id': site_instance.city.id,
+                                 #   'city_name': site_instance.city.name if site_instance.city else None,
+                                 'photo_reference': list(
+                                     site_instance.photos.filter(photo_reference__isnull=False).exclude(
+                                         photo_reference='').values_list('photo_reference', flat=True)
+                                 ),
+                                 'photo_name': list(
+                                     site_instance.photos.filter(photo_name__isnull=False).exclude(
+                                         photo_name='').values_list('photo_name', flat=True)
+                                 ),
+                                 'url': list(
+                                     site_instance.photos.filter(url__isnull=False).exclude(
+                                         url='').values_list('url', flat=True)
+                                 ),
+                                 'facility': site_instance.facility,
+                                 'amenities': site_instance.amenities,
+                                 'service_amenities': site_instance.service_amenities,
+                                 'contact_info': site_instance.contact_info,
+                                 'vicinity': site_instance.vicinity,
+                                 'discount_url': site_instance.discount_url,
+                                 'liked': isLiked(user_id, site_instance.id),
+                                 'website': site_instance.website,
+                                 "regular_opening_hours": site_instance.regular_opening_hours,
+                                 "regular_secondary_opening_hours": site_instance.regular_secondary_opening_hours,
+                                 'reviews': list(site_instance.place_review.values())
+                                 }, safe=False, status=status.HTTP_200_OK)
+
         else:
             return JsonResponse({"error": "Site does not exist"}, safe=False, status=status.HTTP_200_OK)
     except Exception as ex:
