@@ -1187,6 +1187,7 @@ def isPlaceInItinerary(request):
 def getItineraryViaPlan(request):
     data = json.loads(request.body)
     print("FDFFF")
+    user_id = data['user_id']
     plan_id = data['plan_id']
     selectedCity = data['selected_cities']
     selectedCategory = data['selected_categories']
@@ -1228,23 +1229,21 @@ def getItineraryViaPlan(request):
                         'id': plan.id,
                         'name': plan.name,
                         'amenities': plan.amenities,
-                        'city_anchor': plan.city_anchor,
                         'discount_url': plan.discount_url,
-                        'slug': plan.slug,
-                        'property_id': plan.property_id,
                         'description': plan.description,
-                        'images': plan.images,
-                        'city_id': plan.city.id,
                         'place_id': plan.place_id,
-                        'facility': plan.facility,
                         'vicinity': plan.vicinity,
-                        'category__name': plan.category.name,
                         'photo_reference': photo_reference,
                         'photo_name': photo_name,
                         'url': url,
                         'date': itinerarySiteData['date'],
                         'user_count': len(itinerarySite),
                         'users': list(imageList),
+                        'website': plan.website,
+                        'contact_info': plan.contact_info,
+                        'rating': plan.rating,
+                        'liked': isLiked(user_id, plan.id),
+                        'review_count': len(plan.place_review.values()),
                     }
                     dates.add(itinerarySiteData['date'])
                     siteList.append(m)
@@ -2533,6 +2532,7 @@ def getUserAssignedToPlan(request):
 def getLikedSitesViaPlan(request):
     data = json.loads(request.body)
     print("Called")
+    user_id = data['user_id']
     plan_id = data['plan_id']
     selectedCity = data['selected_cities']
     selectedCategory = data['selected_categories']
@@ -2575,15 +2575,9 @@ def getLikedSitesViaPlan(request):
                         'id': plan.id,
                         'name': plan.name,
                         'amenities': plan.amenities,
-                        'city_anchor': plan.city_anchor,
                         'discount_url': plan.discount_url,
-                        'slug': plan.slug,
-                        'property_id': plan.property_id,
                         'description': plan.description,
-                        'images': plan.images,
-                        'city_id': plan.city.id,
                         'place_id': plan.place_id,
-                        'facility': plan.facility,
                         'vicinity': plan.vicinity,
                         'category__name': plan.category.name,
                         'photo_reference': photo_reference,
@@ -2591,6 +2585,11 @@ def getLikedSitesViaPlan(request):
                         'url': url,
                         'user_count': len(userLikesSite),
                         'users': list(imageList),
+                        'website': plan.website,
+                        'contact_info': plan.contact_info,
+                        'rating': plan.rating,
+                        'liked': isLiked(user_id, plan.id),
+                        'review_count': len(plan.place_review.values()),
                     }
                     dates.add(plan.category.name)
                     siteList.append(m)
@@ -2609,54 +2608,7 @@ def getLikedSitesViaPlan(request):
             "value": list(res)
         })
 
-    # return JsonResponse(json.dumps(
-    #     {
-    #         "Site": list(siteList),
-    #     },
-    #     default=str
-    # ), safe=False, status=status.HTTP_200_OK)
-
     return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
-
-
-# @api_view(['POST'])
-# def getWeirdAndWacky(request):
-#     data = json.loads(request.body)
-#     plans = WeirdAndWacky.objects.filter(city_id=data['city_id']).all().values(
-#         'id', 'name',
-#         'description', 'images',
-#     )
-#     # print(len(plans))
-#     plans_list = list(plans)
-
-#     return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
-
-
-# @api_view(['POST'])
-# def getExtremeSport(request):
-#     data = json.loads(request.body)
-#     plans = ExtremeSport.objects.filter(city_id=data['city_id']).all().values(
-#         'id', 'name',
-#         'description', 'images',
-#     )
-#     # print(len(plans))
-#     plans_list = list(plans)
-
-#     return JsonResponse(plans_list, safe=False, status=status.HTTP_200_OK)
-    # #print(data)
-    # city=City.objects.filter(id=data['city_id']).first()
-    # user=User.objects.filter(id=data['user_id']).first()
-    # Plan.objects.create(
-    # name = data['name'],
-    # description = data['description'],
-    # start_date = data['start_date'],
-    # end_date = data['end_date'],
-    # city=city,
-    # user=user,
-    # created_at=date.today().strftime('%Y-%m-%d %H:%M:%S')
-    # )
-    return JsonResponse({'message': 'Trip Created'})
-
 
 class ScrapeHotelsView(View):
     def get(self, request):
