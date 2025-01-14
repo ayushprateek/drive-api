@@ -1206,30 +1206,6 @@ def getItineraryViaPlan(request):
                     fetch = Site.objects.filter(id=itinerarySiteData['site_id'], show=True)
                 if selectedCategory:
                     fetch = fetch.filter(category_id__in=selectedCategory)
-                plans = fetch.all().values(
-                    'id', 'name',
-                    'amenities',
-                    'city_anchor',
-                    'discount_url',
-                    'slug',
-                    'property_id',
-                    'description', 'images',
-                    'city_id',
-                    'place_id', 'facility',
-                    'vicinity'
-                ).annotate(city_name=F('city__name')).values(
-                    'id', 'name',
-                    'amenities',
-                    'city_anchor',
-                    'discount_url',
-                    'slug',
-                    'property_id',
-                    'description', 'images',
-                    'city_id',
-                    'city_name',
-                    'place_id', 'facility',
-                    'vicinity'
-                )
                 imageList = []
                 userList = ItinerarySite.objects.filter(plan_id=plan_id, site_id=itinerarySiteData['site_id']).all()\
                     .values('site_id', 'id', 'itinerary_id')\
@@ -1244,13 +1220,34 @@ def getItineraryViaPlan(request):
                             "profile_pic_id": pic['profile_pic_id'],
                             "profile_picture": pic['profile_picture'],
                         })
-
-                for plan in plans:
-                    plan['user_count'] = len(itinerarySite)
-                    plan['users'] = list(imageList)
-                    plan['date'] = itinerarySiteData['date']
-                    dates.add(plan['date'])
-                    siteList.append(plan)
+                for plan in fetch:
+                    photo_reference = plan.photos.values_list('photo_reference', flat=True).first()
+                    photo_name = plan.photos.values_list('photo_name', flat=True).first()
+                    url = plan.photos.values_list('url', flat=True).first()
+                    m = {
+                        'id': plan.id,
+                        'name': plan.name,
+                        'amenities': plan.amenities,
+                        'city_anchor': plan.city_anchor,
+                        'discount_url': plan.discount_url,
+                        'slug': plan.slug,
+                        'property_id': plan.property_id,
+                        'description': plan.description,
+                        'images': plan.images,
+                        'city_id': plan.city.id,
+                        'place_id': plan.place_id,
+                        'facility': plan.facility,
+                        'vicinity': plan.vicinity,
+                        'category__name': plan.category.name,
+                        'photo_reference': photo_reference,
+                        'photo_name': photo_name,
+                        'url': url,
+                        'date': itinerarySiteData['date'],
+                        'user_count': len(itinerarySite),
+                        'users': list(imageList),
+                    }
+                    dates.add(itinerarySiteData['date'])
+                    siteList.append(m)
 
     plans_list.append({"Site": list(siteList)})
     result = []
@@ -1268,20 +1265,6 @@ def getItineraryViaPlan(request):
         })
 
     return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
-
-    # return JsonResponse(json.dumps(
-    #     {
-    #         "Site": list(siteList),
-    #         "Event": list(eventList),
-    #         "Park": list(parkList),
-    #         "Hotel": list(hotelList),
-    #         "WeirdAndWacky": list(weirdAndWackyList),
-    #         "ExtremeSports": list(extremeSportList),
-    #         "Attraction": list(attractionList)
-    #     },
-    #     default=str
-    # ), safe=False, status=status.HTTP_200_OK)
-
 
 @api_view(['POST'])
 def getItineraryFilter(request):
