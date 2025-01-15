@@ -1266,6 +1266,7 @@ def getItineraryViaPlan(request):
 
     return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
+
 @api_view(['POST'])
 def getItineraryFilter(request):
     data = json.loads(request.body)
@@ -1275,222 +1276,38 @@ def getItineraryFilter(request):
     uniqueCities = set()
     uniqueCategories = set()
     siteList = []
-    # eventList = []
-    # parkList = []
-    # hotelList = []
-    # extremeSportList = []
-    # weirdAndWackyList = []
-    # attractionList = []
 
     itinerary = Itinerary.objects.filter(user_id=data['user_id']).first()
-    # .filter(Q(id=placeId) & Q(plan_id=planId))
 
     itinerarySite = ItinerarySite.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('site_id', 'id')
-    # itineraryEvent = ItineraryEvent.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('event_id', 'id')
-    # itineraryPark = ItineraryPark.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('park_id', 'id')
-    # itineraryHotel = ItineraryHotel.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('hotel_id', 'id')
-    # itineraryExtremeSport = ItineraryExtremeSport.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('extremesport_id', 'id')
-    # itineraryWeirdAndWacky = ItineraryWeirdAndWacky.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('weirdandwacky_id', 'id')
-    # itineraryAttraction = ItineraryAttraction.objects.filter(Q(plan_id=plan_id) & Q(itinerary=itinerary)).all().values('attraction_id', 'id')
 
     if itinerarySite:
-        itinerarySiteData = itinerarySite[0]
-        if Site.objects.filter(id=itinerarySiteData['site_id'], show=True).exists():
-            plans = Site.objects.filter(id=itinerarySiteData['site_id'], show=True).all().values(
-                'city_id',
-                'category_id'
-            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
+        for itinerarySiteData in itinerarySite:
+            if Site.objects.filter(id=itinerarySiteData['site_id'], show=True).exists():
+                plans = Site.objects.filter(id=itinerarySiteData['site_id'], show=True).all().values(
+                    'city_id',
+                    'category_id'
+                ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
 
-                'category_id',
-                'category_name',
-                'city_id',
-                'city_name'
-            )
-            for plan in plans:
-                if plan['city_id'] and plan['city_id'] not in uniqueCities:
-                    uniqueCities.add(plan['city_id'])
-                    cityList.append({
-                        "city_id": plan['city_id'],
-                        "city_name": plan['city_name'],
-                    })
-                if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-                    uniqueCategories.add(plan['category_id'])
-                    categoryList.append({
-                        "category_id": plan['category_id'],
-                        "category_name": plan['category_name'],
-                    })
-            siteList.append(list(plans))
-
-    # if itineraryEvent:
-    #     itineraryEventData = itineraryEvent[0]
-    #     if Event.objects.filter(id=itineraryEventData['event_id']).exists():
-    #         plans = Event.objects.filter(id=itineraryEventData['event_id']).all().values(
-
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         eventList.append(list(plans))
-
-    # if itineraryPark:
-    #     itineraryParkData = itineraryPark[0]
-    #     if Park.objects.filter(id=itineraryParkData['park_id']).exists():
-    #         plans = Park.objects.filter(id=itineraryParkData['park_id']).all().values(
-
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         parkList.append(list(plans))
-
-    # if itineraryHotel:
-    #     itineraryHotelData = itineraryHotel[0]
-    #     if Hotel.objects.filter(id=itineraryHotelData['hotel_id']).exists():
-    #         plans = Hotel.objects.filter(id=itineraryHotelData['hotel_id']).all().values(
-
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         hotelList.append(list(plans))
-
-    # if itineraryWeirdAndWacky:
-    #     itineraryWeirdAndWackyData = itineraryWeirdAndWacky[0]
-    #     if WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id']).exists():
-    #         plans = WeirdAndWacky.objects.filter(id=itineraryWeirdAndWackyData['weirdandwacky_id']).all().values(
-
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         weirdAndWackyList.append(list(plans))
-    #         # plans_list.append({"WeirdAndWacky":list(plans)})
-
-    # if itineraryExtremeSport:
-
-    #     itineraryExtremeSportData = itineraryExtremeSport[0]
-    #     if ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id']).exists():
-    #         plans = ExtremeSport.objects.filter(id=itineraryExtremeSportData['extremesport_id']).all().values(
-
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         extremeSportList.append(list(plans))
-
-    # if itineraryAttraction:
-
-    #     itineraryAttractionData = itineraryAttraction[0]
-    #     if Attraction.objects.filter(id=itineraryAttractionData['attraction_id']).exists():
-    #         plans = Attraction.objects.filter(id=itineraryAttractionData['attraction_id']).all().values(
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         attractionList.append(list(plans))
-
+                    'category_id',
+                    'category_name',
+                    'city_id',
+                    'city_name'
+                )
+                for plan in plans:
+                    if plan['city_id'] and plan['city_id'] not in uniqueCities:
+                        uniqueCities.add(plan['city_id'])
+                        cityList.append({
+                            "city_id": plan['city_id'],
+                            "city_name": plan['city_name'],
+                        })
+                    if plan['category_id'] and plan['category_id'] not in uniqueCategories:
+                        uniqueCategories.add(plan['category_id'])
+                        categoryList.append({
+                            "category_id": plan['category_id'],
+                            "category_name": plan['category_name'],
+                        })
+                siteList.append(list(plans))
     return JsonResponse({
         "city": list(cityList),
         "category": list(categoryList),
@@ -2284,219 +2101,36 @@ def getTripFilter(request):
     uniqueCities = set()
     uniqueCategories = set()
     siteList = []
-    # eventList = []
-    # parkList = []
-    hotelList = []
-    # extremeSportList = []
-    # weirdAndWackyList = []
-    # attractionList = []
 
     userLikesSite = UserLikesSite.objects.filter(plan_id=plan_id).all().values('site_id', 'id')
-    # userLikesEvent = UserLikesEvent.objects.filter(plan_id=plan_id).all().values('event_id', 'id')
-    # userLikesPark = UserLikesPark.objects.filter(plan_id=plan_id).all().values('park_id', 'id')
-    # userLikesHotel = UserLikesHotel.objects.filter(plan_id=plan_id).all().values('hotel_id', 'id')
-    # userLikesExtremeSport = UserLikesExtremeSport.objects.filter(plan_id=plan_id).all().values('extremesport_id', 'id')
-    # userLikesWeirdAndWacky = UserLikesWeirdAndWacky.objects.filter(plan_id=plan_id).all().values('weirdandwacky_id', 'id')
-    # userLikesAttraction = UserLikesAttraction.objects.filter(plan_id=plan_id).all().values('attraction_id', 'id')
 
     if userLikesSite:
-        userLikesiteData = userLikesSite[0]
-        if Site.objects.filter(id=userLikesiteData['site_id'], show=True).exists():
-            plans = Site.objects.filter(id=userLikesiteData['site_id'], show=True).all().values(
-                'city_id',
-                'category_id'
-            ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-
-                'category_id',
-                'category_name',
-                'city_id',
-                'city_name'
-            )
-            for plan in plans:
-                if plan['city_id'] and plan['city_id'] not in uniqueCities:
-                    uniqueCities.add(plan['city_id'])
-                    cityList.append({
-                        "city_id": plan['city_id'],
-                        "city_name": plan['city_name'],
-                    })
-                if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-                    uniqueCategories.add(plan['category_id'])
-                    categoryList.append({
-                        "category_id": plan['category_id'],
-                        "category_name": plan['category_name'],
-                    })
-            siteList.append(list(plans))
-
-    # if userLikesEvent:
-    #     userLikesEventData = userLikesEvent[0]
-    #     if Event.objects.filter(id=userLikesEventData['event_id']).exists():
-    #         plans = Event.objects.filter(id=userLikesEventData['event_id']).all().values(
-
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         eventList.append(list(plans))
-
-    # if userLikesPark:
-    #     userLikesParkData = userLikesPark[0]
-    #     if Park.objects.filter(id=userLikesParkData['park_id']).exists():
-    #         plans = Park.objects.filter(id=userLikesParkData['park_id']).all().values(
-
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         parkList.append(list(plans))
-
-    # if userLikesHotel:
-    #     userLikesHotelData = userLikesHotel[0]
-    #     if Hotel.objects.filter(id=userLikesHotelData['hotel_id']).exists():
-    #         plans = Hotel.objects.filter(id=userLikesHotelData['hotel_id']).all().values(
-
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         hotelList.append(list(plans))
-
-    # if userLikesWeirdAndWacky:
-    #     userLikesWeirdAndWackyData = userLikesWeirdAndWacky[0]
-    #     if WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id']).exists():
-    #         plans = WeirdAndWacky.objects.filter(id=userLikesWeirdAndWackyData['weirdandwacky_id']).all().values(
-
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         weirdAndWackyList.append(list(plans))
-    #         # plans_list.append({"WeirdAndWacky":list(plans)})
-
-    # if userLikesExtremeSport:
-
-    #     userLikesExtremeSportData = userLikesExtremeSport[0]
-    #     if ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id']).exists():
-    #         plans = ExtremeSport.objects.filter(id=userLikesExtremeSportData['extremesport_id']).all().values(
-
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         extremeSportList.append(list(plans))
-
-    # if userLikesAttraction:
-
-    #     userLikesAttractionData = userLikesAttraction[0]
-    #     if Attraction.objects.filter(id=userLikesAttractionData['attraction_id']).exists():
-    #         plans = Attraction.objects.filter(id=userLikesAttractionData['attraction_id']).all().values(
-    #             'city_id',
-    #             'category_id'
-    #         ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-    #             'category_id',
-    #             'category_name',
-    #             'city_id',
-    #             'city_name'
-    #         )
-    #         for plan in plans:
-    #             if plan['city_id'] and plan['city_id'] not in uniqueCities:
-    #                 uniqueCities.add(plan['city_id'])
-    #                 cityList.append({
-    #                     "city_id": plan['city_id'],
-    #                     "city_name": plan['city_name'],
-    #                 })
-    #             if plan['category_id'] and plan['category_id'] not in uniqueCategories:
-    #                 uniqueCategories.add(plan['category_id'])
-    #                 categoryList.append({
-    #                     "category_id": plan['category_id'],
-    #                     "category_name": plan['category_name'],
-    #                 })
-    #         attractionList.append(list(plans))
-
+        for userLikesiteData in userLikesSite:
+            if Site.objects.filter(id=userLikesiteData['site_id'], show=True).exists():
+                plans = Site.objects.filter(id=userLikesiteData['site_id'], show=True).all().values(
+                    'city_id',
+                    'category_id'
+                ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
+                
+                    'category_id',
+                    'category_name',
+                    'city_id',
+                    'city_name'
+                )
+                for plan in plans:
+                    if plan['city_id'] and plan['city_id'] not in uniqueCities:
+                        uniqueCities.add(plan['city_id'])
+                        cityList.append({
+                            "city_id": plan['city_id'],
+                            "city_name": plan['city_name'],
+                        })
+                    if plan['category_id'] and plan['category_id'] not in uniqueCategories:
+                        uniqueCategories.add(plan['category_id'])
+                        categoryList.append({
+                            "category_id": plan['category_id'],
+                            "category_name": plan['category_name'],
+                        })
+                siteList.append(list(plans))
     return JsonResponse({
         "city": list(cityList),
         "category": list(categoryList),
@@ -2611,6 +2245,7 @@ def getLikedSitesViaPlan(request):
         })
 
     return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+
 
 class ScrapeHotelsView(View):
     def get(self, request):
