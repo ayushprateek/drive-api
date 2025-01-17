@@ -13,7 +13,7 @@ def getDeepLink(request):
     response_data = [{
         "relation": ["delegate_permission/common.handle_all_urls"],
         "target": {
-            "namespace": "us.driveenterprises.app",
+            "namespace": "android_app",
             "package_name": "us.driveenterprises.app2",
             "sha256_cert_fingerprints": [
                 # "C8:4D:B3:50:CF:5D:96:31:0D:38:99:63:FF:15:4A:C4:3D:CD:52:06:B2:49:CA:BD:38:EA:D7:82:2F:24:E2:1F",
