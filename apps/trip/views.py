@@ -3944,10 +3944,16 @@ def getSitesNearMe(request):
                 condition = haversine(lat1=lat1, lon1=lon1, lat2=plan.latitude, lon2=plan.longitude) < radius
 
             if condition:
+                photo_reference = plan.photos.values_list('photo_reference', flat=True).first()
+                photo_name = plan.photos.values_list('photo_name', flat=True).first()
+                url = plan.photos.values_list('url', flat=True).first()
                 plans.append({
                     "id": plan.id,
                     "place_id": plan.place_id,
                     "facility": plan.facility,
+                    'photo_reference': photo_reference,
+                    'photo_name': photo_name,
+                    'url': url,
                     "amenities": plan.amenities,
                     "name": plan.name,
                     "description": plan.description,
@@ -3977,6 +3983,9 @@ def getSitesNearMe(request):
                     point = Point(plan.longitude, plan.latitude)
 
                     if haversine(lat1=lat1, lon1=lon1, lat2=plan.latitude, lon2=plan.longitude) < radius and bounding_box.contains(point):
+                        photo_reference = plan.photos.values_list('photo_reference', flat=True).first()
+                        photo_name = plan.photos.values_list('photo_name', flat=True).first()
+                        url = plan.photos.values_list('url', flat=True).first()
                         plans.append({
                             "id": plan.id,
                             "place_id": plan.place_id,
@@ -3996,6 +4005,9 @@ def getSitesNearMe(request):
                             "user_ratings_total": plan.user_ratings_total,
                             "contact_info": plan.contact_info,
                             "website": plan.website,
+                            'photo_reference': photo_reference,
+                            'photo_name': photo_name,
+                            'url': url,
                             "regular_opening_hours": plan.regular_opening_hours,
                             "regular_secondary_opening_hours": plan.regular_secondary_opening_hours,
                         })
