@@ -77,7 +77,7 @@ logger = logging.getLogger('django.request')
 
 
 class CustomPagination(PageNumberPagination):
-    page_size = 20  # Set the number of items per page
+    page_size = 10  # Set the number of items per page
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -2111,7 +2111,7 @@ def getTripFilter(request):
                     'city_id',
                     'category_id'
                 ).annotate(city_name=F('city__name')).annotate(category_name=F('category__name')).values(
-                
+
                     'category_id',
                     'category_name',
                     'city_id',
