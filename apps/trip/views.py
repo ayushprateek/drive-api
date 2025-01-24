@@ -1852,7 +1852,7 @@ def getSites(request):
         elif keyword =='All Events':
             keywords=['Sports','Festivals','Music']
             sites = Site.objects.filter(city_id=city_id, show=True,
-                                        keyword=keywords,
+                                        keyword__in=keywords,
                                         discount_url__isnull=False).order_by('-created_at')
         else:
             sites = Site.objects.filter(city_id=city_id, keyword=keyword, show=True).order_by('-created_at')
