@@ -3713,7 +3713,10 @@ def get_coordinates_along_polyline_without(request):
                 plans.append(plan)
 
     if only_hotels:
-        data = Site.objects.filter(show=True).annotate(icon_url=F('category__icon_url'))
+        env = environ.Env()
+        environ.Env.read_env(env_file=ROOT_DIR('.env'))
+        catgeory_id = env('AD_CATEGORY_ID')
+        data = Site.objects.filter(show=True,category_id=catgeory_id).annotate(icon_url=F('category__icon_url'))
         for plan in data:
             point = Point(plan.longitude, plan.latitude)
             condition = is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance)
