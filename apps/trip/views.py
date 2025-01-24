@@ -1328,7 +1328,7 @@ def likePlace(request):
     else:
         user_likes = UserLikes.objects.create(user=userdata)
 
-    if Site.objects.filter(id=data['like_id'], show=True).exists():
+    if Site.objects.filter(id=data['like_id'], show=True).exists() and not UserLikesSite.objects.filter(site_id=data['like_id'], plan_id=data['plan_id'], userlikes_id=user_likes.id).exists():
         site = Site.objects.get(id=data['like_id'], show=True)
         UserLikesSite.objects.create(
             userlikes=user_likes,
@@ -1336,84 +1336,8 @@ def likePlace(request):
             plan=planModel
         )
         return JsonResponse({'message': 'User Liked Site'})
-
-    # if Hotel.objects.filter(id=data['like_id']).exists():
-    #     site = Hotel.objects.get(id=data['like_id'])
-    #     UserLikesHotel.objects.create(
-    #         userlikes=user_likes,
-    #         hotel=site,
-    #         plan=planModel
-    #     )
-    #     return JsonResponse({'message': 'User Liked Hotel'})
-
-    # if ExtremeSport.objects.filter(id=data['like_id']).exists():
-    #     extreme_sport = ExtremeSport.objects.get(id=data['like_id'])
-    #     user_likes.liked_extremesports.add(extreme_sport)
-    #     return JsonResponse({'message': 'User Liked Extreme Sport'})
-
-    # if ExtremeSport.objects.filter(id=data['like_id']).exists():
-    #     site = ExtremeSport.objects.get(id=data['like_id'])
-    #     UserLikesExtremeSport.objects.create(
-    #         userlikes=user_likes,
-    #         extremesport=site,
-    #         plan=planModel
-    #     )
-    #     return JsonResponse({'message': 'User Liked Extreme Sport'})
-
-    # if Event.objects.filter(id=data['like_id']).exists():
-    #     event = Event.objects.get(id=data['like_id'])
-    #     user_likes.liked_events.add(event)
-    #     return JsonResponse({'message': 'User Liked Event'})
-
-    # if Event.objects.filter(id=data['like_id']).exists():
-    #     site = Event.objects.get(id=data['like_id'])
-    #     UserLikesEvent.objects.create(
-    #         userlikes=user_likes,
-    #         event=site,
-    #         plan=planModel
-    #     )
-    #     return JsonResponse({'message': 'User Liked Event'})
-
-    # if WeirdAndWacky.objects.filter(id=data['like_id']).exists():
-    #     weird_and_wacky = WeirdAndWacky.objects.get(id=data['like_id'])
-    #     user_likes.liked_wierdandwacky.add(weird_and_wacky)
-    #     return JsonResponse({'message': 'User Liked Weird And Wacky'})
-
-    # if WeirdAndWacky.objects.filter(id=data['like_id']).exists()site = WeirdAndWacky.objects.get(id=data['like_id'])
-    #     UserLikesWeirdAndWacky.objects.create(
-    #         userlikes=user_likes,
-    #         weirdandwacky=site,
-    #         plan=planModel
-    #     )
-    #     return JsonResponse({'message': 'User Liked Weird And Wacky'})
-
-    # if Park.objects.filter(id=data['like_id']).exists():
-    #     park = Park.objects.get(id=data['like_id'])
-    #     user_likes.liked_parks.add(park)
-    #     return JsonResponse({'message': 'User Liked Park'})
-
-    # if Park.objects.filter(id=data['like_id']).exists():
-    #     site = Park.objects.get(id=data['like_id'])
-    #     UserLikesPark.objects.create(
-    #         userlikes=user_likes,
-    #         park=site,
-    #         plan=planModel
-    #     )
-    #     return JsonResponse({'message': 'User Liked Park'})
-
-    # if Attraction.objects.filter(id=data['like_id']).exists():
-    #     attraction = Attraction.objects.get(id=data['like_id'])
-    #     user_likes.liked_attractions.add(attraction)
-    #     return JsonResponse({'message': 'User Liked Attraction'})
-
-    # if Attraction.objects.filter(id=data['like_id']).exists():
-    #     site = Attraction.objects.get(id=data['like_id'])
-    #     UserLikesAttraction.objects.create(
-    #         userlikes=user_likes,
-    #         attraction=site,
-    #         plan=planModel
-    #     )
-    #     return JsonResponse({'message': 'User Liked Attraction'})
+    else:
+        return JsonResponse({'message': 'User Already Liked Site'})
 
 
 def isLiked(userId, siteId):
@@ -1849,8 +1773,8 @@ def getSites(request):
             sites = Site.objects.filter(city_id=city_id, show=True,
                                         keyword=keyword,
                                         discount_url__isnull=False).order_by('-created_at')
-        elif keyword =='All Events':
-            keywords=['Sports','Festivals','Music']
+        elif keyword == 'All Events':
+            keywords = ['Sports', 'Festivals', 'Music']
             sites = Site.objects.filter(city_id=city_id, show=True,
                                         keyword__in=keywords).order_by('-created_at')
         else:
@@ -3716,7 +3640,7 @@ def get_coordinates_along_polyline_without(request):
         env = environ.Env()
         environ.Env.read_env(env_file=ROOT_DIR('.env'))
         catgeory_id = env('AD_CATEGORY_ID')
-        data = Site.objects.filter(show=True,category_id=catgeory_id).annotate(icon_url=F('category__icon_url'))
+        data = Site.objects.filter(show=True, category_id=catgeory_id).annotate(icon_url=F('category__icon_url'))
         for plan in data:
             point = Point(plan.longitude, plan.latitude)
             condition = is_distance_one(plan.latitude, plan.longitude, decoded_points, threshold_distance)
