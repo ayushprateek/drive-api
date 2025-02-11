@@ -2,9 +2,11 @@ import re
 from common import constants
 import openai
 import json
-
+import os
+from dotenv import load_dotenv
 from apps.trip import helper
 from drive_ai import settings
+load_dotenv()
 
 
 class TravelAssistant:
@@ -26,11 +28,22 @@ class TravelAssistant:
         """
         # Set parameters for the OpenAI GPT-3 API
         print('generate_chatgpt_response called')
+        # response = openai.ChatCompletion.create(
+        #     model="gpt-3.5-turbo",
+        #     messages=[{'role': 'system', 'content': 'You are a helpful assistant.'},
+        #               {'role': 'user', 'content': user_query}],
+        #     temperature=0.2
+        # )
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[{'role': 'system', 'content': 'You are a helpful assistant.'},
-                      {'role': 'user', 'content': user_query}],
-            temperature=0.2
+            model="gpt-4",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant"
+                },
+                {"role": "user", "content": user_query}
+
+            ]
         )
         print('True response = ',response)
         # Extract and return the assistant's reply
