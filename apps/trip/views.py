@@ -1826,6 +1826,68 @@ def getSites(request):
 
 
 @api_view(['GET'])
+def getDataFromKeywords(request, keyword=None):
+    try:
+
+        hotelKeywordList = ['hotel', 'motel', 'lodging']
+
+        if keyword in hotelKeywordList:
+            sites = Site.objects.filter(
+                keyword=keyword).order_by('-created_at')
+        elif keyword == 'All Events':
+            keywords = ['Sports', 'Festivals', 'Music']
+            sites = Site.objects.filter(
+                keyword__in=keywords).order_by('-created_at')
+        else:
+            sites = Site.objects.filter(keyword=keyword).order_by('-created_at')
+
+        plans_list = []
+        for site_instance in sites:
+            site = {
+                'id': site_instance.id,
+                'name': site_instance.name,
+                'description': site_instance.description,
+                'discount_url': site_instance.discount_url,
+                'contact_info': site_instance.contact_info,
+                'rating': site_instance.rating,
+                'keyword': site_instance.keyword,
+                'website': site_instance.website,
+                'vicinity': site_instance.vicinity,
+                'photo_reference': site_instance.photos.values_list('photo_reference', flat=True).first(),
+                'photo_name': site_instance.photos.values_list('photo_name', flat=True).first(),
+                'url': site_instance.photos.values_list('url', flat=True).first(),
+                'review_count': len(site_instance.place_review.values()),
+                'show': site_instance.show,
+            }
+            plans_list.append(site)
+
+        return JsonResponse({"results": plans_list})
+
+    except ObjectDoesNotExist:
+        return Response({"error": "Data not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['PUT'])
+def updateSiteVisibility(request):
+    data = request.data  
+    
+    if 'id' not in data:
+        return Response({"error": "Missing 'id' in request body"}, status=status.HTTP_400_BAD_REQUEST)
+    if 'show' not in data:
+        return Response({"error": "Missing 'show' in request body"}, status=status.HTTP_400_BAD_REQUEST)
+    site_id=data['id']
+    show=data['show']
+    if not Site.objects.filter(id=site_id).exists():
+        return Response({"error": "Site not found"}, status=status.HTTP_404_NOT_FOUND)
+    site=Site.objects.filter(id=site_id).first()
+    site.show=show
+    site.save()
+    return JsonResponse({"message":"Site saved successfully"}, safe=False, status=status.HTTP_200_OK)
+        
+    
+
+@api_view(['GET'])
 def getSubCategories(request, id):
     try:
         # Fetch the category by ID

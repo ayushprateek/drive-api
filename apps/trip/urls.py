@@ -70,5 +70,9 @@ urlpatterns = [
     path('scrape-events-api/', newScrapeEventsAPI, name='add-user'),
     path('scrape-yelp-api/', scrapeYelpEvents, name='add-user'),
     path('migrate-keywords-to-model/', migrate_keywords_to_model, name='add-user'),
+    path('get-data-from-keywords/<str:keyword>/', getDataFromKeywords, name='get data'),
+    path('update-site-visibility/', updateSiteVisibility, name='Update site visibility'),
+
+    
     # path('update-location-in-site/', updateLocationInSite, name='add-user'),
 ]
