@@ -152,9 +152,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'drive_dev',
-        'USER': 'drive',
+        'USER': 'postgres',
         'PASSWORD': 'drive#2024',
-        'HOST': 'drive-dev.cv6ymyemiw54.us-east-1.rds.amazonaws.com',
+        'HOST': 'drive-dev.c7mwuyiu4us4.ap-south-1.rds.amazonaws.com',
+        # 'HOST': 'drive-dev.cv6ymyemiw54.us-east-1.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
