@@ -1868,24 +1868,24 @@ def getDataFromKeywords(request, keyword=None):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @api_view(['PUT'])
 def updateSiteVisibility(request):
-    data = request.data  
-    
+    data = request.data
+
     if 'id' not in data:
         return Response({"error": "Missing 'id' in request body"}, status=status.HTTP_400_BAD_REQUEST)
     if 'show' not in data:
         return Response({"error": "Missing 'show' in request body"}, status=status.HTTP_400_BAD_REQUEST)
-    site_id=data['id']
-    show=data['show']
+    site_id = data['id']
+    show = data['show']
     if not Site.objects.filter(id=site_id).exists():
         return Response({"error": "Site not found"}, status=status.HTTP_404_NOT_FOUND)
-    site=Site.objects.filter(id=site_id).first()
-    site.show=show
+    site = Site.objects.filter(id=site_id).first()
+    site.show = show
     site.save()
-    return JsonResponse({"message":"Site saved successfully"}, safe=False, status=status.HTTP_200_OK)
-        
-    
+    return JsonResponse({"message": "Site saved successfully"}, safe=False, status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
 def getSubCategories(request, id):
@@ -3673,6 +3673,7 @@ def get_coordinates_along_polyline_without(request):
 
     lat1, lon1 = float(request.data['lat1']), float(request.data['lon1'])
     lat2, lon2 = float(request.data['lat2']), float(request.data['lon2'])
+    way1, way2 = float(request.data['way1']), float(request.data['way2'])
     south_lat, west_lon = float(request.data['south_lat']), float(request.data['west_lon'])
     north_lat, east_lon = float(request.data['north_lat']), float(request.data['east_lon'])
     threshold_distance = float(request.data['threshold_distance'])
@@ -3680,8 +3681,14 @@ def get_coordinates_along_polyline_without(request):
     # Create a bounding box using shapely
     bounding_box = box(west_lon, south_lat, east_lon, north_lat)
 
+    # String apiUrl = 'https://maps.googleapis.com/maps/api/directions/json?' +
+    #     'origin=${startCoordinate.latitude},${startCoordinate.longitude}&' +
+    #     'destination=${endCoordinate.latitude},${endCoordinate.longitude}&' +
+    #     'waypoints=${otherCoordinates.map((point) => "via:${point.latitude},${point.longitude}").join("|")}&' +
+    #     'key=$googleAPiKey';
+
     # Get polyline data from Google API
-    url = f"https://maps.googleapis.com/maps/api/directions/json?origin={lat1},{lon1}&destination={lat2},{lon2}&key={settings.GOOGLE_API_KEY}"
+    url = f"https://maps.googleapis.com/maps/api/directions/json?origin={lat1},{lon1}&destination={lat2},{lon2}&waypoints={way1},{way2}&key={settings.GOOGLE_API_KEY}"
     response = requests.get(url)
     decoded_points = []
     print("response.status_code = ", response.status_code)
