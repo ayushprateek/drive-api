@@ -2400,6 +2400,68 @@ def truncate_all_tables(request):
         return JsonResponse([], safe=False)
 
 
+def savePhotos(request):
+    try:
+        # location = Location.objects.create(
+        #     lat=location_data['lat'],
+        #     lng=location_data['lng']
+        # )
+        #  'photo_reference': list(
+        #                              site_instance.photos.filter(photo_reference__isnull=False).exclude(
+        #                                  photo_reference='').values_list('photo_reference', flat=True)
+        #                          ),
+        #                          'photo_name': list(
+        #                              site_instance.photos.filter(photo_name__isnull=False).exclude(
+        #                                  photo_name='').values_list('photo_name', flat=True)
+        #                          ),
+
+        miamiSites = Site.objects.filter(
+            city_id='2f742167-5e54-4d72-b524-a4fb6875fc83').distinct()
+        # for site in sites_with_empty_photo_ref:
+        #     for photo in site.photos.all():
+        #         print("photo_name = ",photo.photo_name)
+        # return JsonResponse({
+        #     "len":len(sites_with_empty_photo_ref)}, safe=False)
+        # sites_with_empty_photo_ref = Site.objects.filter(id='db5ed3a5-6f3d-4e1b-a47c-c29b280b9f1a').first()
+        for sites_with_empty_photo_ref in miamiSites:
+            url = f"https://places.googleapis.com/v1/places/{sites_with_empty_photo_ref.place_id}?fields=photos&key={settings.  GOOGLE_API_KEY}"
+            logger.info("Scraping API Called " + url)
+            response = requests.get(url)
+            print("Res = ",response)
+            print("Status code = ", response.status_code)
+            if response.status_code == 200:
+                data = response.json()
+                photoList = data.get('photos', [])
+                if photoList:
+                    old_photos = sites_with_empty_photo_ref.photos.all()
+                    for photo in old_photos:
+                        photo.delete()
+                    sites_with_empty_photo_ref.photos.clear()
+
+                for photo in photoList:
+                    author_attributions = photo.get('authorAttributions', [])
+                    photo_obj = Photo.objects.create(
+                        height=photo.get('heightPx'),
+                        width=photo.get('widthPx'),
+                        # html_attributions=', '.join(photo['html_attributions']),
+                        author_name=author_attributions[0].get('displayName') if author_attributions else None,
+                        author_uri=author_attributions[0].get('uri') if author_attributions else None,
+                        author_photo_uri=author_attributions[0].get('photoUri') if author_attributions else None,
+                        photo_name=photo.get('name')
+                    )
+                    sites_with_empty_photo_ref.photos.add(photo_obj)
+                sites_with_empty_photo_ref.save()
+
+        return JsonResponse({
+            "message": "Completed",
+            "sites_processed": len(miamiSites)
+        })
+
+    except Exception as e:
+        print("exception = ", e)
+    return JsonResponse([], safe=False)
+
+
 def saveToDb(api_response, city, category, type):
     data = api_response
     logger.info("Saved Data Length = " + str(len(data['results'])))
