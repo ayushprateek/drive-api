@@ -7,5 +7,7 @@ app_name = 'drive_admin'
 urlpatterns = [
     path('check/', checkAdminAPI, name='check-api'),
     path('add-city/', addCity, name='add city'),
-    path('add-category/', addCategory, name='add category'),
+    path('update-city/<city_id>', updateCity),
+    path('add-category/', addCategory),
+    path('update-category/<category_id>', updateCategory),
 ]

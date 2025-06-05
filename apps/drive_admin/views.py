@@ -15,6 +15,18 @@ def checkAdminAPI(request):
     return JsonResponse({
             'message': 'Running'})
 
+def save_file(file, folder):
+            timestamp = int(time.time())
+            base, ext = os.path.splitext(file.name)
+            filename = f"{base}_{timestamp}{ext}"
+            dir_path = os.path.join(settings.BASE_DIR, folder)
+            os.makedirs(dir_path, exist_ok=True)
+            file_path = os.path.join(dir_path, filename)
+            with open(file_path, 'wb+') as dest:
+                for chunk in file.chunks():
+                    dest.write(chunk)
+            return os.path.join(folder, filename)
+
 
 @api_view(['POST'])
 def addCity(request):
@@ -23,13 +35,6 @@ def addCity(request):
             # Save uploaded 'icon' file if present
             if 'file' in request.FILES and request.FILES['file']:
                 imagePath = save_file(request.FILES['file'], 'static/city')
-            # if 'file' in request.FILES and bool(request.FILES['file']) == True:
-            #     uploaded_file = request.FILES['file']
-            #     with open(os.path.join(settings.BASE_DIR, 'static/city', uploaded_file.name), 'wb+') as destination:
-            #         for chunk in uploaded_file.chunks():
-            #             destination.write(chunk)
-            #     imagePath='static/city/{}'.format(uploaded_file.name)
-            #     print("Name of image = ",imagePath)
             city = City.objects.create(
             name=tempData.get('name'),
             country=tempData.get('country'),
@@ -48,19 +53,48 @@ def addCity(request):
         except Exception as ex:
             print('An error occurred:', ex)
             raise ValidationError(str(ex))
-        
 
-def save_file(file, folder):
-            timestamp = int(time.time())
-            base, ext = os.path.splitext(file.name)
-            filename = f"{base}_{timestamp}{ext}"
-            dir_path = os.path.join(settings.BASE_DIR, folder)
-            os.makedirs(dir_path, exist_ok=True)
-            file_path = os.path.join(dir_path, filename)
-            with open(file_path, 'wb+') as dest:
-                for chunk in file.chunks():
-                    dest.write(chunk)
-            return os.path.join(folder, filename)
+
+@api_view(['PUT'])
+def updateCity(request, city_id):
+    try:
+        city = City.objects.filter(id=city_id).first()
+        if not city:
+            raise ValidationError("City not found.")
+
+        tempData = request.data
+
+        # Update image if present
+        if 'file' in request.FILES and request.FILES['file']:
+            file_path = save_file(request.FILES['file'], 'static/city')
+            city.images = [file_path]
+
+        # Update fields
+        city.name = tempData.get('name', city.name)
+        city.country = tempData.get('country', city.country)
+        city.latitude = tempData.get('latitude', city.latitude)
+        city.longitude = tempData.get('longitude', city.longitude)
+        city.description = tempData.get('description', city.description)
+        city.scrape = bool(int(tempData.get('scrape', int(city.scrape))))
+
+        # Handle lat_long (as JSON string)
+        lat_long_data = tempData.get('lat_long')
+        if lat_long_data:
+            try:
+                city.lat_long = json.loads(lat_long_data)
+            except Exception:
+                raise ValidationError("Invalid 'lat_long' format. Must be JSON list.")
+
+        city.save()
+
+        return JsonResponse({
+            'message': 'City updated successfully',
+            'city': model_to_dict(city)
+        })
+
+    except Exception as ex:
+        print("Error in updateCity:", ex)
+        raise ValidationError(str(ex))
 
 
 @api_view(['POST'])
@@ -105,4 +139,48 @@ def addCategory(request):
         print('An error occurred:', ex)
         raise ValidationError(str(ex))
         
+@api_view(['PUT'])
+def updateCategory(request, category_id):
+    try:
+        category = Category.objects.filter(id=category_id).first()
+        if not category:
+            raise ValidationError("Category not found.")
 
+        tempData = request.data
+
+        # Save uploaded 'icon' file if present
+        if 'icon' in request.FILES and request.FILES['icon']:
+            category.icon_url = save_file(request.FILES['icon'], 'static/category')
+
+        # Save uploaded 'image' file if present
+        if 'image' in request.FILES and request.FILES['image']:
+            category.image_url = save_file(request.FILES['image'], 'static/category')
+
+        # Update fields
+        category.name = tempData.get('name', category.name)
+        category.route = tempData.get('route', category.route)
+        category.scrape = bool(int(tempData.get('scrape', int(category.scrape))))
+        
+        if 'keywords' in tempData:
+            # Expects comma-separated string of keywords
+            keyword_list = [kw.strip() for kw in tempData.get('keywords').split(',') if kw.strip()]
+            if keyword_list:
+                category.keywords = keyword_list
+
+        # Set parent category (optional)
+        if 'parent_id' in tempData and tempData.get('parent_id'):
+            parent = Category.objects.filter(id=tempData.get('parent_id')).first()
+            if parent:
+                category.parent = parent
+        else:
+            category.parent=None
+        category.save()
+
+        return JsonResponse({
+            'message': 'Category updated successfully',
+            'category': model_to_dict(category)
+        })
+
+    except Exception as ex:
+        print("Error in updateCategory:", ex)
+        raise ValidationError(str(ex))
