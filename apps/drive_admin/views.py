@@ -3,11 +3,14 @@ from django.conf import settings
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from pydantic import ValidationError
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.decorators import api_view
 import os
 import time
 
 from apps.trip.models import City,Category, Keyword
+from common import constants
 
 # Create your views here.
 @api_view(['GET'])
@@ -60,7 +63,10 @@ def updateCity(request, city_id):
     try:
         city = City.objects.filter(id=city_id).first()
         if not city:
-            raise ValidationError("City not found.")
+            return Response(
+            constants.ApplicationMessages.CITY_DOES_NOT_EXIST,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
         tempData = request.data
 
@@ -96,6 +102,27 @@ def updateCity(request, city_id):
         print("Error in updateCity:", ex)
         raise ValidationError(str(ex))
 
+@api_view(['DELETE'])
+def deleteCity(request, city_id):
+    try:
+        city = City.objects.filter(id=city_id).first()
+        if not city:
+            return Response(
+            constants.ApplicationMessages.CITY_DOES_NOT_EXIST,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+        
+        city.delete()
+
+        return JsonResponse({
+            'message': 'City deleted successfully',
+            'city_id': city_id
+        })
+
+    except Exception as ex:
+        print("Error in deleteCity:", ex)
+        raise ValidationError(str(ex))
+    
 
 @api_view(['POST'])
 def addCategory(request):
@@ -144,7 +171,10 @@ def updateCategory(request, category_id):
     try:
         category = Category.objects.filter(id=category_id).first()
         if not category:
-            raise ValidationError("Category not found.")
+            return Response(
+            constants.ApplicationMessages.CATEGORY_DOES_NOT_EXIST,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
         tempData = request.data
 
@@ -183,4 +213,25 @@ def updateCategory(request, category_id):
 
     except Exception as ex:
         print("Error in updateCategory:", ex)
+        raise ValidationError(str(ex))
+
+@api_view(['DELETE'])
+def deleteCategory(request, category_id):
+    try:
+        category = Category.objects.filter(id=category_id).first()
+        if not category:
+            return Response(
+            constants.ApplicationMessages.CATEGORY_DOES_NOT_EXIST,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+        
+        category.delete()
+
+        return JsonResponse({
+            'message': 'Category deleted successfully',
+            'category_id': category_id
+        })
+
+    except Exception as ex:
+        print("Error in deleteCity:", ex)
         raise ValidationError(str(ex))
