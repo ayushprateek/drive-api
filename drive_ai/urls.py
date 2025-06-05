@@ -32,6 +32,7 @@ urlpatterns = [
     path('user/', include('apps.user.urls')),
     path('search/', include('apps.search.urls')),
     path('trip/', include('apps.trip.urls', namespace='trip')),
+    path('drive-admin/', include('apps.drive_admin.urls', namespace='admins')),
     path('analytics/', include('apps.analytics.urls', namespace='analytics')),
 ]
 

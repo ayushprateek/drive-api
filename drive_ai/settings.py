@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'apps.search',
     'django_extensions',
     'apps.analytics',
+    'apps.drive_admin',
     'hotels',
 ]
 
