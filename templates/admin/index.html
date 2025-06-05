@@ -19,14 +19,7 @@
     </div>
 
     <!-- Add Hotel by URL Section -->
-    <div class="module">
-        <h2>{% trans 'Add Hotel by URL' %}</h2>
-        <form method="post" action="{% url 'trip:add_hotel' %}">
-            {% csrf_token %}
-            <input type="text" name="hotel_link" placeholder="Enter hotel website URL" required>
-            <input type="submit" value="Add Hotel">
-        </form>
-    </div>
+   
 
     <!-- Add Data by City, URL, and Category -->
     <div class="module">
