@@ -21,13 +21,14 @@ from .models import AdminModel
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
 from .middleware import IsAuthenticatedAdmin
-class SomeDriveAdminView(APIView):
-    permission_classes = [IsAuthenticatedAdmin]
+# class SomeDriveAdminView(APIView):
+#     permission_classes = [IsAuthenticatedAdmin]
 
-    def get(self, request):
-        return Response({"message": "This is a secure drive-admin endpoint."})
+#     def get(self, request):
+#         return Response({"message": "This is a secure drive-admin endpoint."})
 
 class AdminRegisterView(APIView):
+    authentication_classes = []
     permission_classes = [AllowAny]
 
     def post(self, request):

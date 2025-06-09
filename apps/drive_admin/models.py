@@ -1,5 +1,7 @@
 # models.py
-
+import jwt
+import datetime
+from django.conf import settings
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
@@ -30,12 +32,20 @@ class AdminModel(AbstractBaseUser):
     def __str__(self):
         return self.username
 
+
     def tokens(self):
-        refresh = RefreshToken.for_user(self)
+        payload = {
+            'admin_id': str(self.id),
+            'username': self.username,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),  # expires in 1 day
+            'iat': datetime.datetime.utcnow(),
+        }
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         return {
-            'access_token': str(refresh.access_token),
-            'refresh_token': str(refresh),
-            'user_id': str(self.id)
+            'access_token': str(token),
+            'refresh_token': str(token),
+            'admin_id': str(self.id),
+            'username': self.username
         }
     class Meta:
         db_table = 'drive_admin'
