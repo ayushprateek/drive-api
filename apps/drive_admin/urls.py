@@ -7,6 +7,7 @@ app_name = 'drive_admin'
 urlpatterns = [
     path('check/', checkAdminAPI, name='check-api'),
     path('register/', AdminRegisterView.as_view()),
+     path('login/', AdminLoginAPIView.as_view(), name='user_token_obtain_pair'),
     # path('secure/', SomeDriveAdminView.as_view()),
     
     path('add-city/', addCity, name='add city'),

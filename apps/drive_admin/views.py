@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 import os
 import time
+from apps.drive_admin.serializers import AdminLoginSerializer
 from apps.trip.models import City,Category, Keyword
 from common import constants
 from apps.trip.views import CustomPagination
@@ -26,6 +27,25 @@ from .middleware import IsAuthenticatedAdmin
 
 #     def get(self, request):
 #         return Response({"message": "This is a secure drive-admin endpoint."})
+
+class AdminLoginAPIView(APIView):
+    def post(self, request):
+        serializer = AdminLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+
+        try:
+            admin = AdminModel.objects.get(username=username)
+        except AdminModel.DoesNotExist:
+            return Response({'error': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not admin.check_password(password):
+            return Response({'error': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        token = admin.tokens()
+        return Response({'token': token})
 
 class AdminRegisterView(APIView):
     authentication_classes = []
