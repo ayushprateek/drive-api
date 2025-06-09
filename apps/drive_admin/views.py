@@ -8,11 +8,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 import os
 import time
-
 from apps.trip.models import City,Category, Keyword
 from common import constants
+from apps.trip.views import CustomPagination
 
-# Create your views here.
 @api_view(['GET'])
 def checkAdminAPI(request):
     return JsonResponse({
@@ -29,7 +28,6 @@ def save_file(file, folder):
                 for chunk in file.chunks():
                     dest.write(chunk)
             return os.path.join(folder, filename)
-
 
 @api_view(['POST'])
 def addCity(request):
@@ -57,6 +55,47 @@ def addCity(request):
             print('An error occurred:', ex)
             raise ValidationError(str(ex))
 
+@api_view(['GET'])
+def getCity(request, city_id):
+    try:
+        city = City.objects.filter(id=city_id).first()
+        if not city:
+            return Response(
+                {"error": constants.ApplicationMessages.CITY_DOES_NOT_EXIST},
+                status=404
+            )
+
+        city_data = model_to_dict(city)
+        return Response({
+            "message": "City retrieved successfully",
+            "city": city_data
+        }, status=200)
+
+    except Exception as ex:
+        print("Error in getCity:", ex)
+        raise ValidationError(str(ex))
+
+@api_view(['GET'])
+def getAllCities(request):
+    try:
+        cities = City.objects.all().order_by('-created_at')
+
+        paginator = CustomPagination()
+        # paginator.page_size = 10  # Default page size, can be customized or read from query param
+
+        paginated_cities = paginator.paginate_queryset(cities, request)
+        cities_list = []
+        for city in paginated_cities:
+            city_dict = model_to_dict(city)
+            cities_list.append(city_dict)
+
+        return paginator.get_paginated_response({
+            'message': 'Cities retrieved successfully',
+            'cities': cities_list
+        })
+    except Exception as ex:
+        print("Error in getAllCities:", ex)
+        return Response({'error': str(ex)}, status=500)
 
 @api_view(['PUT'])
 def updateCity(request, city_id):
@@ -165,7 +204,51 @@ def addCategory(request):
     except Exception as ex:
         print('An error occurred:', ex)
         raise ValidationError(str(ex))
+
+@api_view(['GET'])
+def getCategory(request, category_id):
+    try:
+        category = Category.objects.filter(id=category_id).first()
+        if not category:
+            return Response(
+                {"error": constants.ApplicationMessages.CATEGORY_DOES_NOT_EXIST},
+                status=404
+            )
         
+        category_data = model_to_dict(category)
+
+        category_data['keywords_relation'] = list(category.keywords_relation.values_list('id', flat=True))
+
+        return Response({
+            "message": "Category retrieved successfully",
+            "category": category_data
+        }, status=200)
+    except Exception as ex:
+        print("Error in getCategory:", ex)
+        raise ValidationError(str(ex))
+
+@api_view(['GET'])
+def getAllCategories(request):
+    try:
+        categories = Category.objects.all().order_by('-created_at')
+        paginator = CustomPagination()
+        # paginated_sites = paginator.paginate_queryset(sites, request)
+
+        # paginator = PageNumberPagination()
+        # paginator.page_size = 10  # You can customize page size here or read from query param
+
+        paginated_categories = paginator.paginate_queryset(categories, request)
+        categories_list = []
+        for category in paginated_categories:
+            cat_dict = model_to_dict(category)
+            cat_dict['keywords_relation'] = list(category.keywords_relation.values_list('id', flat=True))
+            categories_list.append(cat_dict)
+
+        return paginator.get_paginated_response(categories_list)
+    except Exception as ex:
+        print("Error in getAllCategories:", ex)
+        return Response({'error': str(ex)}, status=500)
+
 @api_view(['PUT'])
 def updateCategory(request, category_id):
     try:

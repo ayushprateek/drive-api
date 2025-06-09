@@ -8,8 +8,12 @@ urlpatterns = [
     path('check/', checkAdminAPI, name='check-api'),
     path('add-city/', addCity, name='add city'),
     path('update-city/<city_id>', updateCity),
+    path('get-city/<city_id>', getCity),
+    path('get-all-cities/', getAllCities),
     path('delete-city/<city_id>', deleteCity),
     path('add-category/', addCategory),
+    path('get-category/<category_id>', getCategory),
+    path('get-all-categories/', getAllCategories),
     path('update-category/<category_id>', updateCategory),
     path('delete-category/<category_id>', deleteCategory),
 ]
