@@ -12,6 +12,49 @@ from apps.trip.models import City,Category, Keyword
 from common import constants
 from apps.trip.views import CustomPagination
 
+# views.py
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import AdminModel
+from django.contrib.auth import authenticate
+from rest_framework.permissions import AllowAny
+from .middleware import IsAuthenticatedAdmin
+class SomeDriveAdminView(APIView):
+    permission_classes = [IsAuthenticatedAdmin]
+
+    def get(self, request):
+        return Response({"message": "This is a secure drive-admin endpoint."})
+
+class AdminRegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        data = request.data
+        username = data.get("username")
+        name = data.get("name")
+        password = data.get("password")
+
+        if AdminModel.objects.filter(username=username).exists():
+            return Response({
+                "success": False,
+                "code": 400,
+                "message": "Admin already exists"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        admin = AdminModel.objects.create_admin(username=username, name=name, password=password)
+        tokens = admin.tokens()
+        return Response({
+            "success": True,
+            "code": 200,
+            "data": {
+                "message": "User Logged In Successfully!",
+                **tokens
+            }
+        })
+
+
 @api_view(['GET'])
 def checkAdminAPI(request):
     return JsonResponse({
