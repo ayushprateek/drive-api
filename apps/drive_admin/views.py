@@ -1,4 +1,5 @@
 import json
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from django.conf import settings
 from django.forms import model_to_dict
 from django.http import JsonResponse
@@ -8,6 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 import os
 import time
+from apps.drive_admin.authentication import AdminTokenAuthentication
 from apps.drive_admin.serializers import AdminLoginSerializer
 from apps.trip.models import City,Category, Keyword
 from common import constants
@@ -22,11 +24,20 @@ from .models import AdminModel
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
 from .middleware import IsAuthenticatedAdmin
-# class SomeDriveAdminView(APIView):
-#     permission_classes = [IsAuthenticatedAdmin]
 
-#     def get(self, request):
-#         return Response({"message": "This is a secure drive-admin endpoint."})
+class AdminOnlyView(APIView):
+    authentication_classes = [AdminTokenAuthentication]  # Only use your custom admin auth
+    permission_classes = [IsAuthenticatedAdmin]
+
+    def get(self, request):
+        # Your logic here
+        return Response({"message": f"Hello Admin {request.user.username}"})
+
+class SomeDriveAdminView(APIView):
+    permission_classes = [IsAuthenticatedAdmin]
+
+    def get(self, request):
+        return Response({"message": "This is a secure drive-admin endpoint."})
 
 class AdminLoginAPIView(APIView):
     def post(self, request):
@@ -77,6 +88,8 @@ class AdminRegisterView(APIView):
 
 
 @api_view(['GET'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def checkAdminAPI(request):
     return JsonResponse({
             'message': 'Running'})
@@ -94,6 +107,8 @@ def save_file(file, folder):
             return os.path.join(folder, filename)
 
 @api_view(['POST'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def addCity(request):
         try:
             tempData = request.data
@@ -120,6 +135,8 @@ def addCity(request):
             raise ValidationError(str(ex))
 
 @api_view(['GET'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def getCity(request, city_id):
     try:
         city = City.objects.filter(id=city_id).first()
@@ -140,6 +157,8 @@ def getCity(request, city_id):
         raise ValidationError(str(ex))
 
 @api_view(['GET'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def getAllCities(request):
     try:
         cities = City.objects.all().order_by('-created_at')
@@ -162,6 +181,8 @@ def getAllCities(request):
         return Response({'error': str(ex)}, status=500)
 
 @api_view(['PUT'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def updateCity(request, city_id):
     try:
         city = City.objects.filter(id=city_id).first()
@@ -206,6 +227,8 @@ def updateCity(request, city_id):
         raise ValidationError(str(ex))
 
 @api_view(['DELETE'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def deleteCity(request, city_id):
     try:
         city = City.objects.filter(id=city_id).first()
@@ -228,6 +251,8 @@ def deleteCity(request, city_id):
     
 
 @api_view(['POST'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def addCategory(request):
     try:
         tempData = request.data
@@ -270,6 +295,8 @@ def addCategory(request):
         raise ValidationError(str(ex))
 
 @api_view(['GET'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def getCategory(request, category_id):
     try:
         category = Category.objects.filter(id=category_id).first()
@@ -292,6 +319,8 @@ def getCategory(request, category_id):
         raise ValidationError(str(ex))
 
 @api_view(['GET'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def getAllCategories(request):
     try:
         categories = Category.objects.all().order_by('-created_at')
@@ -314,6 +343,8 @@ def getAllCategories(request):
         return Response({'error': str(ex)}, status=500)
 
 @api_view(['PUT'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def updateCategory(request, category_id):
     try:
         category = Category.objects.filter(id=category_id).first()
@@ -363,6 +394,8 @@ def updateCategory(request, category_id):
         raise ValidationError(str(ex))
 
 @api_view(['DELETE'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
 def deleteCategory(request, category_id):
     try:
         category = Category.objects.filter(id=category_id).first()

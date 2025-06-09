@@ -7,6 +7,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from common import caches
+from common.caches.constants import ADMIN_TOKEN, ONE_DAY, USER_TOKEN
+
 class AdminManager(BaseUserManager):
     def create_admin(self, username, name, password=None):
         if not username:
@@ -41,6 +44,7 @@ class AdminModel(AbstractBaseUser):
             'iat': datetime.datetime.utcnow(),
         }
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+        caches.set(ADMIN_TOKEN, token, ONE_DAY, user_id=str(self.id), token=token)
         return {
             'access_token': str(token),
             'refresh_token': str(token),

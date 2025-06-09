@@ -75,6 +75,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'drive_ai.middleware.APILoggingMiddleware',
+    'apps.drive_admin.middleware.DriveAdminAuthMiddleware',
 ]
 
 ROOT_URLCONF = env('ROOT_URLCONF')

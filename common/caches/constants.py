@@ -10,4 +10,5 @@ ONE_YEAR = ONE_MONTH * 12
 
 
 USER_TOKEN = "user_token_{user_id}_{token}"
+ADMIN_TOKEN = "admin_token_{user_id}_{token}"
 
