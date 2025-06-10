@@ -482,40 +482,34 @@ def getAllSites(request):
             site_list.append({'id': site_instance.id,
                                 'name': site_instance.name,
                                  'description': site_instance.description,
-                                 'place_id': site_instance.place_id,
-                                 'rating': site_instance.rating,
-                                 'user_ratings_total': site_instance.user_ratings_total,
+                                #  'place_id': site_instance.place_id,
+                                #  'rating': site_instance.rating,
+                                #  'user_ratings_total': site_instance.user_ratings_total,
                                  'latitude': site_instance.latitude,
                                  'longitude': site_instance.longitude,
                                  'icon_url': site_instance.category.icon_url if site_instance.category else None,
-                                 'photo_reference': list(
-                                      site_instance.photos
-                                          .filter(photo_reference__isnull=False)
-                                          .exclude(photo_reference='')
-                                          .values('id', 'photo_reference')
-                                  ),
-                                  'photo_name': list(
-                                      site_instance.photos
-                                          .filter(photo_name__isnull=False)
-                                          .exclude(photo_name='')
-                                          .values('id', 'photo_name')
-                                  ),
-                                  'url': list(
-                                      site_instance.photos
-                                          .filter(url__isnull=False)
-                                          .exclude(url='')
-                                          .values('id', 'url')
-                                  ),
-                                 'facility': site_instance.facility,
-                                 'amenities': site_instance.amenities,
-                                 'service_amenities': site_instance.service_amenities,
-                                 'contact_info': site_instance.contact_info,
-                                 'vicinity': site_instance.vicinity,
+                                 'photo_reference': next(iter(site_instance.photos
+                                         .filter(photo_reference__isnull=False)
+                                         .exclude(photo_reference='')
+                                         .values('id', 'photo_reference')), []),
+                                 'photo_name': next(iter(site_instance.photos
+                                         .filter(photo_name__isnull=False)
+                                         .exclude(photo_name='')
+                                         .values('id', 'photo_name')), []),
+                                 'url': next(iter(site_instance.photos
+                                         .filter(url__isnull=False)
+                                         .exclude(url='')
+                                         .values('id', 'url')), []),
+                                #  'facility': site_instance.facility,
+                                #  'amenities': site_instance.amenities,
+                                #  'service_amenities': site_instance.service_amenities,
+                                #  'contact_info': site_instance.contact_info,
+                                #  'vicinity': site_instance.vicinity,
                                  'discount_url': site_instance.discount_url,
                                  'website': site_instance.website,
-                                 "regular_opening_hours": site_instance.regular_opening_hours,
-                                 "regular_secondary_opening_hours": site_instance.regular_secondary_opening_hours,
-                                 'reviews': list(site_instance.place_review.values())
+                                #  "regular_opening_hours": site_instance.regular_opening_hours,
+                                #  "regular_secondary_opening_hours": site_instance.regular_secondary_opening_hours,
+                                #  'reviews': list(site_instance.place_review.values())
                                  })
 
         return paginator.get_paginated_response({
