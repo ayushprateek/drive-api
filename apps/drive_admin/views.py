@@ -473,8 +473,13 @@ def getSite(request,id):
 @permission_classes([IsAuthenticatedAdmin])
 def getAllSites(request):
     try:
-        sites=Site.objects.annotate(icon_url=F('category__icon_url')).all()
-        print("Length = {}".format(len(sites)))
+        query=request.GET.get('query')
+        if query:
+            sites = Site.objects.filter(
+                Q(name__icontains=query)
+            ).annotate(icon_url=F('category__icon_url'))
+        else:
+            sites=Site.objects.annotate(icon_url=F('category__icon_url')).all()
         paginator = CustomPagination()
         paginated_sites = paginator.paginate_queryset(sites, request)
         site_list = []
