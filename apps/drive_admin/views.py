@@ -416,8 +416,6 @@ def deleteCategory(request, category_id):
     except Exception as ex:
         print("Error in deleteCity:", ex)
         raise ValidationError(str(ex))
-    
-
 
 @api_view(['GET'])
 @authentication_classes([AdminTokenAuthentication])
@@ -467,5 +465,62 @@ def getSite(request,id):
 
         else:
             return JsonResponse({"error": "Site does not exist"}, safe=False, status=status.HTTP_200_OK)
+    except Exception as ex:
+        return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
+def getAllSites(request):
+    try:
+        sites=Site.objects.annotate(icon_url=F('category__icon_url')).all()
+        print("Length = {}".format(len(sites)))
+        paginator = CustomPagination()
+        paginated_sites = paginator.paginate_queryset(sites, request)
+        site_list = []
+        for site_instance in paginated_sites:
+            site_list.append({'id': site_instance.id,
+                                'name': site_instance.name,
+                                 'description': site_instance.description,
+                                 'place_id': site_instance.place_id,
+                                 'rating': site_instance.rating,
+                                 'user_ratings_total': site_instance.user_ratings_total,
+                                 'latitude': site_instance.latitude,
+                                 'longitude': site_instance.longitude,
+                                 'icon_url': site_instance.category.icon_url if site_instance.category else None,
+                                 'photo_reference': list(
+                                      site_instance.photos
+                                          .filter(photo_reference__isnull=False)
+                                          .exclude(photo_reference='')
+                                          .values('id', 'photo_reference')
+                                  ),
+                                  'photo_name': list(
+                                      site_instance.photos
+                                          .filter(photo_name__isnull=False)
+                                          .exclude(photo_name='')
+                                          .values('id', 'photo_name')
+                                  ),
+                                  'url': list(
+                                      site_instance.photos
+                                          .filter(url__isnull=False)
+                                          .exclude(url='')
+                                          .values('id', 'url')
+                                  ),
+                                 'facility': site_instance.facility,
+                                 'amenities': site_instance.amenities,
+                                 'service_amenities': site_instance.service_amenities,
+                                 'contact_info': site_instance.contact_info,
+                                 'vicinity': site_instance.vicinity,
+                                 'discount_url': site_instance.discount_url,
+                                 'website': site_instance.website,
+                                 "regular_opening_hours": site_instance.regular_opening_hours,
+                                 "regular_secondary_opening_hours": site_instance.regular_secondary_opening_hours,
+                                 'reviews': list(site_instance.place_review.values())
+                                 })
+
+        return paginator.get_paginated_response({
+            'message': 'Cities retrieved successfully',
+            'sites': site_list
+        })
     except Exception as ex:
         return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
