@@ -455,6 +455,7 @@ class Photo(models.Model):
     photo_reference =  models.TextField(null=True)
     photo_name =  models.TextField(null=True)
     url = models.URLField(null=True, blank=True)
+    static = models.URLField(null=True, blank=True)
     author_uri = models.URLField(null=True, blank=True)
     author_name = models.CharField(max_length=500, null=True)
     author_photo_uri =models.URLField(null=True, blank=True)
