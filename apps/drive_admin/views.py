@@ -162,11 +162,14 @@ def getCity(request, city_id):
 @permission_classes([IsAuthenticatedAdmin])
 def getAllCities(request):
     try:
-        cities = City.objects.all().order_by('-created_at')
-
+        query=request.GET.get('query')
+        if query:
+            cities = City.objects.filter(
+                Q(name__icontains=query)
+            ).order_by('-created_at')
+        else:
+            cities = City.objects.all().order_by('-created_at')
         paginator = CustomPagination()
-        # paginator.page_size = 10  # Default page size, can be customized or read from query param
-
         paginated_cities = paginator.paginate_queryset(cities, request)
         cities_list = []
         for city in paginated_cities:
@@ -324,7 +327,13 @@ def getCategory(request, category_id):
 @permission_classes([IsAuthenticatedAdmin])
 def getAllCategories(request):
     try:
-        categories = Category.objects.all().order_by('-created_at')
+        query=request.GET.get('query')
+        if query:
+            categories = Category.objects.filter(
+                Q(name__icontains=query)
+            ).order_by('-created_at')
+        else:
+            categories = Category.objects.all().order_by('-created_at')
         paginator = CustomPagination()
         # paginated_sites = paginator.paginate_queryset(sites, request)
 
