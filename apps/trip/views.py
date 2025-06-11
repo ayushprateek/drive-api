@@ -3931,6 +3931,10 @@ def getSiteViaId(request):
                                      site_instance.photos.filter(url__isnull=False).exclude(
                                          url='').values_list('url', flat=True)
                                  ),
+                                 'static': list(
+                                     site_instance.photos.filter(static__isnull=False).exclude(
+                                         static='').values_list('static', flat=True)
+                                 ),
                                  'facility': site_instance.facility,
                                  'amenities': site_instance.amenities,
                                  'service_amenities': site_instance.service_amenities,

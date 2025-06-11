@@ -20,6 +20,7 @@ urlpatterns = [
     path('get-all-categories/', getAllCategories),
     path('update-category/<category_id>', updateCategory),
     path('delete-category/<category_id>', deleteCategory),
+    path('add-site/', addSite),
     path('get-site/<id>', getSite),
     path('get-all-sites/', getAllSites),
 ]

@@ -12,7 +12,7 @@ import os
 import time
 from apps.drive_admin.authentication import AdminTokenAuthentication
 from apps.drive_admin.serializers import AdminLoginSerializer
-from apps.trip.models import City,Category, Keyword, Site
+from apps.trip.models import City,Category, Keyword, Photo, Site
 from common import constants
 from apps.trip.views import CustomPagination
 
@@ -426,6 +426,102 @@ def deleteCategory(request, category_id):
         print("Error in deleteCity:", ex)
         raise ValidationError(str(ex))
 
+
+@api_view(['POST'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
+def addSite(request):
+    try:
+        data = request.data
+        # Fetch and validate foreign keys
+        category = Category.objects.get(id=data.get('category_id'))
+        city = City.objects.get(id=data.get('city_id'))
+
+        # Create Photo instances from uploaded files
+        photo_objs = []
+        uploaded_files = request.FILES.getlist('images')
+        print("Image length = ",len(uploaded_files))
+        
+
+        for uploaded_file in uploaded_files:
+            imagePath = save_file(uploaded_file, 'static/site')
+            print("imagePath = ",imagePath)
+
+            # Create Photo object
+            photo = Photo.objects.create(
+                height=0,
+                width=0,
+                html_attributions='',
+                photo_reference='',
+                photo_name='',
+                static=imagePath,
+            )
+            photo_objs.append(photo)
+
+        # Create the Site instance
+        site = Site.objects.create(
+            place_id=data.get('place_id'),
+            property_id=data.get('property_id'),
+            ad_status=data.get('ad_status', 0),
+            category=category,
+            name=data.get('name'),
+            city=city,
+            description=data.get('description'),
+            contact_info=data.get('contact_info', {}),
+            check_in_data=data.get('check_in_data', {}),
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude'),
+            reviews=data.get('reviews', {}),
+            amenities=data.get('amenities', {}),
+            service_amenities=data.get('service_amenities', {}),
+            facility_overview=data.get('facility_overview'),
+            policy=data.get('policy', {}),
+            meta_data=data.get('meta_data', {}),
+            cover_image=data.get('cover_image'),
+            images=data.getlist('image_urls', []),  # optional pre-existing image URLs
+            address=data.get('address'),
+            rating=data.get('rating', 0),
+            user_ratings_total=data.get('user_ratings_total', 0),
+            start_price=data.get('start_price'),
+            end_price=data.get('end_price'),
+            icon=data.get('icon'),
+            discount_url=data.get('discount_url'),
+            business_status=data.get('business_status'),
+            icon_background_color=data.get('icon_background_color'),
+            icon_mask_base_uri=data.get('icon_mask_base_uri'),
+            open_now=data.get('open_now', False),
+            reference=data.get('reference'),
+            scope=data.get('scope'),
+            facility=data.get('facility'),
+            types=data.get('types'),
+            keyword=data.get('keyword'),
+            vicinity=data.get('vicinity'),
+            rate_pretty=data.get('rate_pretty'),
+            rate_type=data.get('rate_type'),
+            slug=data.get('slug'),
+            city_anchor=data.get('city_anchor'),
+            show=data.get('show', True),
+            event_start_date=data.get('event_start_date'),
+            event_end_date=data.get('event_end_date'),
+            website=data.get('website'),
+            regular_opening_hours=data.get('regular_opening_hours', {}),
+            regular_secondary_opening_hours=data.get('regular_secondary_opening_hours', {}),
+        )
+
+        # Add photos to site
+        for photo in photo_objs:
+            site.photos.add(photo)
+
+        return Response({"message": "Site created successfully", "site_id": site.id}, status=status.HTTP_201_CREATED)
+
+    except Category.DoesNotExist:
+        return Response({"error": "Invalid category_id"}, status=status.HTTP_400_BAD_REQUEST)
+    except City.DoesNotExist:
+        return Response({"error": "Invalid city_id"}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 @api_view(['GET'])
 @authentication_classes([AdminTokenAuthentication])
 @permission_classes([IsAuthenticatedAdmin])
@@ -514,6 +610,10 @@ def getAllSites(request):
                                          .filter(url__isnull=False)
                                          .exclude(url='')
                                          .values('id', 'url')), []),
+                                 'static': next(iter(site_instance.photos
+                                         .filter(static__isnull=False)
+                                         .exclude(static='')
+                                         .values('id', 'static')), []),
                                 #  'facility': site_instance.facility,
                                 #  'amenities': site_instance.amenities,
                                 #  'service_amenities': site_instance.service_amenities,
