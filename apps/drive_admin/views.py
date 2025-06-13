@@ -533,6 +533,108 @@ def addSite(request):
         return Response({"error": "Invalid city_id"}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+@api_view(['PUT'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
+def updateSite(request):
+    try:
+        data = request.data
+
+        if not Site.objects.filter(id=data.get('id')).exists():
+            return Response({"error": "Invalid site"}, status=status.HTTP_400_BAD_REQUEST)
+        if not Category.objects.filter(id=data.get('category_id')).exists():
+            return Response({"error": "Invalid category"}, status=status.HTTP_400_BAD_REQUEST)
+        if not City.objects.filter(id=data.get('city_id')).exists():
+            return Response({"error": "Invalid city"}, status=status.HTTP_400_BAD_REQUEST)
+
+        site = Site.objects.get(id=data.get('id'))
+        category = Category.objects.get(id=data.get('category_id'))
+        city = City.objects.get(id=data.get('city_id'))
+
+        # Handle uploaded files
+        photo_objs = []
+        uploaded_files = request.FILES.getlist('images')
+        for uploaded_file in uploaded_files:
+            imagePath = save_file(uploaded_file, 'static/site')  # This function should handle file saving
+            photo = Photo.objects.create(
+                height=0,
+                width=0,
+                html_attributions='',
+                photo_reference='',
+                photo_name='',
+                static=imagePath,
+            )
+            photo_objs.append(photo)
+
+        # Basic fields
+        site.place_id = data.get('place_id', site.place_id)
+        site.property_id = data.get('property_id', site.property_id)
+        site.ad_status = data.get('ad_status', site.ad_status)
+        site.category = category
+        site.name = data.get('name', site.name)
+        site.city = city
+        site.description = data.get('description', site.description)
+        site.latitude = data.get('latitude', site.latitude)
+        site.longitude = data.get('longitude', site.longitude)
+        site.facility_overview = data.get('facility_overview', site.facility_overview)
+        site.cover_image = data.get('cover_image', site.cover_image)
+        site.address = data.get('address', site.address)
+        site.rating = data.get('rating') or site.rating
+        site.user_ratings_total = data.get('user_ratings_total') or site.user_ratings_total
+        site.start_price = data.get('start_price', site.start_price)
+        site.end_price = data.get('end_price', site.end_price)
+        site.icon = data.get('icon', site.icon)
+        site.discount_url = data.get('discount_url', site.discount_url)
+        site.business_status = data.get('business_status', site.business_status)
+        site.icon_background_color = data.get('icon_background_color', site.icon_background_color)
+        site.icon_mask_base_uri = data.get('icon_mask_base_uri', site.icon_mask_base_uri)
+        site.open_now = data.get('open_now', site.open_now)
+        site.reference = data.get('reference', site.reference)
+        site.scope = data.get('scope', site.scope)
+        site.facility = data.get('facility', site.facility)
+        site.types = data.get('types', site.types)
+        site.keyword = data.get('keyword', site.keyword)
+        site.vicinity = data.get('vicinity', site.vicinity)
+        site.rate_pretty = data.get('rate_pretty', site.rate_pretty)
+        site.rate_type = data.get('rate_type', site.rate_type)
+        site.slug = data.get('slug', site.slug)
+        site.city_anchor = data.get('city_anchor', site.city_anchor)
+        site.show = data.get('show', site.show)
+        site.event_start_date = data.get('event_start_date', site.event_start_date)
+        site.event_end_date = data.get('event_end_date', site.event_end_date)
+        site.website = data.get('website', site.website)
+
+        # Parse JSON fields
+        json_fields = [
+            'contact_info', 'check_in_data', 'reviews', 'amenities',
+            'service_amenities', 'policy', 'meta_data',
+            'regular_opening_hours', 'regular_secondary_opening_hours'
+        ]
+        for field in json_fields:
+            if field in data:
+                try:
+                    setattr(site, field, json.loads(data.get(field)))
+                except json.JSONDecodeError as e:
+                    return Response({f"error": f"Invalid JSON for {field}: {str(e)}"}, status=400)
+
+        # Array field: images
+        if 'image_urls' in data:
+            try:
+                site.images = json.loads(data.get('image_urls'))
+            except json.JSONDecodeError as e:
+                return Response({"error": f"Invalid image_urls list: {str(e)}"}, status=400)
+
+        # Add new photos
+        if photo_objs:
+            site.photos.add(*photo_objs)
+
+        site.save()
+
+        return Response({"message": "Site updated successfully", "site_id": site.id}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 @api_view(['GET'])
@@ -568,6 +670,12 @@ def getSite(request,id):
                                           .filter(url__isnull=False)
                                           .exclude(url='')
                                           .values('id', 'url')
+                                  ),
+                                  'static': list(
+                                      site_instance.photos
+                                          .filter(static__isnull=False)
+                                          .exclude(static='')
+                                          .values('id', 'static')
                                   ),
                                  'facility': site_instance.facility,
                                  'amenities': site_instance.amenities,
