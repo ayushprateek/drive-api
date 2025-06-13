@@ -126,10 +126,13 @@ def addCity(request):
             lat_long=tempData.get('lat_long', []),
             scrape=bool(int(tempData.get('scrape', 0)))
         )
+            city_data = model_to_dict(city)
+            city_data['id'] = city.id
+        
 
             return JsonResponse({
                 'message': 'City created successfully',
-                'city': model_to_dict(city)
+                'city': city_data
             })
         except Exception as ex:
             print('An error occurred:', ex)
@@ -148,6 +151,7 @@ def getCity(request, city_id):
             )
 
         city_data = model_to_dict(city)
+        city_data['id'] = city.id
         return Response({
             "message": "City retrieved successfully",
             "city": city_data
@@ -174,6 +178,7 @@ def getAllCities(request):
         cities_list = []
         for city in paginated_cities:
             city_dict = model_to_dict(city)
+            city_dict['id'] = city.id
             cities_list.append(city_dict)
 
         return paginator.get_paginated_response({
@@ -220,10 +225,12 @@ def updateCity(request, city_id):
                 raise ValidationError("Invalid 'lat_long' format. Must be JSON list.")
 
         city.save()
+        city_data=model_to_dict(city)
+        city_data['id'] = city.id
 
         return JsonResponse({
             'message': 'City updated successfully',
-            'city': model_to_dict(city)
+            'city': city_data
         })
 
     except Exception as ex:
@@ -289,10 +296,12 @@ def addCategory(request):
         if keywords_list:
             keyword_objs = Keyword.objects.filter(id__in=keywords_list)
             category.keywords_relation.set(keyword_objs)
+        category_data = model_to_dict(category)
+        category_data['id'] = category.id
 
         return JsonResponse({
             'message': 'Category created successfully',
-            'category': model_to_dict(category)
+            'category': category_data
         })
     except Exception as ex:
         print('An error occurred:', ex)
@@ -313,6 +322,7 @@ def getCategory(request, category_id):
         category_data = model_to_dict(category)
 
         category_data['keywords_relation'] = list(category.keywords_relation.values_list('id', flat=True))
+        category_data['id'] = category.id
 
         return Response({
             "message": "Category retrieved successfully",
@@ -344,6 +354,7 @@ def getAllCategories(request):
         categories_list = []
         for category in paginated_categories:
             cat_dict = model_to_dict(category)
+            cat_dict['id'] = category.id
             cat_dict['keywords_relation'] = list(category.keywords_relation.values_list('id', flat=True))
             categories_list.append(cat_dict)
 
@@ -393,10 +404,12 @@ def updateCategory(request, category_id):
         else:
             category.parent=None
         category.save()
+        category_data=model_to_dict(category)
+        category_data['id']=category.id
 
         return JsonResponse({
             'message': 'Category updated successfully',
-            'category': model_to_dict(category)
+            'category': category_data
         })
 
     except Exception as ex:
