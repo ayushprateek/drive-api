@@ -107,6 +107,12 @@ def save_file(file, folder):
                     dest.write(chunk)
             return os.path.join(folder, filename)
 
+def delete_file(file_path):
+    file_path = os.path.join(settings.BASE_DIR,file_path)
+    if os.path.exists(file_path):
+        os.remove(file_path) 
+            
+
 @api_view(['POST'])
 @authentication_classes([AdminTokenAuthentication])
 @permission_classes([IsAuthenticatedAdmin])
@@ -539,6 +545,7 @@ def addSite(request):
 def updateSite(request):
     try:
         data = request.data
+        print(data.get('delete_images'))
 
         if not Site.objects.filter(id=data.get('id')).exists():
             return Response({"error": "Invalid site"}, status=status.HTTP_400_BAD_REQUEST)
@@ -550,6 +557,16 @@ def updateSite(request):
         site = Site.objects.get(id=data.get('id'))
         category = Category.objects.get(id=data.get('category_id'))
         city = City.objects.get(id=data.get('city_id'))
+        delete_images = json.loads(data.get('delete_images', '[]'))
+        if delete_images:
+            photos_to_delete = site.photos.filter(id__in=delete_images)
+            print("photos_to_delete = ",photos_to_delete)
+            for photo in photos_to_delete:
+                if photo.static:
+                    file_path = os.path.join(settings.BASE_DIR, photo.static)
+                    delete_file(file_path)
+                site.photos.remove(photo)
+                photo.delete()  
 
         # Handle uploaded files
         photo_objs = []
