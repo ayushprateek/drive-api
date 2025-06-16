@@ -300,8 +300,9 @@ def addCategory(request):
         )
 
         if keywords_list:
-            keyword_objs = Keyword.objects.filter(id__in=keywords_list)
-            category.keywords_relation.set(keyword_objs)
+            # keyword_objs = Keyword.objects.filter(id__in=keywords_list)
+            # category.keywords_relation.set(keyword_objs)
+            category.keywords=keywords_list
         category_data = model_to_dict(category)
         category_data['id'] = category.id
 
