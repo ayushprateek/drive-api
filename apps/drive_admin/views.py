@@ -398,7 +398,10 @@ def updateCategory(request, category_id):
         
         if 'keywords' in tempData:
             # Expects comma-separated string of keywords
-            keyword_list = [kw.strip() for kw in tempData.get('keywords').split(',') if kw.strip()]
+            # print(type(json.loads(tempData.get('keywords'))))
+            # print(type(tempData.get('keywords')))
+            # keyword_list = [kw.strip() for kw in tempData.get('keywords').split(',') if kw.strip()]
+            keyword_list = json.loads(tempData.get('keywords'))
             if keyword_list:
                 category.keywords = keyword_list
 
