@@ -24,4 +24,5 @@ urlpatterns = [
     path('update-site/', updateSite),
     path('get-site/<id>', getSite),
     path('get-all-sites/', getAllSites),
+    path('get-city-and-category/', getCityAndCategoryList),
 ]

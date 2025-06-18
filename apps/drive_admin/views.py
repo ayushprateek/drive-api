@@ -12,7 +12,7 @@ import os
 import time
 from apps.drive_admin.authentication import AdminTokenAuthentication
 from apps.drive_admin.serializers import AdminLoginSerializer
-from apps.trip.models import City,Category, Keyword, Photo, Site
+from apps.trip.models import City,Category, Country, Keyword, Photo, Site
 from common import constants
 from apps.trip.views import CustomPagination
 
@@ -778,3 +778,28 @@ def getAllSites(request):
         })
     except Exception as ex:
         return JsonResponse({'error': str(ex)}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@authentication_classes([AdminTokenAuthentication])
+@permission_classes([IsAuthenticatedAdmin])
+def getCityAndCategoryList(request):
+    try:
+        cities = City.objects.all().values(
+            'id',
+            'name'
+        ).order_by('name')
+        
+        countries = Country.objects.all().values(
+        'id',
+        'name'
+    ).order_by('name')
+
+        return JsonResponse({
+            'message': 'Cities & Categories retrieved successfully',
+            'cities': list(cities),
+            'countries': list(countries),
+        }, safe=False, status=status.HTTP_200_OK)
+    except Exception as ex:
+        print("Error in getAllCities:", ex)
+        return Response({'error': str(ex)}, status=500)
