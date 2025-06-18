@@ -793,12 +793,18 @@ def getCityAndCategoryList(request):
         countries = Country.objects.all().values(
         'id',
         'name'
-    ).order_by('name')
+        ).order_by('name')
+
+        categories = Category.objects.all().values(
+            'id', 
+            'name'
+        ).order_by('name') 
 
         return JsonResponse({
             'message': 'Cities & Categories retrieved successfully',
             'cities': list(cities),
             'countries': list(countries),
+            'categories': list(categories)
         }, safe=False, status=status.HTTP_200_OK)
     except Exception as ex:
         print("Error in getAllCities:", ex)
