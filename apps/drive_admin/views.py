@@ -792,7 +792,8 @@ def getCityAndCategoryList(request):
         
         countries = Country.objects.all().values(
         'id',
-        'name'
+        'name',
+        'iso',
         ).order_by('name')
 
         categories = Category.objects.all().values(
