@@ -129,7 +129,7 @@ def addCity(request):
             longitude=tempData.get('longitude'),
             images=[imagePath],
             description=tempData.get('description'),
-            lat_long=tempData.get('lat_long', []),
+            lat_long=json.loads(tempData.get('lat_long', [])),
             scrape=bool(int(tempData.get('scrape', 0)))
         )
             city_data = model_to_dict(city)
@@ -490,16 +490,16 @@ def addSite(request):
             name=data.get('name'),
             city=city,
             description=data.get('description'),
-            contact_info=data.get('contact_info', {}),
-            check_in_data=data.get('check_in_data', {}),
+            contact_info=json.loads(data.get('contact_info', '{}')),
+            check_in_data=json.loads(data.get('check_in_data', '{}')),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
             reviews=data.get('reviews', {}),
-            amenities=data.get('amenities', {}),
-            service_amenities=data.get('service_amenities', {}),
+            amenities=json.loads(data.get('amenities', '{}')),
+            service_amenities=json.loads(data.get('service_amenities', '{}')),
             facility_overview=data.get('facility_overview'),
-            policy=data.get('policy', {}),
-            meta_data=data.get('meta_data', {}),
+            policy=json.loads(data.get('policy', '{}')),
+            meta_data=json.loads(data.get('meta_data', '{}')),
             cover_image=data.get('cover_image'),
             images=data.getlist('image_urls', []),  # optional pre-existing image URLs
             address=data.get('address'),
@@ -527,8 +527,8 @@ def addSite(request):
             event_start_date=data.get('event_start_date'),
             event_end_date=data.get('event_end_date'),
             website=data.get('website'),
-            regular_opening_hours=data.get('regular_opening_hours', {}),
-            regular_secondary_opening_hours=data.get('regular_secondary_opening_hours', {}),
+            regular_opening_hours=json.loads(data.get('regular_opening_hours', '{}')),
+            regular_secondary_opening_hours=json.loads(data.get('regular_secondary_opening_hours', '{}')),
         )
 
         # Add photos to site
@@ -542,6 +542,7 @@ def addSite(request):
     except City.DoesNotExist:
         return Response({"error": "Invalid city_id"}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
+        print("Exception raised = ",str(e))
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 @api_view(['PUT'])
 @authentication_classes([AdminTokenAuthentication])
