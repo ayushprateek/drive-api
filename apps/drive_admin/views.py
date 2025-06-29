@@ -1,3 +1,6 @@
+from datetime import datetime
+from email import parser
+from dateutil import parser as dateParser
 import json
 from django.db.models import F, Q
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -12,7 +15,7 @@ import os
 import time
 from apps.drive_admin.authentication import AdminTokenAuthentication
 from apps.drive_admin.serializers import AdminLoginSerializer
-from apps.trip.models import City,Category, Country, Keyword, Photo, Site
+from apps.trip.models import City,Category, Country, Keyword, Photo, PlaceReview, Site
 from common import constants
 from apps.trip.views import CustomPagination
 
@@ -454,6 +457,9 @@ def deleteCategory(request, category_id):
 @authentication_classes([AdminTokenAuthentication])
 @permission_classes([IsAuthenticatedAdmin])
 def addSite(request):
+    # print("Data = ",request.data.get('amenities', '{}'))
+    # print("Data = ",json.loads(request.data.get('amenities', '{}')))
+    # return Response({"message": "Site created successfully"}, status=status.HTTP_201_CREATED)
     try:
         data = request.data
         # Fetch and validate foreign keys
@@ -463,9 +469,15 @@ def addSite(request):
         # Create Photo instances from uploaded files
         photo_objs = []
         uploaded_files = request.FILES.getlist('images')
+        uploaded_icon_files = request.FILES.getlist('icon')
         print("Image length = ",len(uploaded_files))
         
 
+        for icon in uploaded_icon_files:
+            iconPath = save_file(icon, 'static/icon')
+            print("iconPath = ",iconPath)
+        
+        
         for uploaded_file in uploaded_files:
             imagePath = save_file(uploaded_file, 'static/site')
             print("imagePath = ",imagePath)
@@ -480,6 +492,8 @@ def addSite(request):
                 static=imagePath,
             )
             photo_objs.append(photo)
+
+        
 
         # Create the Site instance
         site = Site.objects.create(
@@ -507,7 +521,7 @@ def addSite(request):
             user_ratings_total=data.get('user_ratings_total', 0),
             start_price=data.get('start_price'),
             end_price=data.get('end_price'),
-            icon=data.get('icon'),
+            icon=iconPath,
             discount_url=data.get('discount_url'),
             business_status=data.get('business_status'),
             icon_background_color=data.get('icon_background_color'),
@@ -534,6 +548,25 @@ def addSite(request):
         # Add photos to site
         for photo in photo_objs:
             site.photos.add(photo)
+        for review in json.loads(data.get('reviews', [])):
+            if review:
+                
+                if review.get('publishTime'):
+                    publishTime=dateParser.isoparse(review.get('publishTime'))
+                else:
+                    publishTime=datetime.now()
+                review_obj = PlaceReview.objects.create(
+                    original_text=review.get('text',0),
+                    rating=review.get('rating',0),
+                    author_name=review.get('authorName',''),
+                    name=review.get('name','Admin'),
+                    text=review.get('text',''),
+                    publish_time=publishTime,
+                    flag_content_uri=review.get('flagContentUri',''),
+                    google_maps_uri=review.get('googleMapsUri',''),
+                )
+                site.place_review.add(review_obj)
+        site.save()
 
         return Response({"message": "Site created successfully", "site_id": site.id}, status=status.HTTP_201_CREATED)
 
