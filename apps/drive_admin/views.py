@@ -457,32 +457,28 @@ def deleteCategory(request, category_id):
 @authentication_classes([AdminTokenAuthentication])
 @permission_classes([IsAuthenticatedAdmin])
 def addSite(request):
-    # print("Data = ",request.data.get('amenities', '{}'))
-    # print("Data = ",json.loads(request.data.get('amenities', '{}')))
-    # return Response({"message": "Site created successfully"}, status=status.HTTP_201_CREATED)
     try:
         data = request.data
-        # Fetch and validate foreign keys
-        category = Category.objects.get(id=data.get('category_id'))
-        city = City.objects.get(id=data.get('city_id'))
 
-        # Create Photo instances from uploaded files
+        # A helper function to safely convert potential empty strings to None for numeric fields
+        def to_num(val):
+            if val is None or val == '':
+                return None
+            return val
+
+        iconPath = None  # Initialize to None
+        icon_file = request.FILES.get('icon') # Use .get() for a single optional file
+        if icon_file:
+            iconPath = save_file(icon_file, 'static/icon')
+            print("iconPath =", iconPath)
+
         photo_objs = []
         uploaded_files = request.FILES.getlist('images')
-        uploaded_icon_files = request.FILES.getlist('icon')
-        print("Image length = ",len(uploaded_files))
-        
-
-        for icon in uploaded_icon_files:
-            iconPath = save_file(icon, 'static/icon')
-            print("iconPath = ",iconPath)
-        
+        print("Image length =", len(uploaded_files))
         
         for uploaded_file in uploaded_files:
             imagePath = save_file(uploaded_file, 'static/site')
-            print("imagePath = ",imagePath)
-
-            # Create Photo object
+            print("imagePath =", imagePath)
             photo = Photo.objects.create(
                 height=0,
                 width=0,
@@ -493,40 +489,37 @@ def addSite(request):
             )
             photo_objs.append(photo)
 
-        
+        # --- FOREIGN KEY VALIDATION ---
+        category = Category.objects.get(id=data.get('category_id'))
+        city = City.objects.get(id=data.get('city_id'))
 
-        # Create the Site instance
+        # --- BOOLEAN HANDLING (FIXED) ---
+        show_val = str(data.get('show', 'true')).lower() == 'true'
+        open_now_val = str(data.get('open_now', 'false')).lower() == 'true'
+
+        # --- JSON FIELD HANDLING (FIXED) ---
+        reviews_data = json.loads(data.get('reviews', '[]'))
+        
+        # --- CREATE SITE INSTANCE (ALL FIXES APPLIED) ---
         site = Site.objects.create(
-            place_id=data.get('place_id'),
-            property_id=data.get('property_id'),
-            ad_status=data.get('ad_status', 0),
-            category=category,
+            # Required fields
             name=data.get('name'),
+            category=category,
             city=city,
-            description=data.get('description'),
-            contact_info=json.loads(data.get('contact_info', '{}')),
-            check_in_data=json.loads(data.get('check_in_data', '{}')),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
-            reviews=data.get('reviews', {}),
-            amenities=json.loads(data.get('amenities', '{}')),
-            service_amenities=json.loads(data.get('service_amenities', '{}')),
-            facility_overview=data.get('facility_overview'),
-            policy=json.loads(data.get('policy', '{}')),
-            meta_data=json.loads(data.get('meta_data', '{}')),
-            cover_image=data.get('cover_image'),
-            images=data.getlist('image_urls', []),  # optional pre-existing image URLs
+
+            # Optional Text/URL fields with .get() for safety
+            place_id=data.get('place_id'),
+            property_id=data.get('property_id'),
+            description=data.get('description'),
+            cover_image=data.get('cover_image'), # From manual URL input
             address=data.get('address'),
-            rating=data.get('rating', 0),
-            user_ratings_total=data.get('user_ratings_total', 0),
-            start_price=data.get('start_price'),
-            end_price=data.get('end_price'),
-            icon=iconPath,
+            icon=iconPath, # Use the safely initialized iconPath
             discount_url=data.get('discount_url'),
             business_status=data.get('business_status'),
             icon_background_color=data.get('icon_background_color'),
             icon_mask_base_uri=data.get('icon_mask_base_uri'),
-            open_now=data.get('open_now', False),
             reference=data.get('reference'),
             scope=data.get('scope'),
             facility=data.get('facility'),
@@ -537,80 +530,124 @@ def addSite(request):
             rate_type=data.get('rate_type'),
             slug=data.get('slug'),
             city_anchor=data.get('city_anchor'),
-            show=data.get('show', True),
-            event_start_date=data.get('event_start_date'),
-            event_end_date=data.get('event_end_date'),
             website=data.get('website'),
+            facility_overview=data.get('facility_overview'),
+            
+            # Numeric fields handled safely
+            ad_status=to_num(data.get('ad_status', 0)),
+            rating=to_num(data.get('rating')),
+            user_ratings_total=to_num(data.get('user_ratings_total')),
+            start_price=to_num(data.get('start_price')),
+            end_price=to_num(data.get('end_price')),
+
+            # Date fields
+            event_start_date=data.get('event_start_date') or None,
+            event_end_date=data.get('event_end_date') or None,
+
+            # Boolean fields handled safely
+            show=show_val,
+            open_now=open_now_val,
+            
+            # JSON fields loaded correctly
+            contact_info=json.loads(data.get('contact_info', '{}')),
+            check_in_data=json.loads(data.get('check_in_data', '{}')),
+            amenities=json.loads(data.get('amenities', '{}')),
+            service_amenities=json.loads(data.get('service_amenities', '{}')),
+            policy=json.loads(data.get('policy', '{}')),
+            meta_data=json.loads(data.get('meta_data', '{}')),
             regular_opening_hours=json.loads(data.get('regular_opening_hours', '{}')),
-            regular_secondary_opening_hours=json.loads(data.get('regular_secondary_opening_hours', '{}')),
+            regular_secondary_opening_hours=json.loads(data.get('regular_secondary_opening_hours', '[]')),
+            # NOTE: The main `reviews` field is removed from here as we process it into PlaceReview below
         )
 
-        # Add photos to site
-        for photo in photo_objs:
-            site.photos.add(photo)
-        for review in json.loads(data.get('reviews', [])):
-            if review:
-                
-                if review.get('publishTime'):
-                    publishTime=dateParser.isoparse(review.get('publishTime'))
-                else:
-                    publishTime=datetime.now()
+        # --- ADD M2M RELATIONSHIPS ---
+        site.photos.add(*photo_objs) # More efficient way to add M2M objects
+
+        for review in reviews_data:
+            # Skip empty review objects sent from the frontend
+            if review and (review.get('authorName') or review.get('text')):
+                # Safely parse date, provide a default
+                publishTime_str = review.get('publishTime')
+                publishTime = dateParser(publishTime_str) if publishTime_str else datetime.now()
+
                 review_obj = PlaceReview.objects.create(
-                    original_text=review.get('text',0),
-                    rating=review.get('rating',0),
-                    author_name=review.get('authorName',''),
-                    name=review.get('name','Admin'),
-                    text=review.get('text',''),
+                    author_name=review.get('authorName', ''),
+                    rating=to_num(review.get('rating')) or 0,
+                    text=review.get('text', ''),
+                    original_text=review.get('text', ''), # Assuming this is intended
                     publish_time=publishTime,
-                    flag_content_uri=review.get('flagContentUri',''),
-                    google_maps_uri=review.get('googleMapsUri',''),
+                    # Add defaults for other fields if necessary
                 )
                 site.place_review.add(review_obj)
-        site.save()
+        
 
         return Response({"message": "Site created successfully", "site_id": site.id}, status=status.HTTP_201_CREATED)
 
-    except Category.DoesNotExist:
-        return Response({"error": "Invalid category_id"}, status=status.HTTP_400_BAD_REQUEST)
-    except City.DoesNotExist:
-        return Response({"error": "Invalid city_id"}, status=status.HTTP_400_BAD_REQUEST)
+    except (Category.DoesNotExist, City.DoesNotExist):
+        return Response({"error": "Invalid category_id or city_id"}, status=status.HTTP_400_BAD_REQUEST)
+    except json.JSONDecodeError:
+        return Response({"error": "Invalid JSON data provided for one of the fields."}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        print("Exception raised = ",str(e))
+        print("Exception raised =", str(e))
+        import traceback
+        traceback.print_exc() # For more detailed logs
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 @api_view(['PUT'])
 @authentication_classes([AdminTokenAuthentication])
 @permission_classes([IsAuthenticatedAdmin])
 def updateSite(request):
     try:
         data = request.data
-        print(data.get('delete_images'))
+        site_id = data.get('id')
 
-        if not Site.objects.filter(id=data.get('id')).exists():
-            return Response({"error": "Invalid site"}, status=status.HTTP_400_BAD_REQUEST)
-        if not Category.objects.filter(id=data.get('category_id')).exists():
-            return Response({"error": "Invalid category"}, status=status.HTTP_400_BAD_REQUEST)
-        if not City.objects.filter(id=data.get('city_id')).exists():
-            return Response({"error": "Invalid city"}, status=status.HTTP_400_BAD_REQUEST)
+        if not site_id:
+            return Response({"error": "Site ID ('id') is required for an update."}, status=status.HTTP_400_BAD_REQUEST)
 
-        site = Site.objects.get(id=data.get('id'))
-        category = Category.objects.get(id=data.get('category_id'))
-        city = City.objects.get(id=data.get('city_id'))
-        delete_images = json.loads(data.get('delete_images', '[]'))
-        if delete_images:
-            photos_to_delete = site.photos.filter(id__in=delete_images)
-            print("photos_to_delete = ",photos_to_delete)
+        # Fetch the main object to update inside the try block
+        site = Site.objects.get(id=site_id)
+
+        # A helper function to safely convert potential empty strings to None for numeric fields
+        def to_num(val):
+            if val is None or val == '':
+                return None
+            try:
+                # Attempt to convert to float or int
+                return float(val) if '.' in str(val) else int(val)
+            except (ValueError, TypeError):
+                return None
+
+        # --- FILE HANDLING: ICON ---
+        iconPath = site.icon  # Start with the existing icon path
+        icon_file = request.FILES.get('icon')
+        if icon_file:
+            # If a new icon is uploaded, delete the old file if it exists
+            if site.icon and os.path.exists(os.path.join(settings.BASE_DIR, site.icon)):
+                delete_file(os.path.join(settings.BASE_DIR, site.icon))
+            iconPath = save_file(icon_file, 'static/icon')
+            print("New iconPath =", iconPath)
+
+        # --- FILE HANDLING: PHOTOS (M2M) ---
+        
+        # 1. Delete images marked for deletion
+        delete_images_ids = json.loads(data.get('delete_images', '[]'))
+        if delete_images_ids:
+            photos_to_delete = site.photos.filter(id__in=delete_images_ids)
+            print("photos_to_delete =", photos_to_delete)
             for photo in photos_to_delete:
                 if photo.static:
                     file_path = os.path.join(settings.BASE_DIR, photo.static)
                     delete_file(file_path)
-                site.photos.remove(photo)
-                photo.delete()  
+            # This deletes the Photo objects and removes the M2M relationship
+            photos_to_delete.delete()
 
-        # Handle uploaded files
+        # 2. Add newly uploaded images
         photo_objs = []
         uploaded_files = request.FILES.getlist('images')
+        print("New image length =", len(uploaded_files))
         for uploaded_file in uploaded_files:
-            imagePath = save_file(uploaded_file, 'static/site')  # This function should handle file saving
+            imagePath = save_file(uploaded_file, 'static/site')
+            print("New imagePath =", imagePath)
             photo = Photo.objects.create(
                 height=0,
                 width=0,
@@ -621,29 +658,64 @@ def updateSite(request):
             )
             photo_objs.append(photo)
 
-        # Basic fields
-        site.place_id = data.get('place_id', site.place_id)
-        site.property_id = data.get('property_id', site.property_id)
-        site.ad_status = data.get('ad_status', site.ad_status)
+        # --- FOREIGN KEY VALIDATION ---
+        # Only fetch new objects if their IDs are provided in the request
+        category = Category.objects.get(id=data.get('category_id')) if 'category_id' in data else site.category
+        city = City.objects.get(id=data.get('city_id')) if 'city_id' in data else site.city
+
+        # --- BOOLEAN HANDLING ---
+        # Only update boolean if key exists in request data
+        if 'show' in data:
+            site.show = str(data.get('show')).lower() == 'true'
+        if 'open_now' in data:
+            site.open_now = str(data.get('open_now')).lower() == 'true'
+
+        # --- M2M HANDLING: REVIEWS (PlaceReview) ---
+        # Strategy: Clear existing reviews and add the new set from the request.
+        if 'reviews' in data:
+            reviews_data = json.loads(data.get('reviews', '[]'))
+            
+            # Delete old review objects associated with this site
+            site.place_review.all().delete()
+            
+            new_review_objs = []
+            for review in reviews_data:
+                if review and (review.get('authorName') or review.get('text')):
+                    publishTime_str = review.get('publishTime')
+                    publishTime = dateParser(publishTime_str) if publishTime_str else datetime.now()
+                    review_obj = PlaceReview.objects.create(
+                        author_name=review.get('authorName', ''),
+                        rating=to_num(review.get('rating')) or 0,
+                        text=review.get('text', ''),
+                        original_text=review.get('text', ''),
+                        publish_time=publishTime,
+                    )
+                    new_review_objs.append(review_obj)
+            
+            # Add the newly created reviews to the site
+            if new_review_objs:
+                site.place_review.add(*new_review_objs)
+
+        # --- UPDATE SITE INSTANCE FIELDS ---
+        
+        # Foreign Keys
         site.category = category
-        site.name = data.get('name', site.name)
         site.city = city
-        site.description = data.get('description', site.description)
+        
+        # Required & Optional Text/URL fields with .get(key, existing_value) for safety
+        site.name = data.get('name', site.name)
         site.latitude = data.get('latitude', site.latitude)
         site.longitude = data.get('longitude', site.longitude)
-        site.facility_overview = data.get('facility_overview', site.facility_overview)
+        site.place_id = data.get('place_id', site.place_id)
+        site.property_id = data.get('property_id', site.property_id)
+        site.description = data.get('description', site.description)
         site.cover_image = data.get('cover_image', site.cover_image)
         site.address = data.get('address', site.address)
-        site.rating = data.get('rating') or site.rating
-        site.user_ratings_total = data.get('user_ratings_total') or site.user_ratings_total
-        site.start_price = data.get('start_price', site.start_price)
-        site.end_price = data.get('end_price', site.end_price)
-        site.icon = data.get('icon', site.icon)
+        site.icon = iconPath  # Use the safely handled iconPath
         site.discount_url = data.get('discount_url', site.discount_url)
         site.business_status = data.get('business_status', site.business_status)
         site.icon_background_color = data.get('icon_background_color', site.icon_background_color)
         site.icon_mask_base_uri = data.get('icon_mask_base_uri', site.icon_mask_base_uri)
-        site.open_now = data.get('open_now', site.open_now)
         site.reference = data.get('reference', site.reference)
         site.scope = data.get('scope', site.scope)
         site.facility = data.get('facility', site.facility)
@@ -654,42 +726,70 @@ def updateSite(request):
         site.rate_type = data.get('rate_type', site.rate_type)
         site.slug = data.get('slug', site.slug)
         site.city_anchor = data.get('city_anchor', site.city_anchor)
-        site.show = data.get('show', site.show)
-        site.event_start_date = data.get('event_start_date', site.event_start_date)
-        site.event_end_date = data.get('event_end_date', site.event_end_date)
         site.website = data.get('website', site.website)
+        site.facility_overview = data.get('facility_overview', site.facility_overview)
+        
+        # Numeric fields handled safely
+        if 'ad_status' in data:
+            new_ad_status = to_num(data.get('ad_status'))
+            # Only update the field if the new value is a valid number (not None).
+            # This prevents overwriting a valid status with None.
+            if new_ad_status is not None:
+                site.ad_status = new_ad_status
+        
+        # The logic for other nullable numeric fields is okay, but can also be hardened
+        if 'rating' in data:
+             new_rating = to_num(data.get('rating'))
+             if new_rating is not None:
+                site.rating = new_rating
 
-        # Parse JSON fields
-        json_fields = [
-            'contact_info', 'check_in_data', 'reviews', 'amenities',
-            'service_amenities', 'policy', 'meta_data',
-            'regular_opening_hours', 'regular_secondary_opening_hours'
-        ]
-        for field in json_fields:
+        if 'user_ratings_total' in data:
+            new_total = to_num(data.get('user_ratings_total'))
+            if new_total is not None:
+                site.user_ratings_total = new_total
+
+        if 'start_price' in data:
+            new_price = to_num(data.get('start_price'))
+            if new_price is not None:
+                site.start_price = new_price
+
+        if 'end_price' in data:
+            new_price = to_num(data.get('end_price'))
+            if new_price is not None:
+                site.end_price = new_price
+
+        # Date fields (set to None if empty string is passed)
+        if 'event_start_date' in data: site.event_start_date = data.get('event_start_date') or None
+        if 'event_end_date' in data: site.event_end_date = data.get('event_end_date') or None
+        
+        # JSON fields loaded correctly
+        json_field_defaults = {
+            'contact_info': '{}', 'check_in_data': '{}', 'amenities': '{}',
+            'service_amenities': '{}', 'policy': '{}', 'meta_data': '{}',
+            'regular_opening_hours': '{}', 'regular_secondary_opening_hours': '[]'
+        }
+        for field, default in json_field_defaults.items():
             if field in data:
-                try:
-                    setattr(site, field, json.loads(data.get(field)))
-                except json.JSONDecodeError as e:
-                    return Response({f"error": f"Invalid JSON for {field}: {str(e)}"}, status=400)
+                setattr(site, field, json.loads(data.get(field, default)))
 
-        # Array field: images
-        if 'image_urls' in data:
-            try:
-                site.images = json.loads(data.get('image_urls'))
-            except json.JSONDecodeError as e:
-                return Response({"error": f"Invalid image_urls list: {str(e)}"}, status=400)
+        # Save the updated site instance before adding M2M relationships
+        site.save()
 
-        # Add new photos
+        # Add new photos to the M2M relationship
         if photo_objs:
             site.photos.add(*photo_objs)
 
-        site.save()
-
         return Response({"message": "Site updated successfully", "site_id": site.id}, status=status.HTTP_200_OK)
 
+    except (Site.DoesNotExist, Category.DoesNotExist, City.DoesNotExist):
+        return Response({"error": "Invalid ID provided for site, category, or city."}, status=status.HTTP_400_BAD_REQUEST)
+    except json.JSONDecodeError:
+        return Response({"error": "Invalid JSON data provided for one of the fields."}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
+        print("Exception raised in updateSite =", str(e))
+        import traceback
+        traceback.print_exc() # For more detailed logs
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 
 @api_view(['GET'])
