@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime
 from email import parser
 from dateutil import parser as dateParser
@@ -452,6 +453,47 @@ def deleteCategory(request, category_id):
         print("Error in deleteCity:", ex)
         raise ValidationError(str(ex))
 
+# def collect_missing_keys(reference, user_input, prefix=""):
+#     missing = {}
+    
+#     for key in reference:
+#         full_key = f"{prefix}.{key}" if prefix else key
+
+#         if key not in user_input:
+#             missing[key] = reference[key]
+#         else:
+#             # If both values are dicts, check recursively
+#             if isinstance(reference[key], dict) and isinstance(user_input[key], dict):
+#                 nested_missing = collect_missing_keys(reference[key], user_input[key])
+#                 if nested_missing:
+#                     missing[key] = nested_missing
+#             # If both values are lists, we skip inner element validation (optional)
+#             elif isinstance(reference[key], list) and isinstance(user_input[key], list):
+#                 continue  # You can optionally validate the structure of list items too
+#     return missing
+
+def collect_missing_keys(reference, user_input, prefix=""):
+    missing = {}
+
+    for key in reference:
+        full_key = f"{prefix}.{key}" if prefix else key
+
+        if key not in user_input:
+            missing[key] = reference[key]
+        else:
+            # If both values are dicts, check recursively
+            if isinstance(reference[key], dict) and isinstance(user_input[key], dict):
+                nested_missing = collect_missing_keys(reference[key], user_input[key])
+                if nested_missing:
+                    missing[key] = nested_missing
+            # If both values are lists, we skip inner element validation (optional)
+            elif isinstance(reference[key], list) and isinstance(user_input[key], list) and len(reference[key]) !=0 and len(user_input[key]) != 0 and isinstance(reference[key][0], dict) and isinstance(user_input[key][0], dict):
+                print("key = ",reference[key])
+                nested_missing = collect_missing_keys(reference[key][0], user_input[key][0])
+                if nested_missing:
+                    missing[key] = nested_missing
+                # continue  # You can optionally validate the structure of list items too
+    return missing
 
 @api_view(['POST'])
 @authentication_classes([AdminTokenAuthentication])
@@ -460,8 +502,331 @@ def addSite(request):
     # print("Data = ",request.data.get('amenities', '{}'))
     # print("Data = ",json.loads(request.data.get('amenities', '{}')))
     # return Response({"message": "Site created successfully"}, status=status.HTTP_201_CREATED)
+    reference={
+    "place_id": "",
+    "property_id": "",
+    "ad_status": 1,
+    "category_id": "",
+    "name": "",
+    "city_id": "",
+    "description": "",
+    "contact_info": {
+        "nationalPhoneNumber": "",
+        "internationalPhoneNumber": ""
+    },
+    "check_in_data": {
+        "minAge": 0,
+        "checkInTime": "",
+        "checkOutTime": "",
+        "specialInstructions": ""
+    },
+    "latitude": 0.0,
+    "longitude": 0.0,
+    "reviews": [
+        {
+            "text": "Amazing stay, wonderful staff and beautiful location!",
+            "rating": 5,
+            "authorName": "Jane Doe",
+            "relativeTimeDescription": "2 weeks ago"
+        },
+        {
+            "text": "Great location, but the room was a bit small.",
+            "rating": 4,
+            "authorName": "John Smith",
+            "relativeTimeDescription": "1 month ago"
+        }
+    ],
+    "amenities": {
+        "allowsDogs": False,
+        "paymentOptions": {
+            "acceptsNfc": False,
+            "acceptsCashOnly": False,
+            "acceptsDebitCards": True,
+            "acceptsCreditCards": True
+        },
+        "goodForChildren": True
+    },
+    "service_amenities": {
+        "roomService": "",
+        "laundry": "",
+        "concierge": True,
+        "airportShuttle": {
+            "available": True,
+            "fee": ""
+        }
+    },
+    "facility_overview": "",
+    "policy": {
+        "pets": "",
+        "smoking": "",
+        "cancellation": ""
+    },
+    "meta_data": {
+        "seoTitle": "",
+        "internalTag": "",
+        "seoKeywords": "",
+        "seoDescription": ""
+    },
+    "vicinity": "",
+    "rating": 0.0,
+    "user_ratings_total": 0,
+    "start_price": 0,
+    "end_price": 0,
+    "discount_url": "",
+    "business_status": "",
+    "icon_background_color": "",
+    "icon_mask_base_uri": "",
+    "open_now": True,
+    "reference": "",
+    "scope": "",
+    "facility": "",
+    "types": "",
+    "keyword": "",
+    "rate_pretty": "",
+    "rate_type": "",
+    "slug": "",
+    "city_anchor": "",
+    "show": True,
+    "event_start_date": "2025-12-01T10:00:00Z",
+    "event_end_date": "2025-12-01T10:00:00Z",
+    "website": "",
+    "regular_opening_hours": {
+        "openNow": False,
+        "periods": [
+            {
+                "open": {
+                    "day": 0,
+                    "hour": 11,
+                    "minute": 0
+                },
+                "close": {
+                    "day": 0,
+                    "hour": 19,
+                    "minute": 0
+                }
+            },
+            {
+                "open": {
+                    "day": 1,
+                    "hour": 14,
+                    "minute": 0
+                },
+                "close": {
+                    "day": 1,
+                    "hour": 21,
+                    "minute": 0
+                }
+            },
+            {
+                "open": {
+                    "day": 2,
+                    "hour": 14,
+                    "minute": 0
+                },
+                "close": {
+                    "day": 2,
+                    "hour": 21,
+                    "minute": 0
+                }
+            },
+            {
+                "open": {
+                    "day": 3,
+                    "hour": 14,
+                    "minute": 0
+                },
+                "close": {
+                    "day": 3,
+                    "hour": 21,
+                    "minute": 0
+                }
+            },
+            {
+                "open": {
+                    "day": 4,
+                    "hour": 14,
+                    "minute": 0
+                },
+                "close": {
+                    "day": 4,
+                    "hour": 21,
+                    "minute": 0
+                }
+            },
+            {
+                "open": {
+                    "day": 5,
+                    "hour": 14,
+                    "minute": 0
+                },
+                "close": {
+                    "day": 5,
+                    "hour": 21,
+                    "minute": 0
+                }
+            },
+            {
+                "open": {
+                    "day": 6,
+                    "hour": 10,
+                    "minute": 30
+                },
+                "close": {
+                    "day": 6,
+                    "hour": 21,
+                    "minute": 0
+                }
+            }
+        ],
+        "nextOpenTime": "2025-01-05T16:00:00Z",
+        "weekdayDescriptions": [
+            "Monday: 2:00 – 9:00\u202fPM",
+            "Tuesday: 2:00 – 9:00\u202fPM",
+            "Wednesday: 2:00 – 9:00\u202fPM",
+            "Thursday: 2:00 – 9:00\u202fPM",
+            "Friday: 2:00 – 9:00\u202fPM",
+            "Saturday: 10:30\u202fAM – 9:00\u202fPM",
+            "Sunday: 11:00\u202fAM – 7:00\u202fPM"
+        ]
+    },
+    "regular_secondary_opening_hours": [
+        {
+            "openNow": False,
+            "periods": [
+                {
+                    "open": {
+                        "day": 0,
+                        "hour": 9,
+                        "minute": 0
+                    },
+                    "close": {
+                        "day": 0,
+                        "hour": 22,
+                        "minute": 0
+                    }
+                },
+                {
+                    "open": {
+                        "day": 1,
+                        "hour": 9,
+                        "minute": 0
+                    },
+                    "close": {
+                        "day": 1,
+                        "hour": 22,
+                        "minute": 0
+                    }
+                },
+                {
+                    "open": {
+                        "day": 2,
+                        "hour": 9,
+                        "minute": 0
+                    },
+                    "close": {
+                        "day": 2,
+                        "hour": 22,
+                        "minute": 0
+                    }
+                },
+                {
+                    "open": {
+                        "day": 3,
+                        "hour": 9,
+                        "minute": 0
+                    },
+                    "close": {
+                        "day": 3,
+                        "hour": 22,
+                        "minute": 0
+                    }
+                },
+                {
+                    "open": {
+                        "day": 4,
+                        "hour": 9,
+                        "minute": 0
+                    },
+                    "close": {
+                        "day": 4,
+                        "hour": 22,
+                        "minute": 0
+                    }
+                },
+                {
+                    "open": {
+                        "day": 5,
+                        "hour": 9,
+                        "minute": 0
+                    },
+                    "close": {
+                        "day": 5,
+                        "hour": 22,
+                        "minute": 0
+                    }
+                },
+                {
+                    "open": {
+                        "day": 6,
+                        "hour": 9,
+                        "minute": 0
+                    },
+                    "close": {
+                        "day": 6,
+                        "hour": 22,
+                        "minute": 0
+                    }
+                }
+            ],
+            "nextOpenTime": "2025-01-05T14:00:00Z",
+            "secondaryHoursType": "ONLINE_SERVICE_HOURS",
+            "weekdayDescriptions": [
+                "Monday: 9:00\u202fAM – 10:00\u202fPM",
+                "Tuesday: 9:00\u202fAM – 10:00\u202fPM",
+                "Wednesday: 9:00\u202fAM – 10:00\u202fPM",
+                "Thursday: 9:00\u202fAM – 10:00\u202fPM",
+                "Friday: 9:00\u202fAM – 10:00\u202fPM",
+                "Saturday: 9:00\u202fAM – 10:00\u202fPM",
+                "Sunday: 9:00\u202fAM – 10:00\u202fPM"
+            ]
+        }
+    ]
+}
+
     try:
-        data = request.data
+        l=[
+            "contact_info",
+            "check_in_data",
+            "amenities",
+            "service_amenities",
+            "policy",
+            "meta_data",
+            "regular_opening_hours",
+            "reviews",
+            "regular_secondary_opening_hours",
+         ]
+        l2=[]
+        data = deepcopy(request.data)
+        print(data)
+        for key in l:
+            if key not in data:
+                l2.append(key)
+        if l2:
+            return Response({"message": "Fields does not exists",
+                             "fields": list(l2),}, status=status.HTTP_206_PARTIAL_CONTENT)
+        for key in l:
+            if not isinstance(data[key],dict):
+                data[key]=json.loads(data[key])
+        print(data)
+        missing_keys=collect_missing_keys(reference,data)
+        if missing_keys:
+            return Response({
+                "message":"The following fields are missing in the input JSON:",
+                "keys":missing_keys,
+                }, status=status.HTTP_201_CREATED)
+        # return Response({"message": "Site created successfully"}, status=status.HTTP_201_CREATED)
+        
+
         # Fetch and validate foreign keys
         category = Category.objects.get(id=data.get('category_id'))
         city = City.objects.get(id=data.get('city_id'))
@@ -504,16 +869,16 @@ def addSite(request):
             name=data.get('name'),
             city=city,
             description=data.get('description'),
-            contact_info=json.loads(data.get('contact_info', '{}')),
-            check_in_data=json.loads(data.get('check_in_data', '{}')),
+            contact_info=data.get('contact_info', {}),
+            check_in_data=data.get('check_in_data', {}),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
             reviews=data.get('reviews', {}),
-            amenities=json.loads(data.get('amenities', '{}')),
-            service_amenities=json.loads(data.get('service_amenities', '{}')),
+            amenities=data.get('amenities', {}),
+            service_amenities=data.get('service_amenities', {}),
             facility_overview=data.get('facility_overview'),
-            policy=json.loads(data.get('policy', '{}')),
-            meta_data=json.loads(data.get('meta_data', '{}')),
+            policy=data.get('policy', {}),
+            meta_data=data.get('meta_data', {}),
             cover_image=data.get('cover_image'),
             images=data.getlist('image_urls', []),  # optional pre-existing image URLs
             address=data.get('address'),
@@ -541,14 +906,14 @@ def addSite(request):
             event_start_date=data.get('event_start_date'),
             event_end_date=data.get('event_end_date'),
             website=data.get('website'),
-            regular_opening_hours=json.loads(data.get('regular_opening_hours', '{}')),
-            regular_secondary_opening_hours=json.loads(data.get('regular_secondary_opening_hours', '{}')),
+            regular_opening_hours=data.get('regular_opening_hours', {}),
+            regular_secondary_opening_hours=data.get('regular_secondary_opening_hours', []),
         )
 
         # Add photos to site
         for photo in photo_objs:
             site.photos.add(photo)
-        for review in json.loads(data.get('reviews', [])):
+        for review in data.get('reviews', []):
             if review:
                 
                 if review.get('publishTime'):
