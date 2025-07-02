@@ -495,359 +495,479 @@ def collect_missing_keys(reference, user_input, prefix=""):
                 # continue  # You can optionally validate the structure of list items too
     return missing
 
+# @api_view(['POST'])
+# @authentication_classes([AdminTokenAuthentication])
+# @permission_classes([IsAuthenticatedAdmin])
+# def addSite(request):
+#     # print("Data = ",request.data.get('amenities', '{}'))
+#     # print("Data = ",json.loads(request.data.get('amenities', '{}')))
+#     # return Response({"message": "Site created successfully"}, status=status.HTTP_201_CREATED)
+#     reference={
+#     "place_id": "",
+#     "property_id": "",
+#     "ad_status": 1,
+#     "category_id": "",
+#     "name": "",
+#     "city_id": "",
+#     "description": "",
+#     "contact_info": {
+#         "nationalPhoneNumber": "",
+#         "internationalPhoneNumber": ""
+#     },
+#     "check_in_data": {
+#         "minAge": 0,
+#         "checkInTime": "",
+#         "checkOutTime": "",
+#         "specialInstructions": ""
+#     },
+#     "latitude": 0.0,
+#     "longitude": 0.0,
+#     "reviews": [
+#         {
+#             "text": "Amazing stay, wonderful staff and beautiful location!",
+#             "rating": 5,
+#             "authorName": "Jane Doe",
+#             "relativeTimeDescription": "2 weeks ago"
+#         },
+#         {
+#             "text": "Great location, but the room was a bit small.",
+#             "rating": 4,
+#             "authorName": "John Smith",
+#             "relativeTimeDescription": "1 month ago"
+#         }
+#     ],
+#     "amenities": {
+#         "allowsDogs": False,
+#         "paymentOptions": {
+#             "acceptsNfc": False,
+#             "acceptsCashOnly": False,
+#             "acceptsDebitCards": True,
+#             "acceptsCreditCards": True
+#         },
+#         "goodForChildren": True
+#     },
+#     "service_amenities": {
+#         "roomService": "",
+#         "laundry": "",
+#         "concierge": True,
+#         "airportShuttle": {
+#             "available": True,
+#             "fee": ""
+#         }
+#     },
+#     "facility_overview": "",
+#     "policy": {
+#         "pets": "",
+#         "smoking": "",
+#         "cancellation": ""
+#     },
+#     "meta_data": {
+#         "seoTitle": "",
+#         "internalTag": "",
+#         "seoKeywords": "",
+#         "seoDescription": ""
+#     },
+#     "vicinity": "",
+#     "rating": 0.0,
+#     "user_ratings_total": 0,
+#     "start_price": 0,
+#     "end_price": 0,
+#     "discount_url": "",
+#     "business_status": "",
+#     "icon_background_color": "",
+#     "icon_mask_base_uri": "",
+#     "open_now": True,
+#     "reference": "",
+#     "scope": "",
+#     "facility": "",
+#     "types": "",
+#     "keyword": "",
+#     "rate_pretty": "",
+#     "rate_type": "",
+#     "slug": "",
+#     "city_anchor": "",
+#     "show": True,
+#     "event_start_date": "2025-12-01T10:00:00Z",
+#     "event_end_date": "2025-12-01T10:00:00Z",
+#     "website": "",
+#     "regular_opening_hours": {
+#         "openNow": False,
+#         "periods": [
+#             {
+#                 "open": {
+#                     "day": 0,
+#                     "hour": 11,
+#                     "minute": 0
+#                 },
+#                 "close": {
+#                     "day": 0,
+#                     "hour": 19,
+#                     "minute": 0
+#                 }
+#             },
+#             {
+#                 "open": {
+#                     "day": 1,
+#                     "hour": 14,
+#                     "minute": 0
+#                 },
+#                 "close": {
+#                     "day": 1,
+#                     "hour": 21,
+#                     "minute": 0
+#                 }
+#             },
+#             {
+#                 "open": {
+#                     "day": 2,
+#                     "hour": 14,
+#                     "minute": 0
+#                 },
+#                 "close": {
+#                     "day": 2,
+#                     "hour": 21,
+#                     "minute": 0
+#                 }
+#             },
+#             {
+#                 "open": {
+#                     "day": 3,
+#                     "hour": 14,
+#                     "minute": 0
+#                 },
+#                 "close": {
+#                     "day": 3,
+#                     "hour": 21,
+#                     "minute": 0
+#                 }
+#             },
+#             {
+#                 "open": {
+#                     "day": 4,
+#                     "hour": 14,
+#                     "minute": 0
+#                 },
+#                 "close": {
+#                     "day": 4,
+#                     "hour": 21,
+#                     "minute": 0
+#                 }
+#             },
+#             {
+#                 "open": {
+#                     "day": 5,
+#                     "hour": 14,
+#                     "minute": 0
+#                 },
+#                 "close": {
+#                     "day": 5,
+#                     "hour": 21,
+#                     "minute": 0
+#                 }
+#             },
+#             {
+#                 "open": {
+#                     "day": 6,
+#                     "hour": 10,
+#                     "minute": 30
+#                 },
+#                 "close": {
+#                     "day": 6,
+#                     "hour": 21,
+#                     "minute": 0
+#                 }
+#             }
+#         ],
+#         "nextOpenTime": "2025-01-05T16:00:00Z",
+#         "weekdayDescriptions": [
+#             "Monday: 2:00 – 9:00\u202fPM",
+#             "Tuesday: 2:00 – 9:00\u202fPM",
+#             "Wednesday: 2:00 – 9:00\u202fPM",
+#             "Thursday: 2:00 – 9:00\u202fPM",
+#             "Friday: 2:00 – 9:00\u202fPM",
+#             "Saturday: 10:30\u202fAM – 9:00\u202fPM",
+#             "Sunday: 11:00\u202fAM – 7:00\u202fPM"
+#         ]
+#     },
+#     "regular_secondary_opening_hours": [
+#         {
+#             "openNow": False,
+#             "periods": [
+#                 {
+#                     "open": {
+#                         "day": 0,
+#                         "hour": 9,
+#                         "minute": 0
+#                     },
+#                     "close": {
+#                         "day": 0,
+#                         "hour": 22,
+#                         "minute": 0
+#                     }
+#                 },
+#                 {
+#                     "open": {
+#                         "day": 1,
+#                         "hour": 9,
+#                         "minute": 0
+#                     },
+#                     "close": {
+#                         "day": 1,
+#                         "hour": 22,
+#                         "minute": 0
+#                     }
+#                 },
+#                 {
+#                     "open": {
+#                         "day": 2,
+#                         "hour": 9,
+#                         "minute": 0
+#                     },
+#                     "close": {
+#                         "day": 2,
+#                         "hour": 22,
+#                         "minute": 0
+#                     }
+#                 },
+#                 {
+#                     "open": {
+#                         "day": 3,
+#                         "hour": 9,
+#                         "minute": 0
+#                     },
+#                     "close": {
+#                         "day": 3,
+#                         "hour": 22,
+#                         "minute": 0
+#                     }
+#                 },
+#                 {
+#                     "open": {
+#                         "day": 4,
+#                         "hour": 9,
+#                         "minute": 0
+#                     },
+#                     "close": {
+#                         "day": 4,
+#                         "hour": 22,
+#                         "minute": 0
+#                     }
+#                 },
+#                 {
+#                     "open": {
+#                         "day": 5,
+#                         "hour": 9,
+#                         "minute": 0
+#                     },
+#                     "close": {
+#                         "day": 5,
+#                         "hour": 22,
+#                         "minute": 0
+#                     }
+#                 },
+#                 {
+#                     "open": {
+#                         "day": 6,
+#                         "hour": 9,
+#                         "minute": 0
+#                     },
+#                     "close": {
+#                         "day": 6,
+#                         "hour": 22,
+#                         "minute": 0
+#                     }
+#                 }
+#             ],
+#             "nextOpenTime": "2025-01-05T14:00:00Z",
+#             "secondaryHoursType": "ONLINE_SERVICE_HOURS",
+#             "weekdayDescriptions": [
+#                 "Monday: 9:00\u202fAM – 10:00\u202fPM",
+#                 "Tuesday: 9:00\u202fAM – 10:00\u202fPM",
+#                 "Wednesday: 9:00\u202fAM – 10:00\u202fPM",
+#                 "Thursday: 9:00\u202fAM – 10:00\u202fPM",
+#                 "Friday: 9:00\u202fAM – 10:00\u202fPM",
+#                 "Saturday: 9:00\u202fAM – 10:00\u202fPM",
+#                 "Sunday: 9:00\u202fAM – 10:00\u202fPM"
+#             ]
+#         }
+#     ]
+# }
+
+#     try:
+#         l=[
+#             "contact_info",
+#             "check_in_data",
+#             "amenities",
+#             "service_amenities",
+#             "policy",
+#             "meta_data",
+#             "regular_opening_hours",
+#             "reviews",
+#             "regular_secondary_opening_hours",
+#          ]
+#         l2=[]
+#         data = deepcopy(request.data)
+#         print(data)
+#         for key in l:
+#             if key not in data:
+#                 l2.append(key)
+#         if l2:
+#             return Response({"message": "Fields does not exists",
+#                              "fields": list(l2),}, status=status.HTTP_206_PARTIAL_CONTENT)
+#         for key in l:
+#             if not isinstance(data[key],dict):
+#                 data[key]=json.loads(data[key])
+#         print(data)
+#         missing_keys=collect_missing_keys(reference,data)
+#         if missing_keys:
+#             return Response({
+#                 "message":"The following fields are missing in the input JSON:",
+#                 "keys":missing_keys,
+#                 }, status=status.HTTP_201_CREATED)
+#         # return Response({"message": "Site created successfully"}, status=status.HTTP_201_CREATED)
+        
+
+#         # Fetch and validate foreign keys
+#         category = Category.objects.get(id=data.get('category_id'))
+#         city = City.objects.get(id=data.get('city_id'))
+
+#         # Create Photo instances from uploaded files
+#         photo_objs = []
+#         uploaded_files = request.FILES.getlist('images')
+#         uploaded_icon_files = request.FILES.getlist('icon')
+#         print("Image length = ",len(uploaded_files))
+        
+
+#         for icon in uploaded_icon_files:
+#             iconPath = save_file(icon, 'static/icon')
+#             print("iconPath = ",iconPath)
+        
+        
+#         for uploaded_file in uploaded_files:
+#             imagePath = save_file(uploaded_file, 'static/site')
+#             print("imagePath = ",imagePath)
+
+#             # Create Photo object
+#             photo = Photo.objects.create(
+#                 height=0,
+#                 width=0,
+#                 html_attributions='',
+#                 photo_reference='',
+#                 photo_name='',
+#                 static=imagePath,
+#             )
+#             photo_objs.append(photo)
+
+        
+
+#         # Create the Site instance
+#         site = Site.objects.create(
+#             place_id=data.get('place_id'),
+#             property_id=data.get('property_id'),
+#             ad_status=data.get('ad_status', 0),
+#             category=category,
+#             name=data.get('name'),
+#             city=city,
+#             description=data.get('description'),
+#             contact_info=data.get('contact_info', {}),
+#             check_in_data=data.get('check_in_data', {}),
+#             latitude=data.get('latitude'),
+#             longitude=data.get('longitude'),
+#             reviews=data.get('reviews', {}),
+#             amenities=data.get('amenities', {}),
+#             service_amenities=data.get('service_amenities', {}),
+#             facility_overview=data.get('facility_overview'),
+#             policy=data.get('policy', {}),
+#             meta_data=data.get('meta_data', {}),
+#             cover_image=data.get('cover_image'),
+#             images=data.getlist('image_urls', []),  # optional pre-existing image URLs
+#             address=data.get('address'),
+#             rating=data.get('rating', 0),
+#             user_ratings_total=data.get('user_ratings_total', 0),
+#             start_price=data.get('start_price'),
+#             end_price=data.get('end_price'),
+#             icon=iconPath,
+#             discount_url=data.get('discount_url'),
+#             business_status=data.get('business_status'),
+#             icon_background_color=data.get('icon_background_color'),
+#             icon_mask_base_uri=data.get('icon_mask_base_uri'),
+#             open_now=data.get('open_now', False),
+#             reference=data.get('reference'),
+#             scope=data.get('scope'),
+#             facility=data.get('facility'),
+#             types=data.get('types'),
+#             keyword=data.get('keyword'),
+#             vicinity=data.get('vicinity'),
+#             rate_pretty=data.get('rate_pretty'),
+#             rate_type=data.get('rate_type'),
+#             slug=data.get('slug'),
+#             city_anchor=data.get('city_anchor'),
+#             show=data.get('show', True),
+#             event_start_date=data.get('event_start_date'),
+#             event_end_date=data.get('event_end_date'),
+#             website=data.get('website'),
+#             regular_opening_hours=data.get('regular_opening_hours', {}),
+#             regular_secondary_opening_hours=data.get('regular_secondary_opening_hours', []),
+#         )
+
+#         # Add photos to site
+#         for photo in photo_objs:
+#             site.photos.add(photo)
+#         for review in data.get('reviews', []):
+#             if review:
+                
+#                 if review.get('publishTime'):
+#                     publishTime=dateParser.isoparse(review.get('publishTime'))
+#                 else:
+#                     publishTime=datetime.now()
+#                 review_obj = PlaceReview.objects.create(
+#                     original_text=review.get('text',0),
+#                     rating=review.get('rating',0),
+#                     author_name=review.get('authorName',''),
+#                     name=review.get('name','Admin'),
+#                     text=review.get('text',''),
+#                     publish_time=publishTime,
+#                     flag_content_uri=review.get('flagContentUri',''),
+#                     google_maps_uri=review.get('googleMapsUri',''),
+#                 )
+#                 site.place_review.add(review_obj)
+#         site.save()
+
+#         return Response({"message": "Site created successfully", "site_id": site.id}, status=status.HTTP_201_CREATED)
+
+#     except Category.DoesNotExist:
+#         return Response({"error": "Invalid category_id"}, status=status.HTTP_400_BAD_REQUEST)
+#     except City.DoesNotExist:
+#         return Response({"error": "Invalid city_id"}, status=status.HTTP_400_BAD_REQUEST)
+#     except Exception as e:
+#         print("Exception raised = ",str(e))
+#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 @api_view(['POST'])
 @authentication_classes([AdminTokenAuthentication])
 @permission_classes([IsAuthenticatedAdmin])
 def addSite(request):
-    # print("Data = ",request.data.get('amenities', '{}'))
-    # print("Data = ",json.loads(request.data.get('amenities', '{}')))
-    # return Response({"message": "Site created successfully"}, status=status.HTTP_201_CREATED)
-    reference={
-    "place_id": "",
-    "property_id": "",
-    "ad_status": 1,
-    "category_id": "",
-    "name": "",
-    "city_id": "",
-    "description": "",
-    "contact_info": {
-        "nationalPhoneNumber": "",
-        "internationalPhoneNumber": ""
-    },
-    "check_in_data": {
-        "minAge": 0,
-        "checkInTime": "",
-        "checkOutTime": "",
-        "specialInstructions": ""
-    },
-    "latitude": 0.0,
-    "longitude": 0.0,
-    "reviews": [
-        {
-            "text": "Amazing stay, wonderful staff and beautiful location!",
-            "rating": 5,
-            "authorName": "Jane Doe",
-            "relativeTimeDescription": "2 weeks ago"
-        },
-        {
-            "text": "Great location, but the room was a bit small.",
-            "rating": 4,
-            "authorName": "John Smith",
-            "relativeTimeDescription": "1 month ago"
-        }
-    ],
-    "amenities": {
-        "allowsDogs": False,
-        "paymentOptions": {
-            "acceptsNfc": False,
-            "acceptsCashOnly": False,
-            "acceptsDebitCards": True,
-            "acceptsCreditCards": True
-        },
-        "goodForChildren": True
-    },
-    "service_amenities": {
-        "roomService": "",
-        "laundry": "",
-        "concierge": True,
-        "airportShuttle": {
-            "available": True,
-            "fee": ""
-        }
-    },
-    "facility_overview": "",
-    "policy": {
-        "pets": "",
-        "smoking": "",
-        "cancellation": ""
-    },
-    "meta_data": {
-        "seoTitle": "",
-        "internalTag": "",
-        "seoKeywords": "",
-        "seoDescription": ""
-    },
-    "vicinity": "",
-    "rating": 0.0,
-    "user_ratings_total": 0,
-    "start_price": 0,
-    "end_price": 0,
-    "discount_url": "",
-    "business_status": "",
-    "icon_background_color": "",
-    "icon_mask_base_uri": "",
-    "open_now": True,
-    "reference": "",
-    "scope": "",
-    "facility": "",
-    "types": "",
-    "keyword": "",
-    "rate_pretty": "",
-    "rate_type": "",
-    "slug": "",
-    "city_anchor": "",
-    "show": True,
-    "event_start_date": "2025-12-01T10:00:00Z",
-    "event_end_date": "2025-12-01T10:00:00Z",
-    "website": "",
-    "regular_opening_hours": {
-        "openNow": False,
-        "periods": [
-            {
-                "open": {
-                    "day": 0,
-                    "hour": 11,
-                    "minute": 0
-                },
-                "close": {
-                    "day": 0,
-                    "hour": 19,
-                    "minute": 0
-                }
-            },
-            {
-                "open": {
-                    "day": 1,
-                    "hour": 14,
-                    "minute": 0
-                },
-                "close": {
-                    "day": 1,
-                    "hour": 21,
-                    "minute": 0
-                }
-            },
-            {
-                "open": {
-                    "day": 2,
-                    "hour": 14,
-                    "minute": 0
-                },
-                "close": {
-                    "day": 2,
-                    "hour": 21,
-                    "minute": 0
-                }
-            },
-            {
-                "open": {
-                    "day": 3,
-                    "hour": 14,
-                    "minute": 0
-                },
-                "close": {
-                    "day": 3,
-                    "hour": 21,
-                    "minute": 0
-                }
-            },
-            {
-                "open": {
-                    "day": 4,
-                    "hour": 14,
-                    "minute": 0
-                },
-                "close": {
-                    "day": 4,
-                    "hour": 21,
-                    "minute": 0
-                }
-            },
-            {
-                "open": {
-                    "day": 5,
-                    "hour": 14,
-                    "minute": 0
-                },
-                "close": {
-                    "day": 5,
-                    "hour": 21,
-                    "minute": 0
-                }
-            },
-            {
-                "open": {
-                    "day": 6,
-                    "hour": 10,
-                    "minute": 30
-                },
-                "close": {
-                    "day": 6,
-                    "hour": 21,
-                    "minute": 0
-                }
-            }
-        ],
-        "nextOpenTime": "2025-01-05T16:00:00Z",
-        "weekdayDescriptions": [
-            "Monday: 2:00 – 9:00\u202fPM",
-            "Tuesday: 2:00 – 9:00\u202fPM",
-            "Wednesday: 2:00 – 9:00\u202fPM",
-            "Thursday: 2:00 – 9:00\u202fPM",
-            "Friday: 2:00 – 9:00\u202fPM",
-            "Saturday: 10:30\u202fAM – 9:00\u202fPM",
-            "Sunday: 11:00\u202fAM – 7:00\u202fPM"
-        ]
-    },
-    "regular_secondary_opening_hours": [
-        {
-            "openNow": False,
-            "periods": [
-                {
-                    "open": {
-                        "day": 0,
-                        "hour": 9,
-                        "minute": 0
-                    },
-                    "close": {
-                        "day": 0,
-                        "hour": 22,
-                        "minute": 0
-                    }
-                },
-                {
-                    "open": {
-                        "day": 1,
-                        "hour": 9,
-                        "minute": 0
-                    },
-                    "close": {
-                        "day": 1,
-                        "hour": 22,
-                        "minute": 0
-                    }
-                },
-                {
-                    "open": {
-                        "day": 2,
-                        "hour": 9,
-                        "minute": 0
-                    },
-                    "close": {
-                        "day": 2,
-                        "hour": 22,
-                        "minute": 0
-                    }
-                },
-                {
-                    "open": {
-                        "day": 3,
-                        "hour": 9,
-                        "minute": 0
-                    },
-                    "close": {
-                        "day": 3,
-                        "hour": 22,
-                        "minute": 0
-                    }
-                },
-                {
-                    "open": {
-                        "day": 4,
-                        "hour": 9,
-                        "minute": 0
-                    },
-                    "close": {
-                        "day": 4,
-                        "hour": 22,
-                        "minute": 0
-                    }
-                },
-                {
-                    "open": {
-                        "day": 5,
-                        "hour": 9,
-                        "minute": 0
-                    },
-                    "close": {
-                        "day": 5,
-                        "hour": 22,
-                        "minute": 0
-                    }
-                },
-                {
-                    "open": {
-                        "day": 6,
-                        "hour": 9,
-                        "minute": 0
-                    },
-                    "close": {
-                        "day": 6,
-                        "hour": 22,
-                        "minute": 0
-                    }
-                }
-            ],
-            "nextOpenTime": "2025-01-05T14:00:00Z",
-            "secondaryHoursType": "ONLINE_SERVICE_HOURS",
-            "weekdayDescriptions": [
-                "Monday: 9:00\u202fAM – 10:00\u202fPM",
-                "Tuesday: 9:00\u202fAM – 10:00\u202fPM",
-                "Wednesday: 9:00\u202fAM – 10:00\u202fPM",
-                "Thursday: 9:00\u202fAM – 10:00\u202fPM",
-                "Friday: 9:00\u202fAM – 10:00\u202fPM",
-                "Saturday: 9:00\u202fAM – 10:00\u202fPM",
-                "Sunday: 9:00\u202fAM – 10:00\u202fPM"
-            ]
-        }
-    ]
-}
-
     try:
-        l=[
-            "contact_info",
-            "check_in_data",
-            "amenities",
-            "service_amenities",
-            "policy",
-            "meta_data",
-            "regular_opening_hours",
-            "reviews",
-            "regular_secondary_opening_hours",
-         ]
-        l2=[]
-        data = deepcopy(request.data)
-        print(data)
-        for key in l:
-            if key not in data:
-                l2.append(key)
-        if l2:
-            return Response({"message": "Fields does not exists",
-                             "fields": list(l2),}, status=status.HTTP_206_PARTIAL_CONTENT)
-        for key in l:
-            if not isinstance(data[key],dict):
-                data[key]=json.loads(data[key])
-        print(data)
-        missing_keys=collect_missing_keys(reference,data)
-        if missing_keys:
-            return Response({
-                "message":"The following fields are missing in the input JSON:",
-                "keys":missing_keys,
-                }, status=status.HTTP_201_CREATED)
-        # return Response({"message": "Site created successfully"}, status=status.HTTP_201_CREATED)
-        
+        data = request.data
 
-        # Fetch and validate foreign keys
-        category = Category.objects.get(id=data.get('category_id'))
-        city = City.objects.get(id=data.get('city_id'))
+        # A helper function to safely convert potential empty strings to None for numeric fields
+        def to_num(val):
+            if val is None or val == '':
+                return None
+            return val
 
-        # Create Photo instances from uploaded files
+        iconPath = None  # Initialize to None
+        icon_file = request.FILES.get('icon') # Use .get() for a single optional file
+        if icon_file:
+            iconPath = save_file(icon_file, 'static/icon')
+            print("iconPath =", iconPath)
+
         photo_objs = []
         uploaded_files = request.FILES.getlist('images')
-        uploaded_icon_files = request.FILES.getlist('icon')
-        print("Image length = ",len(uploaded_files))
-        
-
-        for icon in uploaded_icon_files:
-            iconPath = save_file(icon, 'static/icon')
-            print("iconPath = ",iconPath)
-        
+        print("Image length =", len(uploaded_files))
         
         for uploaded_file in uploaded_files:
             imagePath = save_file(uploaded_file, 'static/site')
-            print("imagePath = ",imagePath)
-
-            # Create Photo object
+            print("imagePath =", imagePath)
             photo = Photo.objects.create(
                 height=0,
                 width=0,
@@ -858,40 +978,32 @@ def addSite(request):
             )
             photo_objs.append(photo)
 
-        
+        # --- FOREIGN KEY VALIDATION ---
+        category = Category.objects.get(id=data.get('category_id'))
+        city = City.objects.get(id=data.get('city_id'))
 
-        # Create the Site instance
+        show_val = str(data.get('show', 'true')).lower() == 'true'
+        open_now_val = str(data.get('open_now', 'false')).lower() == 'true'
+
+        reviews_data = json.loads(data.get('reviews', '[]'))
+        
         site = Site.objects.create(
-            place_id=data.get('place_id'),
-            property_id=data.get('property_id'),
-            ad_status=data.get('ad_status', 0),
-            category=category,
             name=data.get('name'),
+            category=category,
             city=city,
-            description=data.get('description'),
-            contact_info=data.get('contact_info', {}),
-            check_in_data=data.get('check_in_data', {}),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
-            reviews=data.get('reviews', {}),
-            amenities=data.get('amenities', {}),
-            service_amenities=data.get('service_amenities', {}),
-            facility_overview=data.get('facility_overview'),
-            policy=data.get('policy', {}),
-            meta_data=data.get('meta_data', {}),
+
+            place_id=data.get('place_id'),
+            property_id=data.get('property_id'),
+            description=data.get('description'),
             cover_image=data.get('cover_image'),
-            images=data.getlist('image_urls', []),  # optional pre-existing image URLs
             address=data.get('address'),
-            rating=data.get('rating', 0),
-            user_ratings_total=data.get('user_ratings_total', 0),
-            start_price=data.get('start_price'),
-            end_price=data.get('end_price'),
-            icon=iconPath,
+            icon=iconPath, 
             discount_url=data.get('discount_url'),
             business_status=data.get('business_status'),
             icon_background_color=data.get('icon_background_color'),
             icon_mask_base_uri=data.get('icon_mask_base_uri'),
-            open_now=data.get('open_now', False),
             reference=data.get('reference'),
             scope=data.get('scope'),
             facility=data.get('facility'),
@@ -902,46 +1014,61 @@ def addSite(request):
             rate_type=data.get('rate_type'),
             slug=data.get('slug'),
             city_anchor=data.get('city_anchor'),
-            show=data.get('show', True),
-            event_start_date=data.get('event_start_date'),
-            event_end_date=data.get('event_end_date'),
             website=data.get('website'),
-            regular_opening_hours=data.get('regular_opening_hours', {}),
-            regular_secondary_opening_hours=data.get('regular_secondary_opening_hours', []),
+            facility_overview=data.get('facility_overview'),
+            
+            ad_status=to_num(data.get('ad_status', 0)),
+            rating=to_num(data.get('rating')),
+            user_ratings_total=to_num(data.get('user_ratings_total')),
+            start_price=to_num(data.get('start_price')),
+            end_price=to_num(data.get('end_price')),
+
+            event_start_date=data.get('event_start_date') or None,
+            event_end_date=data.get('event_end_date') or None,
+
+            show=show_val,
+            open_now=open_now_val,
+            
+            contact_info=json.loads(data.get('contact_info', '{}')),
+            check_in_data=json.loads(data.get('check_in_data', '{}')),
+            amenities=json.loads(data.get('amenities', '{}')),
+            service_amenities=json.loads(data.get('service_amenities', '{}')),
+            policy=json.loads(data.get('policy', '{}')),
+            meta_data=json.loads(data.get('meta_data', '{}')),
+            regular_opening_hours=json.loads(data.get('regular_opening_hours', '{}')),
+            regular_secondary_opening_hours=json.loads(data.get('regular_secondary_opening_hours', '[]')),
         )
 
-        # Add photos to site
-        for photo in photo_objs:
-            site.photos.add(photo)
-        for review in data.get('reviews', []):
-            if review:
-                
-                if review.get('publishTime'):
-                    publishTime=dateParser.isoparse(review.get('publishTime'))
-                else:
-                    publishTime=datetime.now()
+        site.photos.add(*photo_objs) 
+
+        for review in reviews_data:
+            if review and (review.get('authorName') or review.get('text')):
+                publishTime_str = review.get('publishTime')
+                publishTime = dateParser(publishTime_str) if publishTime_str else datetime.now()
+
                 review_obj = PlaceReview.objects.create(
-                    original_text=review.get('text',0),
-                    rating=review.get('rating',0),
-                    author_name=review.get('authorName',''),
-                    name=review.get('name','Admin'),
-                    text=review.get('text',''),
+                    author_name=review.get('authorName', ''),
+                    rating=to_num(review.get('rating')) or 0,
+                    text=review.get('text', ''),
+                    original_text=review.get('text', ''), 
                     publish_time=publishTime,
-                    flag_content_uri=review.get('flagContentUri',''),
-                    google_maps_uri=review.get('googleMapsUri',''),
                 )
                 site.place_review.add(review_obj)
-        site.save()
-
+        
         return Response({"message": "Site created successfully", "site_id": site.id}, status=status.HTTP_201_CREATED)
 
-    except Category.DoesNotExist:
-        return Response({"error": "Invalid category_id"}, status=status.HTTP_400_BAD_REQUEST)
-    except City.DoesNotExist:
-        return Response({"error": "Invalid city_id"}, status=status.HTTP_400_BAD_REQUEST)
+    except (Category.DoesNotExist, City.DoesNotExist):
+        return Response({"error": "Invalid category_id or city_id"}, status=status.HTTP_400_BAD_REQUEST)
+    except json.JSONDecodeError:
+        return Response({"error": "Invalid JSON data provided for one of the fields."}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        print("Exception raised = ",str(e))
+        print("Exception raised =", str(e))
+        import traceback
+        traceback.print_exc() # For more detailed logs
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+ 
+
+
 @api_view(['PUT'])
 @authentication_classes([AdminTokenAuthentication])
 @permission_classes([IsAuthenticatedAdmin])
@@ -970,6 +1097,11 @@ def updateSite(request):
                     delete_file(file_path)
                 site.photos.remove(photo)
                 photo.delete()  
+        
+        icon_file = request.FILES.get('icon') # Use .get() for a single optional file
+        if icon_file:
+            site.icon = save_file(icon_file, 'static/icon')
+            print("iconPath =", site.icon)
 
         # Handle uploaded files
         photo_objs = []
@@ -986,13 +1118,49 @@ def updateSite(request):
             )
             photo_objs.append(photo)
 
+        # Parse JSON fields
+        json_fields = [
+            'contact_info', 
+            'check_in_data', 
+            'reviews', 
+            'amenities',
+            'service_amenities', 
+            'policy', 
+            'meta_data',
+            'regular_opening_hours', 
+            'regular_secondary_opening_hours',
+        ]
+        parsed_json_data = {}
+        for field in json_fields:
+            if field in data:
+                try:
+                    parsed_json_data[field] = json.loads(data[field])
+                except json.JSONDecodeError as e:
+                    return Response({f"error": f"Invalid JSON format for {field}: {str(e)}"}, status=400)
+
+        # JSON Fields
+        site.contact_info=parsed_json_data.get('contact_info',site.contact_info)
+        site.check_in_data=parsed_json_data.get('check_in_data',site.check_in_data)
+        site.reviews=parsed_json_data.get('reviews',site.reviews)
+        site.amenities=parsed_json_data.get('amenities',site.amenities)
+        site.service_amenities=parsed_json_data.get('service_amenities',site.service_amenities)
+        site.policy=parsed_json_data.get('policy',site.policy)
+        site.meta_data=parsed_json_data.get('meta_data',site.meta_data)
+        site.regular_opening_hours=parsed_json_data.get('regular_opening_hours',site.regular_opening_hours)
+        site.regular_secondary_opening_hours=parsed_json_data.get('regular_secondary_opening_hours',site.regular_secondary_opening_hours)
+
         # Basic fields
+
         site.place_id = data.get('place_id', site.place_id)
         site.property_id = data.get('property_id', site.property_id)
-        site.ad_status = data.get('ad_status', site.ad_status)
+        # site.ad_status = data.get('ad_status', site.ad_status)
+        site.ad_status = 0
         site.category = category
         site.name = data.get('name', site.name)
         site.city = city
+        
+        # site.amenities = data.get('amenities', site.amenities)
+        # site.service_amenities = data.get('service_amenities', site.service_amenities)
         site.description = data.get('description', site.description)
         site.latitude = data.get('latitude', site.latitude)
         site.longitude = data.get('longitude', site.longitude)
@@ -1008,7 +1176,7 @@ def updateSite(request):
         site.business_status = data.get('business_status', site.business_status)
         site.icon_background_color = data.get('icon_background_color', site.icon_background_color)
         site.icon_mask_base_uri = data.get('icon_mask_base_uri', site.icon_mask_base_uri)
-        site.open_now = data.get('open_now', site.open_now)
+        site.open_now = data.get('open_now', 'false') == 'true'
         site.reference = data.get('reference', site.reference)
         site.scope = data.get('scope', site.scope)
         site.facility = data.get('facility', site.facility)
@@ -1019,23 +1187,12 @@ def updateSite(request):
         site.rate_type = data.get('rate_type', site.rate_type)
         site.slug = data.get('slug', site.slug)
         site.city_anchor = data.get('city_anchor', site.city_anchor)
-        site.show = data.get('show', site.show)
+        site.show = data.get('show', 'false') == 'true'
         site.event_start_date = data.get('event_start_date', site.event_start_date)
         site.event_end_date = data.get('event_end_date', site.event_end_date)
         site.website = data.get('website', site.website)
 
-        # Parse JSON fields
-        json_fields = [
-            'contact_info', 'check_in_data', 'reviews', 'amenities',
-            'service_amenities', 'policy', 'meta_data',
-            'regular_opening_hours', 'regular_secondary_opening_hours'
-        ]
-        for field in json_fields:
-            if field in data:
-                try:
-                    setattr(site, field, json.loads(data.get(field)))
-                except json.JSONDecodeError as e:
-                    return Response({f"error": f"Invalid JSON for {field}: {str(e)}"}, status=400)
+        
 
         # Array field: images
         if 'image_urls' in data:
@@ -1053,6 +1210,7 @@ def updateSite(request):
         return Response({"message": "Site updated successfully", "site_id": site.id}, status=status.HTTP_200_OK)
 
     except Exception as e:
+        print(str(e))
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -1062,12 +1220,35 @@ def updateSite(request):
 @permission_classes([IsAuthenticatedAdmin])
 def getSite(request,id):
     try:
-        site_instance = Site.objects.filter(id=id, show=True).annotate(icon_url=F('category__icon_url')).first()
+        site_instance = Site.objects.filter(id=id).annotate(icon_url=F('category__icon_url')).first()
         if site_instance:
             return JsonResponse({'id': site_instance.id,
                                 'name': site_instance.name,
                                  'description': site_instance.description,
                                  'place_id': site_instance.place_id,
+                                 'property_id': site_instance.property_id,
+                                 'city_anchor': site_instance.city_anchor,
+                                 'show': site_instance.show,
+                                 'open_now': site_instance.open_now,
+                                 'ad_status': site_instance.ad_status,
+                                 'start_price': site_instance.start_price,
+                                 'end_price': site_instance.end_price,
+                                 'rate_pretty': site_instance.rate_pretty,
+                                 'rate_type': site_instance.rate_type,
+                                 'icon_background_color': site_instance.icon_background_color,
+                                 'icon_mask_base_uri': site_instance.icon_mask_base_uri,
+                                 'cover_image': site_instance.cover_image,
+                                 'icon': site_instance.icon,
+                                 'scope': site_instance.scope,
+                                 'reference': site_instance.reference,
+                                 'event_start_date': site_instance.event_start_date,
+                                 'event_end_date': site_instance.event_end_date,
+                                 'check_in_data': site_instance.check_in_data,
+                                 'policy': site_instance.policy,
+                                 'meta_data': site_instance.meta_data,
+                                 'types': site_instance.types,
+                                 'keyword': site_instance.keyword,
+                                 'slug': site_instance.slug,
                                  'category_id': site_instance.category.id,
                                  'category_name': site_instance.category.name,
                                  'city_id': site_instance.city.id,
