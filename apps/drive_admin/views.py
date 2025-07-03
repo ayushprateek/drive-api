@@ -1153,8 +1153,7 @@ def updateSite(request):
 
         site.place_id = data.get('place_id', site.place_id)
         site.property_id = data.get('property_id', site.property_id)
-        # site.ad_status = data.get('ad_status', site.ad_status)
-        site.ad_status = 0
+        site.ad_status = data.get('ad_status', site.ad_status)
         site.category = category
         site.name = data.get('name', site.name)
         site.city = city
@@ -1171,7 +1170,6 @@ def updateSite(request):
         site.user_ratings_total = data.get('user_ratings_total') or site.user_ratings_total
         site.start_price = data.get('start_price', site.start_price)
         site.end_price = data.get('end_price', site.end_price)
-        site.icon = data.get('icon', site.icon)
         site.discount_url = data.get('discount_url', site.discount_url)
         site.business_status = data.get('business_status', site.business_status)
         site.icon_background_color = data.get('icon_background_color', site.icon_background_color)
